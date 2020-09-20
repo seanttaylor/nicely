@@ -2,42 +2,15 @@
 #!/usr/bin/env python3
 #Maintainer: Sean Travis Taylor
 
-from post import PostService, PostValidator
-from in_memory_repository import InMemoryRepository
-from json_repository import JSONRepository
-# from sqlite3_repository import SQLite3Repository
+from services.post import PostService, PostValidator
+from lib.repository.in_memory import InMemoryRepository
+from lib.repository.json import JSONRepository
+from interfaces.repository import IRepository
+# from lib.repository.sqlite import SQLite3Repository
 
 
 #def welcome_message(name):
 #  print("Well hello there, {}".format(name));
-
-class IRepository():
-
-  def __init__(self, myImpl): 
-
-    self._name = "myRepo";
-    self._create = myImpl.create;
-    self._find_one = myImpl.find_one;
-    self._find_all = myImpl.find_all;
-    self._update = myImpl.update;
-    self._delete = myImpl.delete;
-
-  def create(self, doc):
-    return self._create(doc);
-
-  def find_one(self, id):
-    return self._find_one(id);
-
-  def find_all(self):
-    return self._find_all();
-
-  def update(self, id, doc):
-    return self._update(id, doc);
-
-  def delete(self, id):
-    return self._delete(id);
-
-####IRepository####
 
 post_validator_config = {
   "post_character_limit": 150,
