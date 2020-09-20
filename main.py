@@ -15,27 +15,27 @@ class IRepository():
 
   def __init__(self, myImpl): 
 
-    self.__name = "myRepo";
-    self.__create = myImpl.create;
-    self.__find_one = myImpl.find_one;
-    self.__find_all = myImpl.find_all;
-    self.__update = myImpl.update;
-    self.__delete = myImpl.delete;
+    self._name = "myRepo";
+    self._create = myImpl.create;
+    self._find_one = myImpl.find_one;
+    self._find_all = myImpl.find_all;
+    self._update = myImpl.update;
+    self._delete = myImpl.delete;
 
   def create(self, doc):
-    return self.__create(doc);
+    return self._create(doc);
 
   def find_one(self, id):
-    return self.__find_one(id);
+    return self._find_one(id);
 
   def find_all(self):
-    return self.__find_all();
+    return self._find_all();
 
   def update(self, id, doc):
-    return self.__update(id, doc);
+    return self._update(id, doc);
 
   def delete(self, id):
-    return self.__delete(id);
+    return self._delete(id);
 
 ####IRepository####
 
@@ -63,13 +63,12 @@ def main():
 
   doc_id = tstark_post.save();
   doc_id_1 = bbanner_post.save();
-
-  print(doc_id_1)
+  fdrake_post.save();
 
 
 
   bbanner_post.update({"comments": 42});
-  #bbanner_post.update({"likes": 1042});
+  bbanner_post.update({"likes": 1042});
 
   #print(list(post_service.find_all_posts()));
   
