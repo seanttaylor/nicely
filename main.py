@@ -2,28 +2,19 @@
 #!/usr/bin/env python3
 #Maintainer: Sean Travis Taylor
 
+#def welcome_message(name):
+#  print("Well hello there, {}".format(name));
+
+
+from config.app import app_config
 from services.post import PostService, PostValidator
 from lib.repository.in_memory import InMemoryRepository
 from lib.repository.json import JSONRepository
 from interfaces.repository import IRepository
 # from lib.repository.sqlite import SQLite3Repository
 
-
-#def welcome_message(name):
-#  print("Well hello there, {}".format(name));
-
-post_validator_config = {
-  "post_character_limit": 150,
-  "base_sentiment_score": 2,
-  "average_post_sentiment_score": 3,
-  "post_limit_per_hour": 5,
-  "sentiment_service": {
-    "url": "http://httpbin.org/status/200"
-  } 
-}
-
 def main():
-  post_validator = PostValidator(post_validator_config);
+  post_validator = PostValidator(app_config["posts"]);
   post_repo = IRepository(InMemoryRepository());
   json_repo = IRepository(JSONRepository());
 
@@ -38,15 +29,9 @@ def main():
   doc_id_1 = bbanner_post.save();
   fdrake_post.save();
 
-
-
   bbanner_post.update({"comments": 42});
   bbanner_post.update({"likes": 1042});
 
-  #print(list(post_service.find_all_posts()));
-  
-  #post_service.delete_post(doc_id);
-  #json_post_service.delete_post(doc_id_1);
   #print(list(post_service.find_all_posts()));
 
   print(list(json_post_service.find_all_posts()));

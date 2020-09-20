@@ -1,8 +1,8 @@
 {
-  "972fd8b4-e644-44ed-8497-de49a32cda31": {
-    "id": "972fd8b4-e644-44ed-8497-de49a32cda31",
-    "createdDate": "2020-09-20 23:03:59.449674",
-    "lastModified": "2020-09-20 23:03:59.450836",
+  "8c1a0164-fd20-4d3e-9775-2b9aec911e89": {
+    "id": "8c1a0164-fd20-4d3e-9775-2b9aec911e89",
+    "createdDate": "2020-09-20 23:19:40.878100",
+    "lastModified": "2020-09-20 23:19:40.880054",
     "doc": {
       "body": "Hulk smash!",
       "author": "@bbanner",
@@ -10,29 +10,9 @@
       "likes": 1042
     }
   },
-  "6aec1f3c-337b-4cbf-a817-64889f187c6c": {
-    "id": "6aec1f3c-337b-4cbf-a817-64889f187c6c",
-    "createdDate": "2020-09-20 23:03:59.450355",
-    "lastModified": "n/a",
-    "doc": {
-      "body": "Sic parvis magna",
-      "author": "@francisdrake"
-    }
-  },
-  "a951dd25-fbb8-4b9b-a0a1-3762f30d26c0": {
-    "id": "a951dd25-fbb8-4b9b-a0a1-3762f30d26c0",
-    "createdDate": "2020-09-20 23:06:15.862328",
-    "lastModified": "2020-09-20 23:06:15.863775",
-    "doc": {
-      "body": "Hulk smash!",
-      "author": "@bbanner",
-      "comments": 42,
-      "likes": 1042
-    }
-  },
-  "71abb0a1-06e7-4148-8750-e2bc0ea09460": {
-    "id": "71abb0a1-06e7-4148-8750-e2bc0ea09460",
-    "createdDate": "2020-09-20 23:06:15.863122",
+  "d3c712ed-c186-460e-8fbe-c9ac0c271d06": {
+    "id": "d3c712ed-c186-460e-8fbe-c9ac0c271d06",
+    "createdDate": "2020-09-20 23:19:40.879192",
     "lastModified": "n/a",
     "doc": {
       "body": "Sic parvis magna",
