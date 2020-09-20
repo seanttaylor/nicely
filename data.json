@@ -1,0 +1,22 @@
+{
+  "9c662594-68d1-4d7d-b939-d5853fde82c1": {
+    "id": "9c662594-68d1-4d7d-b939-d5853fde82c1",
+    "createdDate": "2020-09-20 19:36:08.689832",
+    "lastModified": "2020-09-20 19:36:08.690352",
+    "doc": {
+      "body": "Hulk smash!",
+      "author": "@bbanner",
+      "comments": 42
+    }
+  },
+  "20d0b253-f1a3-49aa-949c-7a9ddad608b5": {
+    "id": "20d0b253-f1a3-49aa-949c-7a9ddad608b5",
+    "createdDate": "2020-09-20 19:36:34.573147",
+    "lastModified": "2020-09-20 19:36:34.573609",
+    "doc": {
+      "body": "Sic parvis magna",
+      "author": "@francisdrake",
+      "comments": 42
+    }
+  }
+}
