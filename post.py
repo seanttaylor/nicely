@@ -3,21 +3,21 @@ import urllib.request;
 class Post():
 
   def __init__(self, repo, body, author):
-    self.__body = body;
-    self.__author = author;
-    self.__repo = repo;
+    self._body = body;
+    self._author = author;
+    self._repo = repo;
 
   def save(self):
-    id = self.__repo.create({
-      "body": self.__body, 
-      "author": self.__author
+    id = self._repo.create({
+      "body": self._body, 
+      "author": self._author
     });
-    self.__id = id;
+    self._id = id;
     return id;
   
   def update(self, doc):
-    id = self.__id;
-    self.__repo.update(id, doc);
+    id = self._id;
+    self._repo.update(id, doc);
     return self;
 
 ####Post####
