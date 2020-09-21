@@ -88,3 +88,6 @@ typings/
 
 # VSCode
 .vscode
+
+#Nicely local data
+data.json

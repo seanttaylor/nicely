@@ -11,12 +11,13 @@ from services.post import PostService, PostValidator
 from lib.repository.in_memory import InMemoryRepository
 from lib.repository.json import JSONRepository
 from interfaces.repository import IRepository
-# from lib.repository.sqlite import SQLite3Repository
+from lib.repository.sqlite import SQLite3Repository
 
 def main():
   post_validator = PostValidator(app_config["posts"]);
   post_repo = IRepository(InMemoryRepository());
   json_repo = IRepository(JSONRepository());
+  sqlite_repo = IRepository(SQLite3Repository("sqlite.db"));
 
   post_service = PostService(post_repo, post_validator);
   json_post_service = PostService(json_repo, post_validator);

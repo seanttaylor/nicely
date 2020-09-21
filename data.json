@@ -18,5 +18,25 @@
       "body": "Sic parvis magna",
       "author": "@francisdrake"
     }
+  },
+  "383139c5-5349-4c10-894e-f82d9ecc8187": {
+    "id": "383139c5-5349-4c10-894e-f82d9ecc8187",
+    "createdDate": "2020-09-21 00:04:53.850127",
+    "lastModified": "2020-09-21 00:04:53.851267",
+    "doc": {
+      "body": "Hulk smash!",
+      "author": "@bbanner",
+      "comments": 42,
+      "likes": 1042
+    }
+  },
+  "45e5cff6-480a-479d-94b6-68ee9f846598": {
+    "id": "45e5cff6-480a-479d-94b6-68ee9f846598",
+    "createdDate": "2020-09-21 00:04:53.850669",
+    "lastModified": "n/a",
+    "doc": {
+      "body": "Sic parvis magna",
+      "author": "@francisdrake"
+    }
   }
 }
