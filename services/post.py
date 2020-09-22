@@ -9,12 +9,12 @@ class Post():
 
   def save(self):
     id = self._repo.create({
-      "body": self._body, 
+      "body": self._body,
       "author": self._author
     });
     self._id = id;
     return id;
-  
+
   def update(self, doc):
     id = self._id;
     self._repo.update(id, doc);
@@ -32,21 +32,21 @@ class PostService():
   def create_post(self, **kwargs):
     self._validator.validate(kwargs);
     return self._Post(
-      repo=self._repo, 
-      body=kwargs["body"], 
+      repo=self._repo,
+      body=kwargs["body"],
       author=kwargs["author"]
     );
 
   def find_post_by_id(self, id):
     return self._repo.find_one(id);
-  
+
   def find_all_posts(self):
     return self._repo.find_all();
-  
+
   def delete_post(self, id):
     return self._repo.delete(id);
 
-####PostService####  
+####PostService####
 
 class PostValidator():
   _messages = {
@@ -61,16 +61,16 @@ class PostValidator():
   def validate(self, post_data):
     if len(post_data["body"]) > self._config["post_character_limit"]:
       raise Exception(self._messages["postCharacterLimitExceeded"])
-    
+
     if len(post_data["author"]) < 4:
       raise Exception(self._messages["invalidUserHandle"].format(post_data["author"]))
-    
+
     with urllib.request.urlopen(self._config["sentiment_service"]["url"]) as response:
       response_code = response.getcode();
       if response_code > 400:
           raise Exception(self._messages["serviceError"].format(response_code))
 
-####PostValidator####  
-  
+####PostValidator####
+
 
 

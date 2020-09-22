@@ -1,0 +1,37 @@
+version: "3.1"
+
+services:
+  db:
+    container_name: db
+    image: mysql:5.7
+    command: --init-file /docker-entrypoint.initdb.d/init.sql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: root
+      MYSQL_DATABASE: asiago
+    volumes:
+      - ./sqls:/docker-entrypoint.initdb.d
+    networks:
+      - shared_network
+    ports:
+      - "3306:3306"
+  nicely_app:
+    container_name: nicely_app
+    depends_on:
+      - db
+    environment:
+      DATABASE_HOSTNAME: db
+      DATABASE_USERNAME: root
+      DATABASE_PASSWORD: root
+      DATABASE_NAME: asiago
+    volumes:
+      - ./:/app
+    build:
+        context: .
+    networks:
+      - shared_network
+    ports:
+      - "3001:3001"
+networks:
+  shared_network:
