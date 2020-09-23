@@ -2,15 +2,20 @@ import urllib.request;
 
 class Post():
 
-  def __init__(self, repo, body, author):
-    self._body = body;
-    self._author = author;
+  def __init__(self, repo, doc):
+    self._doc = doc;
+    #self._body = args[0];
+    #self._author = args[1];
+    #self._created_date = kwargs.get("created_date");
+    #self._last_modified = kwargs.get("last_modified");
+    #self._comments = kwargs.get("comments");
+    #self._likes = kwargs.get("likes");
     self._repo = repo;
 
   def save(self):
     id = self._repo.create({
-      "body": self._body,
-      "author": self._author
+      "body": self._doc["body"],
+      "author": self._doc["author"]
     });
     self._id = id;
     return id;
@@ -22,6 +27,7 @@ class Post():
 
 ####Post####
 
+
 class PostService():
 
   def __init__(self, repo, validator):
@@ -29,22 +35,27 @@ class PostService():
     self._validator = validator;
     self._Post = Post;
 
+
   def create_post(self, **kwargs):
     self._validator.validate(kwargs);
     return self._Post(
-      repo=self._repo,
-      body=kwargs["body"],
-      author=kwargs["author"]
+      self._repo,
+      kwargs
     );
+
 
   def find_post_by_id(self, id):
     return self._repo.find_one(id);
 
+
   def find_all_posts(self):
-    return self._repo.find_all();
+    posts = self._repo.find_all();
+    return list(map(lambda p: self._Post(self._repo, p), posts));
+
 
   def delete_post(self, id):
     return self._repo.delete(id);
+
 
 ####PostService####
 

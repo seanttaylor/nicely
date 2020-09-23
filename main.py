@@ -15,7 +15,7 @@ def main():
   post_validator = PostValidator(app_config["posts"]);
   post_repo = IRepository(InMemoryRepository());
   json_repo = IRepository(JSONRepository());
-  mysql_repo = IRepository(MySQLRepository());
+  mysql_repo = IRepository(MySQLRepository(app_config["posts"]["fields"]));
 
   post_service = PostService(post_repo, post_validator);
   json_post_service = PostService(json_repo, post_validator);
@@ -42,7 +42,7 @@ def main():
 
   #print(list(post_service.find_all_posts()));
 
-  print(mysql_post_service.find_all_posts(), indent=2);
+  print(mysql_post_service.find_all_posts());
 
 
 
