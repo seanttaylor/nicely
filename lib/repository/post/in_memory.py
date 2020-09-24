@@ -1,7 +1,9 @@
 from datetime import datetime;
 import uuid;
 
-#Implements IPostRepository interface for reading/writing posts to in-memory data store.
+# Implements IPostRepository interface for reading/writing posts to in-memory data store.
+# See interfaces/post_repository for method documentation
+
 
 class PostMemoryRepository():
   __store = {};

@@ -3,7 +3,9 @@ import os;
 import uuid;
 import mysql.connector;
 
-#Implements ICommentRepository interface for connecting to a MySQL database.
+# Implements ICommentRepository interface for connecting to a MySQL database.
+# See interfaces/comment_repository for method documentation
+
 
 class CommentMySQLRepository():
   _table_name = "comments";

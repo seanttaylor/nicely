@@ -3,7 +3,9 @@ import os;
 import uuid;
 import mysql.connector;
 
-#Implements IPostRepository interface for connecting to a MySQL database.
+# Implements IPostRepository interface for connecting to a MySQL database.
+# See interfaces/post_repository for method documentation
+
 
 class PostMySQLRepository():
   _table_name = "posts";

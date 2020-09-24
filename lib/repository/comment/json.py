@@ -2,7 +2,8 @@ from datetime import datetime;
 import uuid;
 import json;
 
-#Implements IRepository interface for reading/writing comments to a JSON file.
+# Implements IRepository interface for reading/writing comments to a JSON file.
+# See interfaces/comment_repository for method documentation
 
 
 class CommentJSONRepository():

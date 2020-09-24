@@ -1,7 +1,8 @@
 from datetime import datetime;
 import uuid;
 
-#Implements ICommentRepository interface for reading/writing comments to in-memory data store.
+# Implements ICommentRepository interface for reading/writing comments to in-memory data store.
+# See interfaces/comment_repository for method documentation
 
 class CommentMemoryRepository():
   __store = {};
