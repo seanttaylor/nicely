@@ -1,7 +1,9 @@
 from datetime import datetime;
 import uuid;
 
-class InMemoryRepository():
+#Implements IPostRepository interface for reading/writing posts to in-memory data store.
+
+class PostMemoryRepository():
   __store = {};
 
   def create(self, doc):
@@ -11,7 +13,7 @@ class InMemoryRepository():
       "id": my_uuid,
       "createdDate": str(datetime.now()),
       "lastModified": "n/a",
-      "doc": doc 
+      "doc": doc
     };
     return my_uuid;
 
@@ -25,7 +27,10 @@ class InMemoryRepository():
     self.__store[id]["doc"].update(doc);
     self.__store[id].update({"lastModified": str(datetime.now())});
 
+  def incr_comment_count(self):
+    pass;
+
   def delete(self, id):
     del self.__store[id];
 
-####InMemoryRepository####
+####PostMemoryRepository####

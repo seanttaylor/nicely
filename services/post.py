@@ -12,6 +12,7 @@ class Post():
     #self._likes = kwargs.get("likes");
     self._repo = repo;
 
+
   def save(self):
     id = self._repo.create({
       "body": self._doc["body"],
@@ -19,6 +20,17 @@ class Post():
     });
     self._id = id;
     return id;
+
+
+  def add_comment(self, comment):
+    comment.on_post(self._id);
+    comment.save();
+    self._repo.incr_comment_count(self._id);
+    if "comment_count" in self._doc:
+      self._doc["comment_count"] = self._doc["comment_count"] + 1
+    else:
+      self._doc["comment_count"] = 1
+
 
   def update(self, doc):
     id = self._id;
@@ -45,7 +57,8 @@ class PostService():
 
 
   def find_post_by_id(self, id):
-    return self._repo.find_one(id);
+    post = self._repo.find_one(id)[0];
+    return [self._Post(self._repo, post)];
 
 
   def find_all_posts(self):

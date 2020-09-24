@@ -1,50 +1,46 @@
-
 #!/usr/bin/env python3
 
-#def welcome_message(name):
-#  print("Well hello there, {}".format(name));
-
+#Services
 from config.app import app_config
+from services.comment import CommentService
 from services.post import PostService, PostValidator
-from lib.repository.in_memory import InMemoryRepository
-from lib.repository.json import JSONRepository
-from interfaces.repository import IRepository
-from lib.repository.my_sql import MySQLRepository
+#Repositories
+from lib.repository.post.my_sql import PostMySQLRepository
+from lib.repository.comment.my_sql import CommentMySQLRepository
+#Interfaces
+from interfaces.post_repository import IPostRepository
+from interfaces.comment_repository import ICommentRepository
 
 def main():
+  print(app_config["main"]["launch_banner"]);
   post_validator = PostValidator(app_config["posts"]);
-  post_repo = IRepository(InMemoryRepository());
-  json_repo = IRepository(JSONRepository());
-  mysql_repo = IRepository(MySQLRepository(app_config["posts"]["fields"]));
 
-  post_service = PostService(post_repo, post_validator);
-  json_post_service = PostService(json_repo, post_validator);
-  mysql_post_service = PostService(mysql_repo, post_validator);
+  post_mysql_repo = IPostRepository(PostMySQLRepository(app_config["posts"]["fields"]));
+  comment_mysql_repo = ICommentRepository(CommentMySQLRepository(app_config["comments"]["fields"]));
+
+  post_service = PostService(post_mysql_repo, post_validator);
+  comment_service = CommentService(comment_mysql_repo);
 
   tstark_post = post_service.create_post(body="Playboy. Billionaire. Genius",
   author="@tstark")
-  bbanner_post = json_post_service.create_post(body="Hulk smash!",
+  bbanner_post = post_service.create_post(body="Hulk smash!",
   author="@bbanner");
-  fdrake_post = json_post_service.create_post(body="Sic parvis magna",
+  fdrake_post = post_service.create_post(body="Sic parvis magna",
   author="@francisdrake");
-  genie_post = mysql_post_service.create_post(
+  genie_post = post_service.create_post(
     body="Phenomenal cosmic powers. Itty bitty living space.",
     author="@genie"
   );
+  princess_jasmine_comment = comment_service.create_comment(body="True story. FR.", author="@jazzyjasmine");
 
-  #doc_id = tstark_post.save();
-  #doc_id_1 = bbanner_post.save();
-  #fdrake_post.save();
-  doc_id_2 = genie_post.save();
+  tstark_post.save();
+  bbanner_post.save();
+  fdrake_post.save();
+  doc_id = genie_post.save();
 
-  #bbanner_post.update({"comments": 42});
-  #bbanner_post.update({"likes": 1042});
-
-  #print(list(post_service.find_all_posts()));
-
-  print(mysql_post_service.find_all_posts());
-
-
+  genie_post.add_comment(princess_jasmine_comment);
+  list(map(lambda p: print(p._doc), post_service.find_all_posts()));
+  #print(comment_service.find_all_comments());
 
 
 if __name__ == "__main__": main();

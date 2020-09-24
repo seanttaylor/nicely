@@ -3,8 +3,16 @@ import os;
 import uuid;
 import mysql.connector;
 
-class MySQLRepository():
+#Implements IPostRepository interface for connecting to a MySQL database.
+
+class PostMySQLRepository():
   _table_name = "posts";
+
+  """
+  @param (object) self
+  @param (dict) field_map - Map of fields returned for database queries returned from MySQL connector; used to create an instance of a specific class after the raw data is fetched from the database.
+  @returns (None)
+  """
 
   def __init__(self, field_map):
     self._db_connection = mysql.connector.connect(
@@ -25,12 +33,19 @@ class MySQLRepository():
     doc.update({"id": my_uuid, "created_date": created_date});
     db_cursor.execute(query, (my_uuid, doc["author"], doc["body"], doc["created_date"]));
     self._db_connection.commit();
+    db_cursor.close();
 
     return my_uuid;
 
 
   def find_one(self, id):
-    pass;
+    db_cursor = self._db_connection.cursor();
+    query = ("SELECT * FROM posts WHERE id = '{}'".format(id));
+
+    db_cursor.execute(query);
+    result = db_cursor.fetchall();
+
+    return list(map(lambda p: self.on_read_post(p), result));
 
 
   def find_all(self):
@@ -55,12 +70,23 @@ class MySQLRepository():
     pass;
 
 
+  def incr_comment_count(self, id,):
+    db_cursor = self._db_connection.cursor();
+    query = ("UPDATE posts SET comment_count = comment_count + 1 WHERE id = '{}'".format(id));
+
+    db_cursor.execute(query);
+    self._db_connection.commit();
+    db_cursor.close();
+
+
   def on_read_post(self, record):
     return {
       "id": record[self._field_map["id"]],
       "author": record[self._field_map["author"]],
       "body": record[self._field_map["body"]],
+      "comment_count": record[self._field_map["comment_count"]],
+      "like_count": record[self._field_map["like_count"]],
       "created_date": record[self._field_map["created_date"]]
     }
 
-####SQLite3Repository###
+####PostMySQLRepository###
