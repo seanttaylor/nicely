@@ -8,7 +8,7 @@ class IPostRepository():
     self._create = myImpl.create;
     self._find_one = myImpl.find_one;
     self._find_all = myImpl.find_all;
-    self._update = myImpl.update;
+    self._edit_post = myImpl.edit_post;
     self._delete = myImpl.delete;
     self._incr_comment_count = myImpl.incr_comment_count;
 
@@ -40,14 +40,14 @@ class IPostRepository():
     return self._find_all();
 
 
-  def update(self, id, doc):
+  def edit_post(self, id, text):
     """
     Update a post in the data store by its uuid.
     @param (str) id - uuid of the post
-    @param (doc) doc - the update document
+    @param (str) text - the update text
     @returns (None)
     """
-    return self._update(id, doc);
+    return self._edit_post(id, text);
 
 
   def incr_comment_count(self, post_id):

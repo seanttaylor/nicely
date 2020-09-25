@@ -37,7 +37,7 @@ class PostMySQLRepository():
     self._db_connection.commit();
     db_cursor.close();
 
-    return my_uuid;
+    return { "id": my_uuid, "created_date": str(created_date) };
 
 
   def find_one(self, id):
@@ -62,10 +62,16 @@ class PostMySQLRepository():
     return post_list;
 
 
-  def update(self, id, doc):
-    pass;
-    ##self.__store[id]["doc"].update(doc);
-    ##self.__store[id].update({"lastModified": str(datetime.now())});
+  def edit_post(self, id, text):
+    db_cursor = self._db_connection.cursor();
+    last_modified = datetime.now();
+    query = ("UPDATE posts SET body = '{}', last_modified = '{}' WHERE id = '{}'".format(text, id, last_modified));
+
+    db_cursor.execute(query);
+    self._db_connection.commit();
+    db_cursor.close();
+
+    return { "id": id, "last_modified": str(last_modified) };
 
 
   def delete(self, id):

@@ -41,7 +41,9 @@ def main():
   genie_post.add_comment(princess_jasmine_comment);
   princess_jasmine_comment.incr_like_count();
 
-  list(map(lambda p: print(p), comment_service.find_all_comments()));
+  genie_post.edit("Phenomenal cosmic powers. Teeny tiny living space.");
+
+  print(genie_post);
 
 
 if __name__ == "__main__": main();

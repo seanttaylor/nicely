@@ -11,20 +11,43 @@ class Post():
 
 
   def __str__(self):
-    pp.pprint(self._data);
-    return "###"
+    pp.pprint({
+      "id": self._id,
+      "created_date": self._data["created_date"],
+      "last_modified": self._data["last_modified"],
+      "data": {
+        "author": self._data["author"],
+        "body": self._data["body"],
+        "comment_count": self._data["comment_count"]
+      }
+    });
+    return "##"
 
 
   def save(self):
-    id = self._repo.create({
+    """
+    Saves a new post to the data store.
+    @param (object) self
+    @returns (str) - a uuid for the new post
+    """
+    post = self._repo.create({
       "body": self._data["body"],
       "author": self._data["author"]
     });
-    self._id = id;
-    return id;
+
+    self._id = post["id"];
+    self._data["created_date"] = post["created_date"];
+
+    return post["id"];
 
 
   def add_comment(self, comment):
+    """
+    Associates a comment with a post; updates post['comment_count'] property.
+    @param (object) self
+    @param (Comment) comment - an instance of the Comment class
+    @returns (str) - a uuid for the new post
+    """
     comment.on_post(self._id);
     comment.save();
     self._repo.incr_comment_count(self._id);
@@ -34,15 +57,26 @@ class Post():
       self._data["comment_count"] = 1
 
 
-  def update(self, doc):
+  def edit(self, text):
+    """
+    Updates the post['body'] property; saves the update to the data store
+    @param (object) self
+    @param (str) text - the updated text
+    @returns (None)
+    """
     id = self._id;
-    self._repo.update(id, doc);
+    last_modified = self._repo.edit_post(id, text)["last_modified"];
+    self._data["body"] = text;
+    self._data["last_modified"] = last_modified;
+
     return self;
 
 ####Post####
 
 
 class PostService():
+
+  # Manages collection operations on `Post` objects
 
   def __init__(self, repo, validator):
     self._repo = repo;
@@ -75,6 +109,9 @@ class PostService():
 ####PostService####
 
 class PostValidator():
+
+  # Provides validation logic for `Post` objects.
+
   _messages = {
     "postCharacterLimitExceeded": "ValidationError: Post body must be (150) characters or less",
     "invalidUserHandle": "ValidationError: {} is not a valid user handle",
