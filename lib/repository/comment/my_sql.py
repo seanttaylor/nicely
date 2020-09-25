@@ -1,4 +1,6 @@
 from datetime import datetime;
+from interfaces.comment_repository import ICommentRepository;
+
 import os;
 import uuid;
 import mysql.connector;
@@ -7,7 +9,7 @@ import mysql.connector;
 # See interfaces/comment_repository for method documentation
 
 
-class CommentMySQLRepository():
+class CommentMySQLRepository(ICommentRepository):
   _table_name = "comments";
 
   """

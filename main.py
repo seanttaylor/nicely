@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
 
 #Services
-from config.app import app_config
+from app_config.app import app_config;
+from app_config.startup import startup_config;
 from services.comment import CommentService
 from services.post import PostService, PostValidator
 #Repositories
 from lib.repository.post.my_sql import PostMySQLRepository
 from lib.repository.comment.my_sql import CommentMySQLRepository
-#Interfaces
-from interfaces.post_repository import IPostRepository
-from interfaces.comment_repository import ICommentRepository
+
 
 def main():
-  print(app_config["main"]["launch_banner"]);
+  print(startup_config["launch_banner"]);
   post_validator = PostValidator(app_config["posts"]);
 
-  post_mysql_repo = IPostRepository(PostMySQLRepository(app_config["posts"]["fields"]));
-  comment_mysql_repo = ICommentRepository(CommentMySQLRepository(app_config["comments"]["fields"]));
+  post_mysql_repo = PostMySQLRepository(app_config["posts"]["fields"]);
+  comment_mysql_repo = CommentMySQLRepository(app_config["comments"]["fields"]);
 
   post_service = PostService(post_mysql_repo, post_validator);
   comment_service = CommentService(comment_mysql_repo);

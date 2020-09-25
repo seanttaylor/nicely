@@ -1,4 +1,6 @@
 from datetime import datetime;
+from interfaces.post_repository import IPostRepository;
+
 import os;
 import uuid;
 import mysql.connector;
@@ -7,7 +9,7 @@ import mysql.connector;
 # See interfaces/post_repository for method documentation
 
 
-class PostMySQLRepository():
+class PostMySQLRepository(IPostRepository):
   _table_name = "posts";
 
   """

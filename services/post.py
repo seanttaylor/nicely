@@ -21,7 +21,7 @@ class Post():
         "comment_count": self._data["comment_count"]
       }
     });
-    return "##"
+    return "####"
 
 
   def save(self):
