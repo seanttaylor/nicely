@@ -68,12 +68,22 @@ class CommentMySQLRepository():
     ##self.__store[id].update({"lastModified": str(datetime.now())});
 
 
+  def incr_like_count(self, id):
+    db_cursor = self._db_connection.cursor();
+    query = ("UPDATE comments SET like_count = like_count + 1 WHERE id = '{}'".format(id));
+
+    db_cursor.execute(query);
+    self._db_connection.commit();
+    db_cursor.close();
+
+
   def on_read_comment(self, record):
     return {
       "id": record[self._field_map["id"]],
       "post_id": record[self._field_map["post_id"]],
       "author": record[self._field_map["author"]],
       "body": record[self._field_map["body"]],
+      "like_count": record[self._field_map["like_count"]],
       "created_date": record[self._field_map["created_date"]]
     }
 

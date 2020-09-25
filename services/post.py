@@ -1,22 +1,24 @@
 import urllib.request;
+import pprint;
+
+pp = pprint.PrettyPrinter(indent=2);
 
 class Post():
 
   def __init__(self, repo, doc):
-    self._doc = doc;
-    #self._body = args[0];
-    #self._author = args[1];
-    #self._created_date = kwargs.get("created_date");
-    #self._last_modified = kwargs.get("last_modified");
-    #self._comments = kwargs.get("comments");
-    #self._likes = kwargs.get("likes");
+    self._data = doc;
     self._repo = repo;
+
+
+  def __str__(self):
+    pp.pprint(self._data);
+    return "###"
 
 
   def save(self):
     id = self._repo.create({
-      "body": self._doc["body"],
-      "author": self._doc["author"]
+      "body": self._data["body"],
+      "author": self._data["author"]
     });
     self._id = id;
     return id;
@@ -26,10 +28,10 @@ class Post():
     comment.on_post(self._id);
     comment.save();
     self._repo.incr_comment_count(self._id);
-    if "comment_count" in self._doc:
-      self._doc["comment_count"] = self._doc["comment_count"] + 1
+    if "comment_count" in self._data:
+      self._data["comment_count"] = self._data["comment_count"] + 1
     else:
-      self._doc["comment_count"] = 1
+      self._data["comment_count"] = 1
 
 
   def update(self, doc):

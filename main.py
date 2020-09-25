@@ -39,8 +39,9 @@ def main():
   doc_id = genie_post.save();
 
   genie_post.add_comment(princess_jasmine_comment);
-  list(map(lambda p: print(p._doc), post_service.find_all_posts()));
-  #print(comment_service.find_all_comments());
+  princess_jasmine_comment.incr_like_count();
+
+  list(map(lambda p: print(p), comment_service.find_all_comments()));
 
 
 if __name__ == "__main__": main();

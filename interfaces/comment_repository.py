@@ -9,6 +9,7 @@ class ICommentRepository():
     self._find_one = myImpl.find_one;
     self._find_all_comments = myImpl.find_all_comments;
     self._update_comment = myImpl.update_comment;
+    self._incr_like_count = myImpl.incr_like_count;
 
 
   def create(self, doc):
@@ -38,12 +39,19 @@ class ICommentRepository():
     """
     return self._find_all_comments();
 
+  def incr_like_count(self, comment_id):
+    """
+    Increments `like_count` property of a comment in the data store
+    @param (str) comment_id - uuid of comment['like_count'] to increment
+    @returns (None)
+    """
+    self._incr_like_count(comment_id)
 
   def update(self, id, doc):
     """
     Update a comment in the data store by its uuid.
     @param (str) id - uuid of the post
-    @param (doc) doc - the update document
+    @param (dict) doc - the update document
     @returns (None)
     """
     return self._update_comment(id, doc);
