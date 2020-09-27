@@ -16,8 +16,9 @@ services:
       - shared_network
     ports:
       - "3306:3306"
-  nicely_app:
+  app:
     container_name: nicely_app
+    command: python main.py
     depends_on:
       - db
     environment:

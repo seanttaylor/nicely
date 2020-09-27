@@ -11,7 +11,7 @@ app_config = {
       "__comments": "Indices mapping to database table field values returned from the mysql connector inqueries.",
       "id": 0,
       "body":1,
-      "author": 2,
+      "user_id": 2,
       "created_date": 3,
       "last_modified": 4,
       "comment_count": 5,
@@ -23,11 +23,11 @@ app_config = {
       "__comments": "Indices mapping to database table field values returned from the mysql connector inqueries.",
       "id": 0,
       "post_id": 1,
-      "body": 2,
-      "author": 3,
-      "like_count": 4,
-      "created_date": 5,
-      "last_modified": 6
+      "user_id": 2,
+      "body": 3,
+      "created_date": 4,
+      "last_modified": 5,
+      "like_count": 6
     }
   }
 }

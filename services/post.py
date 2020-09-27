@@ -17,6 +17,7 @@ class Post():
       "last_modified": self._data["last_modified"],
       "data": {
         "author": self._data["author"],
+        "user_id": self._data["user_id"],
         "body": self._data["body"],
         "comment_count": self._data["comment_count"]
       }
@@ -32,11 +33,12 @@ class Post():
     """
     post = self._repo.create({
       "body": self._data["body"],
-      "author": self._data["author"]
+      "user_id": self._data["user_id"]
     });
 
     self._id = post["id"];
     self._data["created_date"] = post["created_date"];
+    self._data["last_modified"] = None;
 
     return post["id"];
 
@@ -114,7 +116,7 @@ class PostValidator():
 
   _messages = {
     "postCharacterLimitExceeded": "ValidationError: Post body must be (150) characters or less",
-    "invalidUserHandle": "ValidationError: {} is not a valid user handle",
+    "invalidUserId": "ValidationError: {} is not a valid user id",
     "serviceError": "ValidationFailure: The Sentiment Service returned a {} response"
   }
 
@@ -125,8 +127,8 @@ class PostValidator():
     if len(post_data["body"]) > self._config["post_character_limit"]:
       raise Exception(self._messages["postCharacterLimitExceeded"])
 
-    if len(post_data["author"]) < 4:
-      raise Exception(self._messages["invalidUserHandle"].format(post_data["author"]))
+    if len(post_data["user_id"]) < 32:
+      raise Exception(self._messages["invalidUserId"].format(post_data["user_id"]))
 
     with urllib.request.urlopen(self._config["sentiment_service"]["url"]) as response:
       response_code = response.getcode();

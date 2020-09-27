@@ -11,7 +11,17 @@ class Comment():
 
 
   def __str__(self):
-    pp.pprint(self._data);
+    pp.pprint({
+      "id": self._id,
+      "created_date": self._data["created_date"],
+      "last_modified": self._data["last_modified"],
+      "data": {
+        "author": self._data["author"],
+        "user_id": self._data["user_id"],
+        "body": self._data["body"],
+        "like_count": self._data["like_count"]
+      }
+    });
     return "###"
 
 
@@ -21,13 +31,18 @@ class Comment():
 
 
   def save(self):
-    id = self._repo.create({
+    comment = self._repo.create({
       "body": self._data["body"],
-      "author": self._data["author"],
+      "user_id": self._data["user_id"],
       "post_id": self._data["post_id"]
     });
-    self._id = id;
-    return id;
+
+    self._id = comment["id"];
+    self._data["created_date"] = comment["created_date"];
+    self._data["last_modified"] = None;
+
+    return comment["id"];
+
 
   def incr_like_count(self):
     self._repo.incr_like_count(self._id);

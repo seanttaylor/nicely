@@ -32,14 +32,14 @@ class CommentMySQLRepository(ICommentRepository):
     db_cursor = self._db_connection.cursor();
     my_uuid = str(uuid.uuid4());
     created_date = datetime.now();
-    query = ("INSERT INTO comments (id, post_id, author, body, created_date) VALUES (%s, %s, %s, %s, %s)");
+    query = ("INSERT INTO comments (id, post_id, user_id, body, created_date) VALUES (%s, %s, %s, %s, %s)");
 
     doc.update({"id": my_uuid, "created_date": created_date});
-    db_cursor.execute(query, (my_uuid, doc["post_id"], doc["author"], doc["body"], doc["created_date"]));
+    db_cursor.execute(query, (my_uuid, doc["post_id"], doc["user_id"], doc["body"], doc["created_date"]));
     self._db_connection.commit();
     db_cursor.close();
 
-    return my_uuid;
+    return { "id": my_uuid, "created_date": str(created_date) };
 
 
   def find_one(self, id):
@@ -83,7 +83,7 @@ class CommentMySQLRepository(ICommentRepository):
     return {
       "id": record[self._field_map["id"]],
       "post_id": record[self._field_map["post_id"]],
-      "author": record[self._field_map["author"]],
+      "user_id": record[self._field_map["user_id"]],
       "body": record[self._field_map["body"]],
       "like_count": record[self._field_map["like_count"]],
       "created_date": record[self._field_map["created_date"]]

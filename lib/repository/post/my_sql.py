@@ -32,10 +32,10 @@ class PostMySQLRepository(IPostRepository):
     db_cursor = self._db_connection.cursor();
     my_uuid = str(uuid.uuid4());
     created_date = datetime.now();
-    query = ("INSERT INTO posts (id, author, body, created_date) VALUES (%s, %s, %s, %s)");
+    query = ("INSERT INTO posts (id, user_id, body, created_date) VALUES (%s, %s, %s, %s)");
 
     doc.update({"id": my_uuid, "created_date": created_date});
-    db_cursor.execute(query, (my_uuid, doc["author"], doc["body"], doc["created_date"]));
+    db_cursor.execute(query, (my_uuid, doc["user_id"], doc["body"], doc["created_date"]));
     self._db_connection.commit();
     db_cursor.close();
 
@@ -92,7 +92,7 @@ class PostMySQLRepository(IPostRepository):
   def on_read_post(self, record):
     return {
       "id": record[self._field_map["id"]],
-      "author": record[self._field_map["author"]],
+      "user_id": record[self._field_map["user_id"]],
       "body": record[self._field_map["body"]],
       "comment_count": record[self._field_map["comment_count"]],
       "like_count": record[self._field_map["like_count"]],

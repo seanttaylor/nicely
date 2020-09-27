@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-#Services
+
 from app_config.app import app_config;
 from app_config.startup import startup_config;
+#Services
 from services.comment import CommentService
 from services.post import PostService, PostValidator
 #Repositories
@@ -20,29 +21,24 @@ def main():
   post_service = PostService(post_mysql_repo, post_validator);
   comment_service = CommentService(comment_mysql_repo);
 
-  tstark_post = post_service.create_post(body="Playboy. Billionaire. Genius",
-  author="@tstark")
-  bbanner_post = post_service.create_post(body="Hulk smash!",
-  author="@bbanner");
-  fdrake_post = post_service.create_post(body="Sic parvis magna",
-  author="@francisdrake");
-  genie_post = post_service.create_post(
-    body="Phenomenal cosmic powers. Itty bitty living space.",
-    author="@genie"
+  tstark_post = post_service.create_post(
+    body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
+  user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
+  author="@tstark"
   );
-  princess_jasmine_comment = comment_service.create_comment(body="True story. FR.", author="@jazzyjasmine");
 
-  tstark_post.save();
-  bbanner_post.save();
-  fdrake_post.save();
-  doc_id = genie_post.save();
+  thor_comment = comment_service.create_comment(
+    body="Still not worthy. LOL",
+    user_id="b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09",
+    author="@thor");
 
-  genie_post.add_comment(princess_jasmine_comment);
-  princess_jasmine_comment.incr_like_count();
+  doc_id = tstark_post.save();
 
-  genie_post.edit("Phenomenal cosmic powers. Teeny tiny living space.");
+  tstark_post.add_comment(thor_comment);
+  thor_comment.incr_like_count();
+  tstark_post.edit("Sometimes you gotta run before you can walk.");
 
-  print(genie_post);
+  print(thor_comment);
 
 
 if __name__ == "__main__": main();
