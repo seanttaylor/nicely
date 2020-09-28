@@ -29,5 +29,19 @@ app_config = {
       "last_modified": 5,
       "like_count": 6
     }
+  },
+  "users": {
+    "__comments": "Indices mapping to database table field values returned from the mysql connector inqueries.",
+    "fields": {
+      "id": 0,
+      "handle": 1,
+      "email_address": 2,
+      "motto": 3,
+      "is_verified": 4,
+      "first_name": 5,
+      "last_name": 6,
+      "created_date": 7,
+      "last_modified": 8
+    }
   }
 }
