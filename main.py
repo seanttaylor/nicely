@@ -40,5 +40,9 @@ def main():
 
   print(thor_comment);
 
+  thor_comment.edit("You people are so petty. And tiny.");
+
+  print(thor_comment);
+
 
 if __name__ == "__main__": main();

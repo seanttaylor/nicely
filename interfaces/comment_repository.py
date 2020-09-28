@@ -47,7 +47,7 @@ class ICommentRepository(ABC):
 
 
   @abstractmethod
-  def update_comment(self, id, doc):
+  def edit_comment(self, id, doc):
     """
     Update a comment in the data store by its uuid.
     @param (str) id - uuid of the post

@@ -27,10 +27,20 @@ class Comment():
 
 
   def on_post(self, post_id):
+    """
+    Associates a comment with a specified post
+    @param (str) post_id - id of the post being commented on
+    @returns (None)
+    """
     self._data["post_id"] = post_id;
 
 
   def save(self):
+    """
+    Saves a new comment to the data store.
+    @param (object) self
+    @returns (str) - a uuid for the new comment
+    """
     comment = self._repo.create({
       "body": self._data["body"],
       "user_id": self._data["user_id"],
@@ -45,11 +55,32 @@ class Comment():
 
 
   def incr_like_count(self):
+    """
+    Increments the comment['like_count'] property
+    @param (object) self
+    @returns (None)
+    """
     self._repo.incr_like_count(self._id);
     if "like_count" in self._data:
       self._data["like_count"] = self._data["like_count"] + 1
     else:
       self._data["like_count"] = 1
+
+
+  def edit(self, text):
+    """
+    Updates the comment['body'] property
+    @param (object) self
+    @param (string) text - of the updated comment
+    @returns (object) self
+    """
+
+    id = self._id;
+    last_modified = self._repo.edit_comment(id, text)["last_modified"];
+    self._data["body"] = text;
+    self._data["last_modified"] = last_modified;
+
+    return self;
 
 
 ####Comment####
