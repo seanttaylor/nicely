@@ -22,7 +22,7 @@ class Post():
         "comment_count": self._data["comment_count"]
       }
     });
-    return "####"
+    return "#####"
 
 
   def save(self):
@@ -105,7 +105,8 @@ class PostService():
 
 
   def delete_post(self, id):
-    return self._repo.delete(id);
+    #return self._repo.delete(id);
+    pass;
 
 
 ####PostService####

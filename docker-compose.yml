@@ -18,7 +18,7 @@ services:
       - "3306:3306"
   app:
     container_name: nicely_app
-    command: python main.py
+    command: pytest
     depends_on:
       - db
     environment:

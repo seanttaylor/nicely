@@ -9,6 +9,9 @@ lerna-debug.log*
 # Optimized Python bytecode
 __pycache__/
 
+# PyTest
+.pytest_cache
+
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
