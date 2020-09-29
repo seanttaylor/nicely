@@ -36,9 +36,7 @@ def main():
     phone_number="12125552727"
   );
 
-  #bbanner_user.save();
-
-  #print(bbanner_user);
+  banner_doc_id = bbanner_user.save();
 
   tstark_post = post_service.create_post(
     body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
@@ -52,7 +50,7 @@ def main():
     user_id="b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09",
     author="@thor");
 
-  doc_id = tstark_post.save();
+  stark_doc_id = tstark_post.save();
 
   tstark_post.add_comment(thor_comment);
   thor_comment.incr_like_count();

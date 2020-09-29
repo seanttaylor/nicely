@@ -50,6 +50,48 @@ class User():
     return user["id"];
 
 
+  def edit_name(self, **kwargs):
+    """
+    Edit first_name and/or last_name on an existing user in the data store.
+    @param (object) self
+    @param (str) first_name - updated first name
+    @param (str) last_name - updated last name
+    @returns (None)
+    """
+
+    #The second argument to `get` returns a default value if key is not found.
+    self._data["first_name"] = kwargs.get("first_name", self._data["first_name"]);
+    self._data["last_name"] = kwargs.get("last_name", self._data["last_name"]);
+
+    user = self._repo.edit_name(self._id, {
+      "first_name": self._data["first_name"],
+      "last_name": self._data["last_name"]
+    });
+
+    self._id = user["id"];
+    self._data["last_modified"] = user["last_modified"];
+
+    return user["id"];
+
+
+
+  def edit_phone_number(self, phone_number):
+    """
+    Edit phone_number property of an existing user in the data store.
+    @param (object) self
+    @param (str) phone_number - a telephone number
+    @returns (None)
+    """
+
+    if phone_number: self._data["phone_number"] = phone_number;
+
+    user = self._repo.edit_phone_number(self._id, self._data["phone_number"]);
+
+    self._id = user["id"];
+    self._data["last_modified"] = user["last_modified"];
+
+    return user["id"];
+
 
 ####User####
 

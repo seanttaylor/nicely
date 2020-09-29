@@ -102,6 +102,22 @@ class UserMySQLRepository(IUserRepository):
     return { "id": id, "last_modified": str(last_modified) };
 
 
+  def edit_phone_number(self, id, phone_number):
+    db_cursor = self._db_connection.cursor();
+    last_modified = datetime.now();
+    query = ("UPDATE users SET phone_number = '{}', last_modified = '{}' WHERE id = '{}'".format(
+        phone_number,
+        last_modified,
+        id
+    ));
+
+    db_cursor.execute(query);
+    self._db_connection.commit();
+    db_cursor.close();
+
+    return { "id": id, "last_modified": str(last_modified) };
+
+
   def delete(self, id):
     pass;
 
