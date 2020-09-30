@@ -38,26 +38,15 @@ def main():
 
   banner_doc_id = bbanner_user.save();
 
-  #tstark_post = post_service.create_post(
-    #body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
-  #user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-  #author="@tstark"
-  #);
-
-
   thor_comment = comment_service.create_comment(
     body="Still not worthy. LOL",
     user_id="b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09",
     author="@thor");
 
-  #stark_doc_id = tstark_post.save();
-
-  #tstark_post.add_comment(thor_comment);
   thor_comment.incr_like_count();
-  #tstark_post.edit("Sometimes you gotta run before you can walk.");
   thor_comment.edit("You people are so petty. And tiny.");
 
-  # user_service.find_all_users()
+
 
 
 if __name__ == "__main__": main();

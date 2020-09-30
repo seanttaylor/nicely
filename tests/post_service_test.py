@@ -8,8 +8,6 @@ test_post_validator = PostValidator(app_config["posts"]);
 test_post_mysql_repo = PostMySQLRepository(app_config["posts"]["fields"]);
 test_post_service = PostService(test_post_mysql_repo, test_post_validator);
 
-#test_doc_id = None;
-
 class MockComment():
 
     def __init__(self):
@@ -73,6 +71,7 @@ def test_should_return_specified_post_matching_id():
 
 def test_should_delete_post():
     #delete_post FUNCTIONALITY NOT IMPLEMENTED YET
+
     #test_post = test_post_service.create_post(
     #    body="Everybody wants a happy ending, right? But it doesn’t always roll #that way.",
         #user_id="e98417a8-d912-44e0-8d37-abe712ca840f",

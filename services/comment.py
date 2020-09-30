@@ -88,9 +88,9 @@ class Comment():
 
 class CommentService():
 
-  def __init__(self, repo):
+  def __init__(self, repo, validator):
     self._repo = repo;
-    #self._validator = validator;
+    self._validator = validator;
     self._Comment = Comment;
 
 
@@ -107,3 +107,16 @@ class CommentService():
 
 
 ####CommentService####
+
+class CommentValidator():
+
+  # Provides validation logic for `Comment` objects.
+  # TODO: Actually create validation logic
+
+  def __init__(self, config):
+    self._config = config;
+
+  def validate(self, comment_data):
+    pass;
+
+####CommentValidator####

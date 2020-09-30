@@ -18,7 +18,7 @@ services:
       - "3306:3306"
   app:
     container_name: nicely_app
-    command: pytest
+    command: pytest --cov-report term-missing --cov=.
     depends_on:
       - db
     environment:
