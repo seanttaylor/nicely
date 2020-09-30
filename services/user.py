@@ -93,6 +93,24 @@ class User():
     return user["id"];
 
 
+  def edit_motto(self, motto_text):
+    """
+    Edit phone_number property of an existing user in the data store.
+    @param (object) self
+    @param (str) phone_number - a telephone number
+    @returns (None)
+    """
+
+    if motto_text: self._data["motto"] = motto_text;
+
+    user = self._repo.edit_motto(self._id, self._data["motto"]);
+
+    self._id = user["id"];
+    self._data["last_modified"] = user["last_modified"];
+
+    return user["id"];
+
+
 ####User####
 
 
