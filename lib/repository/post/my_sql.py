@@ -116,6 +116,22 @@ class PostMySQLRepository(IPostRepository):
     return post_list;
 
 
+  def get_recent_posts(self):
+    post_list = [];
+    db_cursor = self._db_connection.cursor();
+    query = ("SELECT * from posts WHERE is_published = 1 ORDER BY sequence_no DESC LIMIT 35");
+
+    db_cursor.execute(query);
+    result = db_cursor.fetchall();
+
+    for post in result:
+      post_list.append(self.on_read_post(post));
+
+    db_cursor.close();
+
+    return post_list;
+
+
   def on_read_post(self, record):
     return {
       "id": record[self._field_map["id"]],

@@ -3,12 +3,12 @@ class FeedService():
 
   # Manages `Posts` on the Main Feed
 
-    def __init__(self, PostService):
+    def __init__(self, PostService, PublishService):
       self._PostService = PostService;
-      pass;
+      self._PublishService = PublishService;
 
 
-    def batch_get_posts(self, sequence_no, batch_size=25):
+    def replay_posts(self, sequence_no, batch_size=25):
       """
       Fetches a batch of published posts from the PostService in reverse chronological order
       @param (object) self
@@ -29,6 +29,27 @@ class FeedService():
         starting_sequence_no = starting_sequence_no - len(result);
         yield result;
 
+
+    def get_recent_posts(self):
+      """
+      Fetches the (35) most recently published posts
+      @param (object) self
+      @returns (list)
+      """
+
+      return self._PostService.get_recent_posts();
+
+
+    def publish_post(self, post):
+      """
+      Publishes a post to the main feed
+      @param (object) self
+      @param (Post) post - an instance of the Post class
+      @returns (None)
+      """
+
+      self._PostService.mark_as_published(post._id)
+      self._PublishService.send(post);
 
 
 

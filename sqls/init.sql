@@ -29,6 +29,8 @@ CREATE TABLE IF NOT EXISTS `posts`
  `last_modified` mediumtext NULL ,
  `comment_count` integer NULL DEFAULT 0 ,
  `like_count`    integer NULL DEFAULT 0,
+ `is_archived`   boolean NOT NULL DEFAULT FALSE,
+ `is_published`  boolean NOT NULL DEFAULT FALSE,
 
 PRIMARY KEY (`id`),
 KEY `fkIdx_169` (`user_id`),

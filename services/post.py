@@ -120,6 +120,12 @@ class PostService():
       batch_size
     );
 
+
+  def get_recent_posts(self):
+    posts = self._repo.get_recent_posts();
+    return list(map(lambda p: self._Post(self._repo, p), posts));
+
+
 ####PostService####
 
 class PostValidator():

@@ -18,7 +18,7 @@ def main():
   post_service = PostService(post_mysql_repo, post_validator);
   feed_service = FeedService(post_service);
 
-  feed_gen = feed_service.batch_get_posts(sequence_no=15, batch_size=25);
+  #feed_service.replay_posts(sequence_no=15, batch_size=25);
 
 
 
