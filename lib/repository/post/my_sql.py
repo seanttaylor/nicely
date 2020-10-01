@@ -89,6 +89,33 @@ class PostMySQLRepository(IPostRepository):
     db_cursor.close();
 
 
+  def get_total_post_count(self):
+    db_cursor = self._db_connection.cursor();
+    query = ("SELECT COUNT(*) from posts");
+
+    db_cursor.execute(query);
+    result = db_cursor.fetchone();
+    db_cursor.close();
+
+    return {"count": result};
+
+
+  def get_batch_by_sequence_no(self, sequence_no):
+    post_list = [];
+    db_cursor = self._db_connection.cursor();
+    query = ("SELECT * from posts WHERE sequence_no >= {} LIMIT 25".format(sequence_no));
+
+    db_cursor.execute(query);
+    result = db_cursor.fetchall();
+
+    for post in result:
+      post_list.append(self.on_read_post(post));
+
+    db_cursor.close();
+
+    return post_list;
+
+
   def on_read_post(self, record):
     return {
       "id": record[self._field_map["id"]],
@@ -96,6 +123,7 @@ class PostMySQLRepository(IPostRepository):
       "body": record[self._field_map["body"]],
       "comment_count": record[self._field_map["comment_count"]],
       "like_count": record[self._field_map["like_count"]],
+      "sequence_no": record[self._field_map["sequence_no"]],
       "created_date": record[self._field_map["created_date"]]
     }
 

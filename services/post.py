@@ -109,6 +109,13 @@ class PostService():
     pass;
 
 
+  def get_total_post_count(self):
+    return self._repo.get_total_post_count()["count"][0];
+
+
+  def get_batch_by_sequence_no(self, sequence_no):
+    return self._repo.get_batch_by_sequence_no(sequence_no);
+
 ####PostService####
 
 class PostValidator():
