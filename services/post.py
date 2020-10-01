@@ -80,50 +80,50 @@ class PostService():
 
   # Manages collection operations on `Post` objects
 
-  def __init__(self, repo, validator):
-    self._repo = repo;
-    self._validator = validator;
-    self._Post = Post;
+    def __init__(self, repo, validator):
+        self._repo = repo;
+        self._validator = validator;
+        self._Post = Post;
 
 
-  def create_post(self, **kwargs):
-    self._validator.validate(kwargs);
-    return self._Post(
-      self._repo,
-      kwargs
-    );
+    def create_post(self, **kwargs):
+        self._validator.validate(kwargs);
+        return self._Post(
+          self._repo,
+          kwargs
+        );
 
 
-  def find_post_by_id(self, id):
-    post = self._repo.find_one(id)[0];
-    return [self._Post(self._repo, post)];
+    def find_post_by_id(self, id):
+        post = self._repo.find_one(id)[0];
+        return [self._Post(self._repo, post)];
 
 
-  def find_all_posts(self):
-    posts = self._repo.find_all();
-    return list(map(lambda p: self._Post(self._repo, p), posts));
+    def find_all_posts(self):
+        posts = self._repo.find_all();
+        return list(map(lambda p: self._Post(self._repo, p), posts));
 
 
-  def delete_post(self, id):
-    #return self._repo.delete(id);
-    pass;
+    def delete_post(self, id):
+        #return self._repo.delete(id);
+        pass;
 
 
-  def get_total_post_count(self):
-    return self._repo.get_total_post_count()["count"][0];
+    def get_total_post_count(self):
+        return self._repo.get_total_post_count()["count"][0];
 
 
-  def get_batch_by_sequence_no(self, starting_with, ending_with, batch_size):
-    return self._repo.get_batch_by_sequence_no(
-      starting_with,
-      ending_with,
-      batch_size
-    );
+    def get_batch_by_sequence_no(self, starting_with, ending_with, batch_size):
+        return self._repo.get_batch_by_sequence_no(
+          starting_with,
+          ending_with,
+          batch_size
+        );
 
 
-  def get_recent_posts(self):
-    posts = self._repo.get_recent_posts();
-    return list(map(lambda p: self._Post(self._repo, p), posts));
+    def get_recent_posts(self):
+        posts = self._repo.get_recent_posts();
+        return list(map(lambda p: self._Post(self._repo, p), posts));
 
 
 ####PostService####
@@ -132,26 +132,26 @@ class PostValidator():
 
   # Provides validation logic for `Post` objects.
 
-  _messages = {
+    _messages = {
     "postCharacterLimitExceeded": "ValidationError: Post body must be (150) characters or less",
     "invalidUserId": "ValidationError: {} is not a valid user id",
     "serviceError": "ValidationFailure: The Sentiment Service returned a {} response"
-  }
+    }
 
-  def __init__(self, config):
-    self._config = config;
+    def __init__(self, config):
+        self._config = config;
 
-  def validate(self, post_data):
-    if len(post_data["body"]) > self._config["post_character_limit"]:
-      raise Exception(self._messages["postCharacterLimitExceeded"])
+    def validate(self, post_data):
+        if len(post_data["body"]) > self._config["post_character_limit"]:
+            raise Exception(self._messages["postCharacterLimitExceeded"])
 
-    if len(post_data["user_id"]) < 32:
-      raise Exception(self._messages["invalidUserId"].format(post_data["user_id"]))
+        if len(post_data["user_id"]) < 32:
+            raise Exception(self._messages["invalidUserId"].format(post_data["user_id"]))
 
-    with urllib.request.urlopen(self._config["sentiment_service"]["url"]) as response:
-      response_code = response.getcode();
-      if response_code > 400:
-          raise Exception(self._messages["serviceError"].format(response_code))
+        with urllib.request.urlopen(self._config["sentiment_service"]["url"]) as response:
+            response_code = response.getcode();
+            if response_code > 400:
+                raise Exception(self._messages["serviceError"].format(response_code))
 
 ####PostValidator####
 

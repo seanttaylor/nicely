@@ -12,13 +12,13 @@ from lib.repository.post.my_sql import PostMySQLRepository;
 
 
 def main():
-  print(startup_config["launch_banner"]);
-  post_validator = PostValidator(app_config["posts"]);
-  post_mysql_repo = PostMySQLRepository(app_config["posts"]["fields"]);
-  post_service = PostService(post_mysql_repo, post_validator);
-  feed_service = FeedService(post_service);
+    print(startup_config["launch_banner"]);
+    post_validator = PostValidator(app_config["posts"]);
+    post_mysql_repo = PostMySQLRepository(app_config["posts"]["fields"]);
+    post_service = PostService(post_mysql_repo, post_validator);
+    feed_service = FeedService(post_service);
 
-  #feed_service.replay_posts(sequence_no=15, batch_size=25);
+#feed_service.replay_posts(sequence_no=15, batch_size=25);
 
 
 

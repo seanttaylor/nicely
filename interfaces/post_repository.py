@@ -2,12 +2,12 @@ from abc import ABC, abstractmethod;
 
 class IPostRepository(ABC):
 
-  def __init__(self):
-    super().__init__();
+    def __init__(self):
+        super().__init__();
 
 
-  @abstractmethod
-  def create(self, doc):
+    @abstractmethod
+    def create(self, doc):
     """
     Creates a new post in the data store.
     @param (object) self
@@ -17,8 +17,8 @@ class IPostRepository(ABC):
     pass;
 
 
-  @abstractmethod
-  def find_one(self, id):
+    @abstractmethod
+    def find_one(self, id):
     """
     Finds a post in the data store by its uuid.
     @param (str) id - uuid of the post
@@ -27,8 +27,8 @@ class IPostRepository(ABC):
     pass;
 
 
-  @abstractmethod
-  def find_all(self):
+    @abstractmethod
+    def find_all(self):
     """
     Finds all posts in the data store
     @returns (list) - a list of all records in the data store
@@ -36,8 +36,8 @@ class IPostRepository(ABC):
     pass;
 
 
-  @abstractmethod
-  def edit_post(self, id, text):
+    @abstractmethod
+    def edit_post(self, id, text):
     """
     Update a post in the data store by its uuid.
     @param (str) id - uuid of the post
@@ -47,8 +47,8 @@ class IPostRepository(ABC):
     pass;
 
 
-  @abstractmethod
-  def incr_comment_count(self, post_id):
+    @abstractmethod
+    def incr_comment_count(self, post_id):
     """
     Increments the `comment_count` of a user post.
     @param (self)
@@ -59,8 +59,8 @@ class IPostRepository(ABC):
     pass;
 
 
-  @abstractmethod
-  def delete(self, id):
+    @abstractmethod
+    def delete(self, id):
     """
     Deletes a post in the data store by its uuid.
     @param (str) id - uuid of the post

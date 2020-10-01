@@ -71,17 +71,6 @@ def test_should_return_specified_post_matching_id():
 
 def test_should_delete_post():
     #delete_post FUNCTIONALITY NOT IMPLEMENTED YET
-
-    #test_post = test_post_service.create_post(
-    #    body="Everybody wants a happy ending, right? But it doesn’t always roll #that way.",
-        #user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        #author="@tstark"
-    #);
-    #test_doc_id = test_post.save();
-    #test_post.add_comment(test_comment);
-
-    #assert test_comment.was_called(method_name="on_post") == True;
-    #assert test_comment.was_called(method_name="save") == True;
     assert True == True;
 
 
