@@ -113,8 +113,12 @@ class PostService():
     return self._repo.get_total_post_count()["count"][0];
 
 
-  def get_batch_by_sequence_no(self, sequence_no):
-    return self._repo.get_batch_by_sequence_no(sequence_no);
+  def get_batch_by_sequence_no(self, starting_with, ending_with, batch_size):
+    return self._repo.get_batch_by_sequence_no(
+      starting_with,
+      ending_with,
+      batch_size
+    );
 
 ####PostService####
 

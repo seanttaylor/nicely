@@ -100,10 +100,10 @@ class PostMySQLRepository(IPostRepository):
     return {"count": result};
 
 
-  def get_batch_by_sequence_no(self, sequence_no):
+  def get_batch_by_sequence_no(self, starting_with, ending_with, batch_size):
     post_list = [];
     db_cursor = self._db_connection.cursor();
-    query = ("SELECT * from posts WHERE sequence_no >= {} LIMIT 25".format(sequence_no));
+    query = ("SELECT * from posts WHERE sequence_no >= {} AND sequence_no <= {} ORDER BY sequence_no DESC LIMIT {}".format(ending_with, starting_with, batch_size));
 
     db_cursor.execute(query);
     result = db_cursor.fetchall();

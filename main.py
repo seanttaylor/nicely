@@ -18,6 +18,9 @@ def main():
   post_service = PostService(post_mysql_repo, post_validator);
   feed_service = FeedService(post_service);
 
-  print(next(feed_service.get_posts(offset=5)));
+  feed_gen = feed_service.batch_get_posts(sequence_no=15, batch_size=25);
+
+
+
 
 if __name__ == "__main__": main();
