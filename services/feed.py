@@ -47,9 +47,9 @@ class FeedService():
         @param (Post) post - an instance of the Post class
         @returns (None)
         """
+        self._PostService.mark_as_published(post)
+        self._PublishService.publish(post);
 
-        self._PostService.mark_as_published(post._id)
-        self._PublishService.send(post);
 
 
 ####FeedService####

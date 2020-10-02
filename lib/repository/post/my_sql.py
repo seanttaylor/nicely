@@ -133,6 +133,15 @@ class PostMySQLRepository(IPostRepository):
         return post_list;
 
 
+    def mark_as_published(self, id):
+        db_cursor = self._db_connection.cursor();
+        query = ("UPDATE posts SET is_published = 1 WHERE id = '{}'".format(id));
+
+        db_cursor.execute(query);
+        self._db_connection.commit();
+        db_cursor.close();
+
+
     def on_read_post(self, record):
         return {
           "id": record[self._field_map["id"]],

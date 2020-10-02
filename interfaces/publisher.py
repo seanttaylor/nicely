@@ -8,7 +8,7 @@ class IPublisher(ABC):
 
 
     @abstractmethod
-    def send(self, post):
+    def publish(self, post):
         """
         Sends a newly published post to a specified feed in the implementation
         @param (object) self

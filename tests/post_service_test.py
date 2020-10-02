@@ -98,6 +98,20 @@ def test_should_return_updated_post_body_matching_text():
     assert test_post._data["body"] == test_edit;
 
 
+def test_should_mark_post_as_published():
+    test_edit = "Playboy. Billionaire. Genius";
+    test_post = test_post_service.create_post(
+        body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
+        user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
+        author="@tstark"
+    );
+    test_doc_id = test_post.save();
+
+    test_post_service.mark_as_published(test_post);
+
+    assert test_post._data["is_published"] == True;
+
+
 def test_should_call_comment_on_post_and_save_methods():
     test_comment = MockComment();
     test_edit = "Playboy. Billionaire. Genius";

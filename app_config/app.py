@@ -16,7 +16,9 @@ app_config = {
       "created_date": 4,
       "last_modified": 5,
       "comment_count": 6,
-      "like_count": 7
+      "like_count": 7,
+      "is_published": 8,
+      "is_archived": 9
     }
   },
   "comments": {

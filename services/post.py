@@ -19,7 +19,7 @@ class Post():
         "author": self._data["author"],
         "user_id": self._data["user_id"],
         "body": self._data["body"],
-        "comment_count": self._data["comment_count"]
+        "comment_count": self._data.get("comment_count", 0)
       }
     });
     return "#####"
@@ -124,6 +124,11 @@ class PostService():
     def get_recent_posts(self):
         posts = self._repo.get_recent_posts();
         return list(map(lambda p: self._Post(self._repo, p), posts));
+
+
+    def mark_as_published(self, post):
+        self._repo.mark_as_published(post._id);
+        post._data["is_published"] = True;
 
 
 ####PostService####
