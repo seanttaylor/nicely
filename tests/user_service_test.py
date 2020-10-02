@@ -61,6 +61,8 @@ def test_should_return_list_of_user_instances():
     test_user.save();
     result = test_user_service.find_all_users();
 
+    print(result[0])
+
     assert isinstance(result, list);
     assert isinstance(result[0], User) == True;
 

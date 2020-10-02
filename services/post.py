@@ -8,15 +8,14 @@ class Post():
   def __init__(self, repo, doc):
     self._data = doc;
     self._repo = repo;
-
+    self._id = doc.get("id", None);
 
   def __str__(self):
     pp.pprint({
       "id": self._id,
       "created_date": self._data["created_date"],
-      "last_modified": self._data["last_modified"],
+      "last_modified": self._data.get("last_modified", None),
       "data": {
-        "author": self._data["author"],
         "user_id": self._data["user_id"],
         "body": self._data["body"],
         "comment_count": self._data.get("comment_count", 0)

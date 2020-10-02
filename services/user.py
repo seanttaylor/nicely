@@ -8,14 +8,15 @@ class User():
     def __init__(self, repo, doc):
         self._data = doc;
         self._repo = repo;
-        self._data["is_verified"] = False;
+        self._id = doc.get("id", None);
+        self._data["is_verified"] = doc.get("is_verified", None);
 
 
     def __str__(self):
         pp.pprint({
           "id": self._id,
           "created_date": self._data["created_date"],
-          "last_modified": self._data["last_modified"],
+          "last_modified": self._data.get("last_modified", None),
           "data": {
             "motto": self._data["motto"],
             "handle": self._data["handle"],

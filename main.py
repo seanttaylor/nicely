@@ -27,7 +27,6 @@ def main():
     post.save();
     feed_service = FeedService(post_service, StdoutPublisher());
     feed_service.publish_post(post);
-    #feed_service.replay_posts(sequence_no=15, batch_size=25);
 
 
 
