@@ -1,4 +1,4 @@
-import urllib.request;
+from services.exceptions import PostServiceError;
 import pprint;
 
 pp = pprint.PrettyPrinter(indent=2);
@@ -136,26 +136,21 @@ class PostValidator():
 
   # Provides validation logic for `Post` objects.
 
-    _messages = {
-    "postCharacterLimitExceeded": "ValidationError: Post body must be (150) characters or less",
-    "invalidUserId": "ValidationError: {} is not a valid user id",
-    "serviceError": "ValidationFailure: The Sentiment Service returned a {} response"
-    }
-
     def __init__(self, config):
         self._config = config;
 
     def validate(self, post_data):
+        if "body" not in post_data:
+            raise PostServiceError(error_type="InvalidPostBody");
+
+        if "user_id" not in post_data:
+            raise PostServiceError(error_type="MissingUserId");
+
         if len(post_data["body"]) > self._config["post_character_limit"]:
-            raise Exception(self._messages["postCharacterLimitExceeded"])
+            raise PostServiceError(error_type="PostCharacterLimitExceeded")
 
         if len(post_data["user_id"]) < 32:
-            raise Exception(self._messages["invalidUserId"].format(post_data["user_id"]))
-
-        with urllib.request.urlopen(self._config["sentiment_service"]["url"]) as response:
-            response_code = response.getcode();
-            if response_code > 400:
-                raise Exception(self._messages["serviceError"].format(response_code))
+            raise PostServiceError(error_type="InvalidUserId");
 
 ####PostValidator####
 

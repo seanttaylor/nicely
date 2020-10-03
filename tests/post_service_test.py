@@ -1,6 +1,7 @@
 ####PostService Unit Tests####
-
+import pytest;
 from app_config.app import app_config;
+from services.exceptions import PostServiceError;
 from services.post import PostService, PostValidator, Post;
 from lib.repository.post.my_sql import PostMySQLRepository;
 
@@ -125,3 +126,39 @@ def test_should_call_comment_on_post_and_save_methods():
 
     assert test_comment.was_called(method_name="on_post") == True;
     assert test_comment.was_called(method_name="save") == True;
+
+
+def test_should_throw_exception_when_attempting_to_create_invalid_post():
+    with pytest.raises(PostServiceError) as exception_info:
+        test_post = test_post_service.create_post();
+
+    assert "InvalidPostBody" in str(exception_info.value);
+
+
+def test_should_throw_exception_when_no_user_id_provided():
+    with pytest.raises(PostServiceError) as exception_info:
+        test_post = test_post_service.create_post(body="Everybody wants a happy ending, right? But it doesn’t always roll that way.");
+
+    assert "MissingUserId" in str(exception_info.value);
+
+
+def test_should_throw_exception_on_posts_that_exceed_length_limit():
+    with pytest.raises(PostServiceError) as exception_info:
+        test_post = test_post_service.create_post(
+            body="I'm baby hammock disrupt pop-up, ugh bushwick taxidermy before they sold out gentrify coloring book. Cardigan deep v taiyaki occupy. Hashtag cray dreamcatcher try-hard blog.",
+            user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
+            author="@tstark"
+        );
+
+    assert "PostCharacterLimitExceeded" in str(exception_info.value);
+
+
+def test_should_throw_exception_on_posts_with_invalid_user_ids():
+    with pytest.raises(PostServiceError) as exception_info:
+        test_post = test_post_service.create_post(
+            body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
+            user_id="@tstark"
+        );
+
+    assert "InvalidUserId" in str(exception_info.value);
+
