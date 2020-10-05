@@ -1,6 +1,8 @@
 ####UserService Unit Tests####
+import pytest;
 import random;
 from datetime import datetime;
+from services.exceptions import UserServiceError;
 from app_config.app import app_config;
 from services.user import UserService, UserValidator, User;
 from lib.repository.user.my_sql import UserMySQLRepository;
@@ -157,3 +159,72 @@ def test_should_return_updated_user_phone_number():
     test_user.edit_phone_number(test_phone_number_edit);
 
     assert test_user._data["phone_number"] == test_phone_number_edit;
+
+
+def test_should_throw_exception_when_attempting_to_create_invalid_user():
+    with pytest.raises(UserServiceError) as exception_info:
+        test_user = test_user_service.create_user();
+
+    assert "UserDataEmpty" in str(exception_info.value);
+
+
+def test_should_throw_exception_when_email_address_is_missing():
+    with pytest.raises(UserServiceError) as exception_info:
+        test_user = test_user_service.create_user(
+            first_name="Bruce",
+            last_name="Banner",
+            phone_number=random_phone_number()
+        );
+
+    assert "MissingOrInvalidEmail" in str(exception_info.value);
+
+
+def test_should_throw_exception_when_first_name_is_missing():
+    with pytest.raises(UserServiceError) as exception_info:
+        test_date = datetime.now();
+        test_user = test_user_service.create_user(
+            email_address="bbanner-{}@avengers.io".format(test_date),
+            handle="@bbanner-{}".format(test_date),
+            last_name="Banner",
+            phone_number=random_phone_number()
+        );
+
+    assert "MissingOrInvalidFirstName" in str(exception_info.value);
+
+
+def test_should_throw_exception_when_last_name_is_missing():
+    with pytest.raises(UserServiceError) as exception_info:
+        test_date = datetime.now();
+        test_user = test_user_service.create_user(
+            email_address="bbanner-{}@avengers.io".format(test_date),
+            handle="@bbanner-{}".format(test_date),
+            first_name="Bruce",
+            phone_number=random_phone_number()
+        );
+
+    assert "MissingOrInvalidLastName" in str(exception_info.value);
+
+
+def test_should_throw_exception_when_handle_is_missing():
+    with pytest.raises(UserServiceError) as exception_info:
+        test_date = datetime.now();
+        test_user = test_user_service.create_user(
+            email_address="bbanner-{}@avengers.io".format(test_date),
+            first_name="Bruce",
+            last_name="Banner",
+            phone_number=random_phone_number()
+        );
+
+    assert "MissingOrInvalidHandle" in str(exception_info.value);
+
+
+def test_should_throw_exception_when_phone_number_is_missing():
+    with pytest.raises(UserServiceError) as exception_info:
+        test_date = datetime.now();
+        test_user = test_user_service.create_user(
+            email_address="bbanner-{}@avengers.io".format(test_date),
+            first_name="Bruce",
+            last_name="Banner"
+        );
+
+    assert "MissingOrInvalidPhone" in str(exception_info.value);

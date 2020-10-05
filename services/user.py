@@ -1,5 +1,6 @@
 import urllib.request;
 import pprint;
+from services.exceptions import UserServiceError;
 
 pp = pprint.PrettyPrinter(indent=2);
 
@@ -117,8 +118,6 @@ class User():
 
 class UserService():
 
-  # Manages collection operations on `User` objects
-
     def __init__(self, repo, validator):
         self._repo = repo;
         self._validator = validator;
@@ -151,13 +150,30 @@ class UserService():
 
 class UserValidator():
 
-    # Provides validation logic for `User` objects.
-    # TODO: Actually add user validation logic
     def __init__(self, config):
         self._config = config;
 
     def validate(self, user_data):
-        pass;
+        if len(user_data.keys()) == 0:
+            raise UserServiceError(error_type="UserDataEmpty");
+
+        if "email_address" not in user_data:
+            raise UserServiceError(error_type="MissingOrInvalidEmail");
+
+        if "phone_number" not in user_data:
+            raise UserServiceError(error_type="MissingOrInvalidPhone");
+
+        if "first_name" not in user_data:
+            raise UserServiceError(error_type="MissingOrInvalidFirstName");
+
+        if "last_name" not in user_data:
+            raise UserServiceError(error_type="MissingOrInvalidLastName");
+
+        if "handle" not in user_data:
+            raise UserServiceError(error_type="MissingOrInvalidHandle");
+
+
+
 
 
 ####UserValidator####

@@ -41,4 +41,23 @@ class CommentServiceError(Exception):
 
 
 #UserService
+class UserServiceError(Exception):
+    _messages = {
+        "MissingOrInvalidEmail": "ValidationError: 'email_address' of user is missing or invalid",
+        "MissingOrInvalidPhone": "ValidationError: 'phone_number' of user is missing or invalid",
+        "MissingOrInvalidFirstName": "ValidationError: 'first_name' of user missing or invalid",
+        "MissingOrInvalidLastName": "ValidationError: 'last_name' of user is missing or invalid",
+        "MissingOrInvalidHandle": "ValidationError: 'handle' of user is missing or invalid",
+        "UserDataEmpty": "ValidationError: cannot create user; no arguments given"
+    };
+
+    def __init__(self, **kwargs):
+        self._error_type = kwargs["error_type"];
+        self._error_data = kwargs;
+
+    def __str__(self):
+        if self._error_type in self._messages:
+            return "UserServiceError.{} {}".format(self._error_type, self._messages[self._error_type]);
+        else:
+            return "Unspecified UserServiceError raised";
 
