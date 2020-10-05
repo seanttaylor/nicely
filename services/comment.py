@@ -118,13 +118,13 @@ class CommentValidator():
 
     def validate(self, comment_data):
         if "body" not in comment_data:
-            raise CommentServiceError(error_type="MissingCommentBody");
+            raise CommentServiceError(error_type="MissingOrInvalidCommentBody");
 
         if "user_id" not in comment_data:
-            raise CommentServiceError(error_type="MissingUserId");
+            raise CommentServiceError(error_type="MissingOrInvalidUserId");
 
         if "post_id" not in comment_data:
-            raise CommentServiceError(error_type="MissingPostId");
+            raise CommentServiceError(error_type="MissingOrInvalidPostId");
 
         #if UserService.user_exists(comment_data["user_id"]) != True:
         #    raise CommentServiceError(error_type="InvalidUserId");

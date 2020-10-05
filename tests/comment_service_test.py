@@ -81,7 +81,7 @@ def test_should_throw_exception_when_attempting_to_create_invalid_comment():
     with pytest.raises(CommentServiceError) as exception_info:
         test_comment = test_comment_service.create_comment();
 
-    assert "MissingCommentBody" in str(exception_info.value);
+    assert "MissingOrInvalidCommentBody" in str(exception_info.value);
 
 
 def test_should_throw_exception_when_user_id_missing():
@@ -91,7 +91,7 @@ def test_should_throw_exception_when_user_id_missing():
             post_id="fake_post_id"
         );
 
-    assert "MissingUserId" in str(exception_info.value);
+    assert "MissingOrInvalidUserId" in str(exception_info.value);
 
 
 def test_should_throw_exception_when_post_id_missing():
@@ -101,4 +101,4 @@ def test_should_throw_exception_when_post_id_missing():
             user_id="fake_user_id"
         );
 
-    assert "MissingPostId" in str(exception_info.value);
+    assert "MissingOrInvalidPostId" in str(exception_info.value);

@@ -21,12 +21,10 @@ class PostServiceError(Exception):
 #CommentService
 class CommentServiceError(Exception):
     _messages = {
-        "InvalidUserId": "ValidationError: {} is not a valid user id",
-        "InvalidPostId": "ValidationError: {} is not a valid post id",
-        "MissingUserId": "ValidationError: cannot find 'user_id' of comment",
-        "MissingPostId": "ValidationError: cannot find 'post_id' of comment",
-        "MissingCommentBody": "ValidationError: cannot find 'body' of comment",
-        "InsufficientPostSentimentScore": "ValidationFailure: The Sentiment Service returned a {} response"
+        "MissingOrInvalidUserId": "ValidationError: 'user_id' of comment is missing or invalid",
+        "MissingOrInvalidPostId": "ValidationError: 'post_id' of comment is missing or invalid",
+        "MissingOrInvalidCommentBody": "ValidationError: 'body' of comment is missing or invalid",
+        "InsufficientCommentSentimentScore": "ValidationFailure: The Sentiment Service returned a {} response"
     };
 
     def __init__(self, **kwargs):
