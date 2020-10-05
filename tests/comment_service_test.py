@@ -1,6 +1,7 @@
 ####CommentService Unit Tests####
-
+import pytest;
 from app_config.app import app_config;
+from services.exceptions import CommentServiceError;
 from services.comment import CommentService, CommentValidator, Comment;
 from lib.repository.comment.my_sql import CommentMySQLRepository;
 
@@ -74,3 +75,30 @@ def test_should_increment_comment_like_count():
     test_comment.incr_like_count();
 
     assert test_comment._data["like_count"] == 1;
+
+
+def test_should_throw_exception_when_attempting_to_create_invalid_comment():
+    with pytest.raises(CommentServiceError) as exception_info:
+        test_comment = test_comment_service.create_comment();
+
+    assert "MissingCommentBody" in str(exception_info.value);
+
+
+def test_should_throw_exception_when_user_id_missing():
+    with pytest.raises(CommentServiceError) as exception_info:
+        test_comment = test_comment_service.create_comment(
+            body="True story. FR.",
+            post_id="fake_post_id"
+        );
+
+    assert "MissingUserId" in str(exception_info.value);
+
+
+def test_should_throw_exception_when_post_id_missing():
+    with pytest.raises(CommentServiceError) as exception_info:
+        test_comment = test_comment_service.create_comment(
+            body="True story. FR.",
+            user_id="fake_user_id"
+        );
+
+    assert "MissingPostId" in str(exception_info.value);

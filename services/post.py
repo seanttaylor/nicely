@@ -134,8 +134,6 @@ class PostService():
 
 class PostValidator():
 
-  # Provides validation logic for `Post` objects.
-
     def __init__(self, config):
         self._config = config;
 
