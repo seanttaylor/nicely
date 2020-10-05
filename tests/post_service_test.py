@@ -132,14 +132,14 @@ def test_should_throw_exception_when_attempting_to_create_invalid_post():
     with pytest.raises(PostServiceError) as exception_info:
         test_post = test_post_service.create_post();
 
-    assert "InvalidPostBody" in str(exception_info.value);
+    assert "PostDataEmpty" in str(exception_info.value);
 
 
 def test_should_throw_exception_when_no_user_id_provided():
     with pytest.raises(PostServiceError) as exception_info:
         test_post = test_post_service.create_post(body="Everybody wants a happy ending, right? But it doesn’t always roll that way.");
 
-    assert "MissingUserId" in str(exception_info.value);
+    assert "MissingOrInvalidUserId" in str(exception_info.value);
 
 
 def test_should_throw_exception_on_posts_that_exceed_length_limit():
@@ -160,5 +160,5 @@ def test_should_throw_exception_on_posts_with_invalid_user_ids():
             user_id="@tstark"
         );
 
-    assert "InvalidUserId" in str(exception_info.value);
+    assert "MissingOrInvalidUserId" in str(exception_info.value);
 

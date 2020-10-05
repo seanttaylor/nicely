@@ -2,9 +2,9 @@
 class PostServiceError(Exception):
     _messages = {
         "PostCharacterLimitExceeded": "ValidationError: Post body must be (150) characters or less",
-        "InvalidUserId": "ValidationError: {} is not a valid user id",
-        "MissingUserId": "ValidationError: cannot find 'user_id' of post",
-        "InvalidPostBody": "ValidationError: cannot find 'body' of post",
+        "MissingOrInvalidUserId": "ValidationError: 'user_id' of post is missing or invalid",
+        "MissingOrInvalidPostBody": "ValidationError: 'body' of post is missing or invalid",
+        "PostDataEmpty": "Validation Error: cannot create post; no arguments given",
         "InsufficientPostSentimentScore": "ValidationFailure: The Sentiment Service returned a {} response"
     };
 

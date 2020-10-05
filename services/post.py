@@ -138,17 +138,20 @@ class PostValidator():
         self._config = config;
 
     def validate(self, post_data):
+        if len(post_data.keys()) == 0:
+            raise PostServiceError(error_type="PostDataEmpty");
+
         if "body" not in post_data:
-            raise PostServiceError(error_type="InvalidPostBody");
+            raise PostServiceError(error_type="MissingOrInvalidPostBody");
 
         if "user_id" not in post_data:
-            raise PostServiceError(error_type="MissingUserId");
+            raise PostServiceError(error_type="MissingOrInvalidUserId");
 
         if len(post_data["body"]) > self._config["post_character_limit"]:
             raise PostServiceError(error_type="PostCharacterLimitExceeded")
 
         if len(post_data["user_id"]) < 32:
-            raise PostServiceError(error_type="InvalidUserId");
+            raise PostServiceError(error_type="MissingOrInvalidUserId");
 
 ####PostValidator####
 
