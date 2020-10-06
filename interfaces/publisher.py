@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod;
 
 class IPublisher(ABC):
-  #Interface for creating services that can publish posts to assorted media
+    #Interface for creating services that can publish posts to assorted media
 
     def __init__(self):
         super().__init__();

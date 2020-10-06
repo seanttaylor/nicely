@@ -1,4 +1,4 @@
-#PostService
+###PostService###
 class PostServiceError(Exception):
     _messages = {
         "PostCharacterLimitExceeded": "ValidationError: Post body must be (150) characters or less",
@@ -18,7 +18,8 @@ class PostServiceError(Exception):
         else:
             return "Unspecified PostServiceError raised";
 
-#CommentService
+
+###CommentService###
 class CommentServiceError(Exception):
     _messages = {
         "MissingOrInvalidUserId": "ValidationError: 'user_id' of comment is missing or invalid",
@@ -38,7 +39,7 @@ class CommentServiceError(Exception):
             return "Unspecified CommentServiceError raised";
 
 
-#UserService
+###UserService###
 class UserServiceError(Exception):
     _messages = {
         "MissingOrInvalidEmail": "ValidationError: 'email_address' of user is missing or invalid",

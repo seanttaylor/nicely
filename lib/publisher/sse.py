@@ -1,7 +1,8 @@
 from interfaces.publisher import IPublisher;
 
 
-class StdoutPublisher(IPublisher):
+class SSEPublisher(IPublisher):
+    #Publishes posts to connected clients via Server-Sent Events (e.g. a web browser)
 
     def __init__(self):
         pass;
@@ -9,7 +10,3 @@ class StdoutPublisher(IPublisher):
 
     def publish(self, post):
         print(post);
-
-
-
-

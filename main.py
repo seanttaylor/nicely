@@ -10,6 +10,7 @@ from services.feed import FeedService;
 from lib.repository.post.my_sql import PostMySQLRepository;
 #Libraries
 from lib.publisher.stdout import StdoutPublisher;
+from lib.sse.server_sent_event import ServerSentEvent;
 
 
 
@@ -25,8 +26,14 @@ def main():
         author="@tstark"
     );
     post.save();
-    feed_service = FeedService(post_service, StdoutPublisher());
-    feed_service.publish_post(post);
+    #feed_service = FeedService(post_service, StdoutPublisher());
+    sse = ServerSentEvent();
+    my_event = sse.of(event_name="NewPost", event_data=post._data);
+    print(my_event);
+
+
+
+
 
 
 
