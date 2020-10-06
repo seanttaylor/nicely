@@ -3,9 +3,15 @@ import pytest;
 from app_config.app import app_config;
 from services.exceptions import CommentServiceError;
 from services.comment import CommentService, CommentValidator, Comment;
+from services.post import PostService, PostValidator, Post;
+from lib.repository.post.my_sql import PostMySQLRepository;
 from lib.repository.comment.my_sql import CommentMySQLRepository;
 
-test_comment_validator = CommentValidator(app_config["comments"]);
+test_post_validator = PostValidator(app_config["posts"]);
+test_post_mysql_repo = PostMySQLRepository(app_config["posts"]["fields"]);
+test_post_service = PostService(test_post_mysql_repo, test_post_validator);
+
+test_comment_validator = CommentValidator(test_post_service);
 test_comment_mysql_repo = CommentMySQLRepository(app_config["comments"]["fields"]);
 test_comment_service = CommentService(test_comment_mysql_repo, test_comment_validator);
 

@@ -25,17 +25,8 @@ def main():
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
         author="@tstark"
     );
-    post.save();
-    #feed_service = FeedService(post_service, StdoutPublisher());
-    sse = ServerSentEvent();
-    my_event = sse.of(event_name="NewPost", event_data=post._data);
-    print(my_event);
 
-
-
-
-
-
+    #post_service.post_exists(doc_id);
 
 
 if __name__ == "__main__": main();

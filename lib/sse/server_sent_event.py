@@ -6,6 +6,7 @@ class ServerSentEvent():
     def __init__(self):
         pass;
 
+
     def of(self, event_name, event_data):
         """
         Creates a string complying with the Event Stream format for pushing Server-Sent Events to connected clients

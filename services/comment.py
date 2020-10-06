@@ -1,6 +1,5 @@
 from datetime import datetime;
 from services.exceptions import CommentServiceError;
-
 import pprint;
 
 pp = pprint.PrettyPrinter(indent=2);
@@ -114,8 +113,14 @@ class CommentService():
 
 class CommentValidator():
 
-    def __init__(self, config):
-        self._config = config;
+    def __init__(self, PostService):
+        """
+        Validates comments before they are created
+        @param (PostService) PostService - an instance of the PostService
+        @returns (None)
+        """
+        self._PostService = PostService;
+
 
     def validate(self, comment_data):
         if "body" not in comment_data:
@@ -130,8 +135,8 @@ class CommentValidator():
         #if UserService.user_exists(comment_data["user_id"]) != True:
         #    raise CommentServiceError(error_type="InvalidUserId");
 
-        #if PostService.post_exists(comment_data["post_id"]) != True:
-        #    raise CommentServiceError(error_type="InvalidPostId");
+        if self._PostService.post_exists(comment_data["post_id"]) != True:
+            raise CommentServiceError(error_type="MissingOrInvalidPostId");
 
 
 ####CommentValidator####

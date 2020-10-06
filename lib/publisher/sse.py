@@ -1,5 +1,6 @@
 from interfaces.publisher import IPublisher;
-
+from lib.sse.server_sent_event import ServerSentEvent;
+sse = ServerSentEvent();
 
 class SSEPublisher(IPublisher):
     #Publishes posts to connected clients via Server-Sent Events (e.g. a web browser)
@@ -9,4 +10,6 @@ class SSEPublisher(IPublisher):
 
 
     def publish(self, post):
-        print(post);
+        #return sse.of(event_name="NewPost", event_data=post._data);
+        pass;
+

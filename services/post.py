@@ -130,6 +130,11 @@ class PostService():
         post._data["is_published"] = True;
 
 
+    def post_exists(self, id):
+       return len(self._repo.find_one(id)) == 1;
+
+
+
 ####PostService####
 
 class PostValidator():
