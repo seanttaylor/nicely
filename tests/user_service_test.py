@@ -161,6 +161,12 @@ def test_should_return_updated_user_phone_number():
     assert test_user._data["phone_number"] == test_phone_number_edit;
 
 
+def test_should_return_false_when_user_does_not_exist_in_database():
+    fake_user_id = str(datetime.now());
+
+    assert test_user_service.user_exists(fake_user_id) == False;
+
+###Negative Tests###
 def test_should_throw_exception_when_attempting_to_create_invalid_user():
     with pytest.raises(UserServiceError) as exception_info:
         test_user = test_user_service.create_user();

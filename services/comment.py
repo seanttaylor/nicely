@@ -113,13 +113,14 @@ class CommentService():
 
 class CommentValidator():
 
-    def __init__(self, PostService):
+    def __init__(self, PostService, UserService):
         """
         Validates comments before they are created
         @param (PostService) PostService - an instance of the PostService
         @returns (None)
         """
         self._PostService = PostService;
+        self._UserService = UserService;
 
 
     def validate(self, comment_data):
@@ -132,8 +133,8 @@ class CommentValidator():
         if "post_id" not in comment_data:
             raise CommentServiceError(error_type="MissingOrInvalidPostId");
 
-        #if UserService.user_exists(comment_data["user_id"]) != True:
-        #    raise CommentServiceError(error_type="InvalidUserId");
+        if self._UserService.user_exists(comment_data["user_id"]) != True:
+            raise CommentServiceError(error_type="MissingOrInvalidUserId");
 
         if self._PostService.post_exists(comment_data["post_id"]) != True:
             raise CommentServiceError(error_type="MissingOrInvalidPostId");

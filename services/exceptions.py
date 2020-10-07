@@ -47,6 +47,7 @@ class UserServiceError(Exception):
         "MissingOrInvalidFirstName": "ValidationError: 'first_name' of user missing or invalid",
         "MissingOrInvalidLastName": "ValidationError: 'last_name' of user is missing or invalid",
         "MissingOrInvalidHandle": "ValidationError: 'handle' of user is missing or invalid",
+        "MissingOrInvalidUserId": "ValidationError: 'id' of user missing or invalid",
         "UserDataEmpty": "ValidationError: cannot create user; no arguments given"
     };
 

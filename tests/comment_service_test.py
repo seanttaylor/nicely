@@ -1,9 +1,14 @@
 ####CommentService Unit Tests####
 import pytest;
 from app_config.app import app_config;
+from datetime import datetime;
+
 from services.exceptions import CommentServiceError;
 from services.comment import CommentService, CommentValidator, Comment;
 from services.post import PostService, PostValidator, Post;
+from services.user import UserService, UserValidator;
+
+from lib.repository.user.my_sql import UserMySQLRepository;
 from lib.repository.post.my_sql import PostMySQLRepository;
 from lib.repository.comment.my_sql import CommentMySQLRepository;
 
@@ -11,7 +16,11 @@ test_post_validator = PostValidator(app_config["posts"]);
 test_post_mysql_repo = PostMySQLRepository(app_config["posts"]["fields"]);
 test_post_service = PostService(test_post_mysql_repo, test_post_validator);
 
-test_comment_validator = CommentValidator(test_post_service);
+test_user_validator = UserValidator(app_config["users"]);
+test_user_mysql_repo = UserMySQLRepository(app_config["users"]["fields"]);
+test_user_service = UserService(test_user_mysql_repo, test_user_validator);
+
+test_comment_validator = CommentValidator(test_post_service, test_user_service);
 test_comment_mysql_repo = CommentMySQLRepository(app_config["comments"]["fields"]);
 test_comment_service = CommentService(test_comment_mysql_repo, test_comment_validator);
 
@@ -143,3 +152,34 @@ def test_should_throw_exception_when_post_id_missing():
         );
 
     assert "MissingOrInvalidPostId" in str(exception_info.value);
+
+
+def test_should_throw_exception_when_post_id_does_not_exist():
+    with pytest.raises(CommentServiceError) as exception_info:
+        fake_post_id = str(datetime.now());
+        test_comment = test_comment_service.create_comment(
+            body="True story. FR.",
+            user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
+            post_id=fake_post_id
+        );
+
+    assert "MissingOrInvalidPostId" in str(exception_info.value);
+
+
+def test_should_throw_exception_when_user_id_does_not_exist():
+    with pytest.raises(CommentServiceError) as exception_info:
+        fake_user_id = str(datetime.now());
+        test_post = test_post_service.create_post(
+            body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
+            user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
+            author="@tstark"
+        );
+        test_post_id = test_post.save();
+
+        test_comment = test_comment_service.create_comment(
+            body="True story. FR.",
+            user_id=fake_user_id,
+            post_id=test_post_id
+        );
+
+    assert "MissingOrInvalidUserId" in str(exception_info.value);

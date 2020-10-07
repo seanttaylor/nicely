@@ -146,6 +146,12 @@ class UserService():
         return self._repo.delete(id);
 
 
+    def user_exists(self, id):
+        result = self._repo.find_one(id);
+        return len(result) == 1 and result[0]["id"] == id;
+
+
+
 ####UserService####
 
 class UserValidator():
@@ -171,8 +177,6 @@ class UserValidator():
 
         if "handle" not in user_data:
             raise UserServiceError(error_type="MissingOrInvalidHandle");
-
-
 
 
 
