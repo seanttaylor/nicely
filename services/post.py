@@ -131,7 +131,8 @@ class PostService():
 
 
     def post_exists(self, id):
-       return len(self._repo.find_one(id)) == 1;
+       result = self._repo.find_one(id);
+       return len(result) == 1 and result[0]["id"] == id;
 
 
 

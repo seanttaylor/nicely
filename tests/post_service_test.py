@@ -1,5 +1,6 @@
 ####PostService Unit Tests####
 import pytest;
+from datetime import datetime;
 from app_config.app import app_config;
 from services.exceptions import PostServiceError;
 from services.post import PostService, PostValidator, Post;
@@ -128,6 +129,24 @@ def test_should_call_comment_on_post_and_save_methods():
     assert test_comment.was_called(method_name="save") == True;
 
 
+def test_should_return_true_when_post_exists_in_database():
+    test_post = test_post_service.create_post(
+        body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
+        user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
+        author="@tstark"
+    );
+    test_post_id = test_post.save();
+
+    assert test_post_service.post_exists(test_post_id) == True;
+
+
+def test_should_return_false_when_post_does_not_exist_in_database():
+    fake_post_id = str(datetime.now());
+
+    assert test_post_service.post_exists(fake_post_id) == False;
+
+
+###Negative Tests###
 def test_should_throw_exception_when_attempting_to_create_invalid_post():
     with pytest.raises(PostServiceError) as exception_info:
         test_post = test_post_service.create_post();

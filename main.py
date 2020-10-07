@@ -26,7 +26,9 @@ def main():
         author="@tstark"
     );
 
-    #post_service.post_exists(doc_id);
+    doc_id = post.save();
+
+    print(post_service.post_exists(doc_id));
 
 
 if __name__ == "__main__": main();

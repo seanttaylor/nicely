@@ -18,10 +18,17 @@ test_comment_service = CommentService(test_comment_mysql_repo, test_comment_vali
 ####Tests####
 
 def test_should_return_new_comment_instance():
+    test_post = test_post_service.create_post(
+        body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
+        user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
+        author="@tstark"
+    );
+    test_post_id = test_post.save();
+
     test_comment = test_comment_service.create_comment(
         body="True story. FR.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        post_id="test_post_id"
+        post_id=test_post_id
     );
     test_comment.save();
 
@@ -29,12 +36,19 @@ def test_should_return_new_comment_instance():
 
 
 def test_should_return_list_of_comment_instances():
+    test_post = test_post_service.create_post(
+        body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
+        user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
+        author="@tstark"
+    );
+    test_post_id = test_post.save();
+
     test_comment = test_comment_service.create_comment(
         body="True story. FR.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        post_id="test_post_id"
+        post_id=test_post_id
     );
-    test_doc_id = test_comment.save();
+    test_comment.save();
     result = test_comment_service.find_all_comments();
 
     assert isinstance(result, list);
@@ -47,34 +61,55 @@ def test_should_delete_comment():
 
 
 def test_should_return_comment_id_on_save():
+    test_post = test_post_service.create_post(
+        body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
+        user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
+        author="@tstark"
+    );
+    test_post_id = test_post.save();
+
     test_comment = test_comment_service.create_comment(
         body="True story. FR.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        post_id="test_post_id"
+        post_id=test_post_id
     );
-    test_doc_id = test_comment.save();
+    test_comment_id = test_comment.save();
 
-    assert isinstance(test_doc_id, str) == True;
+    assert isinstance(test_comment_id, str) == True;
 
 
 def test_should_return_updated_comment_matching_test_text():
+    test_post = test_post_service.create_post(
+        body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
+        user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
+        author="@tstark"
+    );
+    test_post_id = test_post.save();
+
     test_edit = "True story. No doubt.";
     test_comment = test_comment_service.create_comment(
         body="True story. FR.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        post_id="test_post_id"
+        post_id=test_post_id
     );
-    test_doc_id = test_comment.save();
+
+    test_comment.save();
     test_comment.edit(test_edit);
 
     assert test_comment._data["body"] == test_edit;
 
 
 def test_should_increment_comment_like_count():
+    test_post = test_post_service.create_post(
+        body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
+        user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
+        author="@tstark"
+    );
+    test_doc_id = test_post.save();
     test_comment = test_comment_service.create_comment(
         body="True story. FR.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        post_id="test_post_id"
+        post_id=test_doc_id
     );
 
     test_comment.save();
