@@ -45,7 +45,7 @@ class PostMySQLRepository(IPostRepository):
 
     def find_one(self, id):
         db_cursor = self._db_connection.cursor();
-        query = ("SELECT * FROM posts WHERE id = '{}'".format(id));
+        query = ("SELECT posts.*, users.handle FROM posts JOIN users ON posts.user_id = users.id  WHERE posts.id = '{}'".format(id));
 
         db_cursor.execute(query);
         result = db_cursor.fetchall();
@@ -56,7 +56,7 @@ class PostMySQLRepository(IPostRepository):
     def find_all(self):
         post_list = []
         db_cursor = self._db_connection.cursor();
-        db_cursor.execute("SELECT * FROM posts");
+        db_cursor.execute("SELECT posts.*, users.handle FROM posts JOIN users ON posts.user_id = users.id");
         result = db_cursor.fetchall();
 
         for post in result:
@@ -146,6 +146,7 @@ class PostMySQLRepository(IPostRepository):
         return {
           "id": record[self._field_map["id"]],
           "user_id": record[self._field_map["user_id"]],
+          "handle": record[self._field_map["handle"]],
           "body": record[self._field_map["body"]],
           "comment_count": record[self._field_map["comment_count"]],
           "like_count": record[self._field_map["like_count"]],

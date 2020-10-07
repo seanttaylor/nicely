@@ -18,7 +18,8 @@ app_config = {
       "comment_count": 6,
       "like_count": 7,
       "is_published": 8,
-      "is_archived": 9
+      "is_archived": 9,
+      "handle": 10
     }
   },
   "comments": {

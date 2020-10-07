@@ -20,15 +20,14 @@ def main():
     post_mysql_repo = PostMySQLRepository(app_config["posts"]["fields"]);
     post_service = PostService(post_mysql_repo, post_validator);
 
-    post = post_service.create_post(
-        body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
-        user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        author="@tstark"
-    );
+    #post = post_service.create_post(
+    #    body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
+        #user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
+        #author="@tstark"
+    #);
 
-    doc_id = post.save();
+    #doc_id = post.save();
 
-    print(post_service.post_exists(doc_id));
 
 
 if __name__ == "__main__": main();
