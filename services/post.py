@@ -18,7 +18,7 @@ class Post():
       "data": {
         "user_id": self._data["user_id"],
         "body": self._data["body"],
-        "handle": self._data["handle"],
+        "author": self._data["author"],
         "comment_count": self._data.get("comment_count", 0)
       }
     });

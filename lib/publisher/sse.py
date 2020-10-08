@@ -3,7 +3,9 @@ from lib.sse.server_sent_event import ServerSentEvent;
 sse = ServerSentEvent();
 
 class SSEPublisher(IPublisher):
-    #Publishes posts to connected clients via Server-Sent Events (e.g. a web browser)
+    # Implements IPublisher interface for publishing posts
+    # See interfaces/publisher for method documentation
+    # Publishes posts to connected clients via Server-Sent Events (e.g. a web browser)
 
     def __init__(self):
         pass;

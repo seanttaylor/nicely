@@ -1,15 +1,14 @@
 from datetime import datetime;
 from interfaces.comment_repository import ICommentRepository;
-
 import os;
 import uuid;
 import mysql.connector;
 
-# Implements ICommentRepository interface for connecting to a MySQL database.
-# See interfaces/comment_repository for method documentation
-
-
 class CommentMySQLRepository(ICommentRepository):
+    # Implements ICommentRepository interface for connecting to
+    # a MySQL database.
+    # See interfaces/comment_repository for method documentation
+
     _table_name = "comments";
 
 
