@@ -19,7 +19,7 @@ app_config = {
       "like_count": 7,
       "is_published": 8,
       "is_archived": 9,
-      "handle": 10
+      "author": 10
     }
   },
   "comments": {

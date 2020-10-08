@@ -12,6 +12,8 @@ class SSEPublisher(IPublisher):
 
 
     def publish(self, post):
-        #return sse.of(event_name="NewPost", event_data=post._data);
-        pass;
+        event = sse.of(event_name="NewPost", event_data=post._data);
+        print(event);
+        return event;
+
 

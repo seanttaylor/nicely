@@ -1,13 +1,15 @@
 ####Server-Sent Event Unit Tests####
 
+from app_config.app import app_config;
 from services.post import PostService, PostValidator;
 from lib.sse.server_sent_event import ServerSentEvent;
 from lib.repository.post.my_sql import PostMySQLRepository;
-from app_config.app import app_config;
+from lib.events.event_emitter import EventEmitter;
 
+test_event_emitter = EventEmitter();
 test_post_validator = PostValidator(app_config["posts"]);
 test_post_mysql_repo = PostMySQLRepository(app_config["posts"]["fields"]);
-test_post_service = PostService(test_post_mysql_repo, test_post_validator);
+test_post_service = PostService(test_post_mysql_repo, test_post_validator, test_event_emitter);
 sse = ServerSentEvent();
 
 ####Tests####

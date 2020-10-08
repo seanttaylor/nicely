@@ -80,9 +80,10 @@ class PostService():
 
   # Manages collection operations on `Post` objects
 
-    def __init__(self, repo, validator):
+    def __init__(self, repo, validator, event_emitter):
         self._repo = repo;
         self._validator = validator;
+        self._event_emitter = event_emitter;
         self._Post = Post;
 
 
@@ -129,6 +130,7 @@ class PostService():
     def mark_as_published(self, post):
         self._repo.mark_as_published(post._id);
         post._data["is_published"] = True;
+        self._event_emitter.emit("Posts.NewPostReadyToPublish", post);
 
 
     def post_exists(self, id):

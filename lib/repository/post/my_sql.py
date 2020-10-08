@@ -120,7 +120,7 @@ class PostMySQLRepository(IPostRepository):
     def get_recent_posts(self):
         post_list = [];
         db_cursor = self._db_connection.cursor();
-        query = ("SELECT * from posts WHERE is_published = 1 ORDER BY sequence_no DESC LIMIT 35");
+        query = ("SELECT posts.*, users.handle from posts JOIN users ON posts.user_id = users.id WHERE is_published = 1 ORDER BY sequence_no DESC LIMIT 35");
 
         db_cursor.execute(query);
         result = db_cursor.fetchall();
@@ -146,7 +146,7 @@ class PostMySQLRepository(IPostRepository):
         return {
           "id": record[self._field_map["id"]],
           "user_id": record[self._field_map["user_id"]],
-          "handle": record[self._field_map["handle"]],
+          "author": record[self._field_map["author"]],
           "body": record[self._field_map["body"]],
           "comment_count": record[self._field_map["comment_count"]],
           "like_count": record[self._field_map["like_count"]],

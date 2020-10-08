@@ -1,11 +1,11 @@
-
 class FeedService():
 
-  # Manages `Posts` on the Main Feed
-
-    def __init__(self, PostService, PublishService):
+    def __init__(self, PostService, PublishService, event_emitter):
         self._PostService = PostService;
         self._PublishService = PublishService;
+        self._event_emitter = event_emitter;
+
+        self._event_emitter.on("Posts.NewPostReadyToPublish", self.on_post_marked_as_published);
 
 
     def replay_posts(self, sequence_no, batch_size=25):
@@ -47,8 +47,17 @@ class FeedService():
         @param (Post) post - an instance of the Post class
         @returns (None)
         """
-        self._PostService.mark_as_published(post)
         self._PublishService.publish(post);
+
+
+    def on_post_marked_as_published(self, event_data):
+        """
+        Publishes a post to the main feed in response to a post recently marked for publishing
+        @param (object) self
+        @param (ApplicationEventData) event_data - an instance of the ApplicationEventData class
+        @returns (None)
+        """
+        self._PublishService.publish(event_data.value());
 
 
 

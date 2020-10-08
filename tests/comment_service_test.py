@@ -11,10 +11,12 @@ from services.user import UserService, UserValidator;
 from lib.repository.user.my_sql import UserMySQLRepository;
 from lib.repository.post.my_sql import PostMySQLRepository;
 from lib.repository.comment.my_sql import CommentMySQLRepository;
+from lib.events.event_emitter import EventEmitter
 
+test_event_emitter = EventEmitter();
 test_post_validator = PostValidator(app_config["posts"]);
 test_post_mysql_repo = PostMySQLRepository(app_config["posts"]["fields"]);
-test_post_service = PostService(test_post_mysql_repo, test_post_validator);
+test_post_service = PostService(test_post_mysql_repo, test_post_validator, test_event_emitter);
 
 test_user_validator = UserValidator(app_config["users"]);
 test_user_mysql_repo = UserMySQLRepository(app_config["users"]["fields"]);
