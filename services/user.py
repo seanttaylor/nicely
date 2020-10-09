@@ -1,6 +1,6 @@
 import urllib.request;
 import pprint;
-from services.exceptions import UserServiceError;
+from services.exceptions import UserServiceException;
 
 pp = pprint.PrettyPrinter(indent=2);
 
@@ -125,7 +125,7 @@ class UserService():
 
 
     def create_user(self, **kwargs):
-        self._validator.validate(kwargs);
+        self._validator.validate(self, kwargs);
         return self._User(
           self._repo,
           kwargs
@@ -151,6 +151,13 @@ class UserService():
         return len(result) == 1 and result[0]["id"] == id;
 
 
+    def email_address_exists(self, email_address):
+        result = self._repo.find_one_by_email(email_address);
+        return len(result) == 1 and result[0]["email_address"] == email_address;
+
+
+
+
 
 ####UserService####
 
@@ -159,25 +166,26 @@ class UserValidator():
     def __init__(self, config):
         self._config = config;
 
-    def validate(self, user_data):
+    def validate(self, user_service, user_data):
         if len(user_data.keys()) == 0:
-            raise UserServiceError(error_type="UserDataEmpty");
+            raise UserServiceException(error_type="UserDataEmpty");
 
         if "email_address" not in user_data:
-            raise UserServiceError(error_type="MissingOrInvalidEmail");
+            raise UserServiceException(error_type="MissingOrInvalidEmail");
 
         if "phone_number" not in user_data:
-            raise UserServiceError(error_type="MissingOrInvalidPhone");
+            raise UserServiceException(error_type="MissingOrInvalidPhone");
 
         if "first_name" not in user_data:
-            raise UserServiceError(error_type="MissingOrInvalidFirstName");
+            raise UserServiceException(error_type="MissingOrInvalidFirstName");
 
         if "last_name" not in user_data:
-            raise UserServiceError(error_type="MissingOrInvalidLastName");
+            raise UserServiceException(error_type="MissingOrInvalidLastName");
 
         if "handle" not in user_data:
-            raise UserServiceError(error_type="MissingOrInvalidHandle");
+            raise UserServiceException(error_type="MissingOrInvalidHandle");
 
+        if user_service.email_address_exists(user_data["email_address"]) == True: raise UserServiceException(error_type="UserEmailAlreadyExists");
 
 
 ####UserValidator####
