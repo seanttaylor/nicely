@@ -71,6 +71,16 @@ class UserMySQLRepository(IUserRepository):
         return list(map(lambda p: self.on_read_user(p), result));
 
 
+    def find_one_by_handle(self, handle):
+        db_cursor = self._db_connection.cursor();
+        query = ("SELECT * FROM users WHERE handle = '{}'".format(handle));
+
+        db_cursor.execute(query);
+        result = db_cursor.fetchall();
+
+        return list(map(lambda p: self.on_read_user(p), result));
+
+
     def find_all(self):
         user_list = []
         db_cursor = self._db_connection.cursor();

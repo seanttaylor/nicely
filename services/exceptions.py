@@ -9,15 +9,17 @@ class PostServiceException(Exception):
         "InsufficientPostSentimentScore": "ValidationFailure: The Sentiment Service returned a {} response"
     };
 
+
     def __init__(self, **kwargs):
         self._error_type = kwargs["error_type"];
         self._error_data = kwargs;
 
+
     def __str__(self):
         if self._error_type in self._messages:
-            return "PostServiceError.{} {}".format(self._error_type, self._messages[self._error_type]);
+            return "PostServiceException.{} {}".format(self._error_type, self._messages[self._error_type]);
         else:
-            return "Unspecified PostServiceError raised";
+            return "Unspecified PostServiceException raised";
 
 
 ###CommentService###
@@ -29,9 +31,11 @@ class CommentServiceError(Exception):
         "InsufficientCommentSentimentScore": "ValidationFailure: The Sentiment Service returned a {} response"
     };
 
+
     def __init__(self, **kwargs):
         self._error_type = kwargs["error_type"];
         self._error_data = kwargs;
+
 
     def __str__(self):
         if self._error_type in self._messages:
@@ -47,6 +51,8 @@ class UserServiceException(Exception):
         "MissingOrInvalidFirstName": "ValidationError: 'first_name' of user missing or invalid",
         "MissingOrInvalidLastName": "ValidationError: 'last_name' of user is missing or invalid",
         "MissingOrInvalidHandle": "ValidationError: 'handle' of user is missing or invalid",
+        "MissingOrInvalidHandle.HandleExists": "ValidationError: cannot create user; handle already exists",
+        "MissingOrInvalidHandle.Format": "ValidationError: cannot create user; handle invalid format",
         "MissingOrInvalidUserId": "ValidationError: 'id' of user missing or invalid",
         "UserDataEmpty": "ValidationError: cannot create user; no arguments given",
         "MissingOrInvalidEmail.Missing": "ValidationError: 'email_address' of user is missing",
@@ -54,13 +60,15 @@ class UserServiceException(Exception):
         "MissingOrInvalidEmail.Format": "ValidationError: cannot create user; email address invalid format"
     };
 
+
     def __init__(self, **kwargs):
         self._error_type = kwargs["error_type"];
         self._error_data = kwargs;
 
+
     def __str__(self):
         if self._error_type in self._messages:
-            return "UserServiceError.{} {}".format(self._error_type, self._messages[self._error_type]);
+            return "UserServiceException.{} {}".format(self._error_type, self._messages[self._error_type]);
         else:
-            return "Unspecified UserServiceError raised";
+            return "Unspecified UserServiceException raised";
 

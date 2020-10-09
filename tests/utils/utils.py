@@ -7,6 +7,12 @@ def random_email_address():
   return email.lower();
 
 
+def random_user_handle():
+  length = 10;
+  handle = ''.join(random.choice(string.ascii_letters) for x in range(length));
+  return "@" + handle.lower();
+
+
 def random_phone_number():
     p=list('0000000000')
     p[0] = str(random.randint(1,9))

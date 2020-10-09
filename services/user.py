@@ -12,6 +12,7 @@ class User():
         self._repo = repo;
         self._id = doc.get("id", None);
         self._data["is_verified"] = doc.get("is_verified", None);
+        self._data["motto"] = doc.get("motto", None);
 
 
     def __str__(self):
@@ -157,7 +158,9 @@ class UserService():
         return len(result) == 1 and result[0]["email_address"] == email_address;
 
 
-
+    def handle_exists(self, handle):
+        result = self._repo.find_one_by_handle(handle);
+        return len(result) == 1 and result[0]["handle"] == handle;
 
 
 ####UserService####
@@ -167,6 +170,7 @@ class UserValidator():
     def __init__(self, config):
         self._config = config;
         self._email_regex = config["email_regex"];
+        self._handle_regex = config["handle_regex"];
 
     def validate(self, user_service, user_data):
         if len(user_data.keys()) == 0:
@@ -187,8 +191,11 @@ class UserValidator():
         if "handle" not in user_data:
             raise UserServiceException(error_type="MissingOrInvalidHandle");
 
+        if user_service.handle_exists(user_data["handle"]) == True: raise UserServiceException(error_type="MissingOrInvalidHandle.HandleExists");
+
+        if len(re.findall(self._handle_regex, user_data["handle"])) != 1: raise UserServiceException(error_type="MissingOrInvalidHandle.Format");
+
         if user_service.email_address_exists(user_data["email_address"]) == True: raise UserServiceException(error_type="MissingOrInvalidEmail.EmailExists");
-        print(re.findall(self._email_regex, user_data["email_address"]))
 
         if len(re.findall(self._email_regex, user_data["email_address"])) != 1: raise UserServiceException(error_type="MissingOrInvalidEmail.Format");
 

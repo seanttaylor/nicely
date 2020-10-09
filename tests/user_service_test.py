@@ -6,7 +6,7 @@ from services.exceptions import UserServiceException;
 from app_config.app import app_config;
 from services.user import UserService, UserValidator, User;
 from lib.repository.user.my_sql import UserMySQLRepository;
-from tests.utils.utils import random_email_address, random_phone_number;
+from tests.utils.utils import random_email_address, random_phone_number, random_user_handle
 
 test_user_validator = UserValidator(app_config["users"]);
 test_user_mysql_repo = UserMySQLRepository(app_config["users"]["fields"]);
@@ -18,7 +18,7 @@ test_user_service = UserService(test_user_mysql_repo, test_user_validator);
 def test_should_return_new_user_instance():
     test_date = datetime.now();
     test_user = test_user_service.create_user(
-        handle="@hulk-{}".format(test_date),
+        handle=random_user_handle(),
         motto="Hulk smash!",
         email_address=random_email_address(),
         first_name="Bruce",
@@ -33,7 +33,7 @@ def test_should_return_new_user_instance():
 def test_should_return_list_of_user_instances():
     test_date = datetime.now();
     test_user = test_user_service.create_user(
-        handle="@hulk-{}".format(test_date),
+        handle=random_user_handle(),
         motto="Hulk smash!",
         email_address=random_email_address(),
         first_name="Bruce",
@@ -206,6 +206,45 @@ def test_should_throw_exception_when_handle_is_missing():
     assert "MissingOrInvalidHandle" in str(exception_info.value);
 
 
+def test_should_throw_exception_when_handle_is_invalid():
+    with pytest.raises(UserServiceException) as exception_info:
+        test_date = datetime.now();
+        test_user = test_user_service.create_user(
+            email_address=random_email_address(),
+            handle="testhandle987@mail.com",
+            first_name="Bruce",
+            last_name="Banner",
+            phone_number=random_phone_number()
+        );
+
+    assert "MissingOrInvalidHandle.Format" in str(exception_info.value);
+
+
+def test_should_throw_exception_when_creating_user_with_handle_that_already_exists():
+    with pytest.raises(UserServiceException) as exception_info:
+        test_date = datetime.now();
+        test_handle = random_user_handle();
+        test_user = test_user_service.create_user(
+            email_address=random_email_address(),
+            handle=test_handle,
+            first_name="Bruce",
+            last_name="Banner",
+            phone_number=random_phone_number()
+        );
+
+        test_user.save();
+
+        test_user_service.create_user(
+            email_address=random_email_address(),
+            handle=test_handle,
+            first_name="Bruce",
+            last_name="Banner",
+            phone_number=random_phone_number()
+        );
+
+    assert "MissingOrInvalidHandle.HandleExists" in str(exception_info.value);
+
+
 def test_should_throw_exception_when_phone_number_is_missing():
     with pytest.raises(UserServiceException) as exception_info:
         test_date = datetime.now();
@@ -223,7 +262,7 @@ def test_should_throw_exception_when_creating_user_with_email_that_already_exist
         test_date = datetime.now();
         test_email_address = random_email_address();
         test_user = test_user_service.create_user(
-            handle="@hulk-{}".format(test_date),
+            handle=random_user_handle(),
             motto="Hulk smash!",
             email_address=test_email_address,
             first_name="Bruce",
@@ -233,7 +272,7 @@ def test_should_throw_exception_when_creating_user_with_email_that_already_exist
         test_user.save();
 
         test_user = test_user_service.create_user(
-            handle="@hulk-{}".format(test_date),
+            handle=random_user_handle(),
             motto="Hulk smash!",
             email_address=test_email_address,
             first_name="Bruce",
@@ -246,9 +285,10 @@ def test_should_throw_exception_when_creating_user_with_email_that_already_exist
 
 def test_should_throw_exception_when_creating_user_with_invalid_email_address():
     with pytest.raises(UserServiceException) as exception_info:
+        print(random_user_handle());
         test_date = datetime.now();
         test_user = test_user_service.create_user(
-            handle="@hulk-{}".format(test_date),
+            handle=random_user_handle(),
             motto="Hulk smash!",
             email_address="bogus_email",
             first_name="Bruce",

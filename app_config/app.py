@@ -47,6 +47,7 @@ app_config = {
       "created_date": 7,
       "last_modified": 8
     },
-    "email_regex": "^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$"
+    "email_regex": "^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$",
+    "handle_regex": "(?<![\w.-])@[A-Za-z][\w-]+"
   }
 }
