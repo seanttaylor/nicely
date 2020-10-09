@@ -2,12 +2,18 @@
 
 from app_config.app import app_config;
 from services.post import PostService, PostValidator;
-from lib.sse.server_sent_event import ServerSentEvent;
+from services.user import UserService, UserValidator;
+from lib.repository.user.my_sql import UserMySQLRepository;
 from lib.repository.post.my_sql import PostMySQLRepository;
+from lib.sse.server_sent_event import ServerSentEvent;
 from lib.events.event_emitter import EventEmitter;
 
+test_user_validator = UserValidator(app_config["users"]);
+test_user_mysql_repo = UserMySQLRepository(app_config["users"]["fields"]);
+test_user_service = UserService(test_user_mysql_repo, test_user_validator);
+
 test_event_emitter = EventEmitter();
-test_post_validator = PostValidator(app_config["posts"]);
+test_post_validator = PostValidator(app_config["posts"], test_user_service);
 test_post_mysql_repo = PostMySQLRepository(app_config["posts"]["fields"]);
 test_post_service = PostService(test_post_mysql_repo, test_post_validator, test_event_emitter);
 sse = ServerSentEvent();

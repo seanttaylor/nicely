@@ -2,13 +2,19 @@
 import pytest;
 from datetime import datetime;
 from app_config.app import app_config;
-from services.exceptions import PostServiceError;
+from services.exceptions import PostServiceException;
 from services.post import PostService, PostValidator, Post;
+from services.user import UserService, UserValidator;
+from lib.repository.user.my_sql import UserMySQLRepository;
 from lib.repository.post.my_sql import PostMySQLRepository;
 from lib.events.event_emitter import EventEmitter;
 
+test_user_validator = UserValidator(app_config["users"]);
+test_user_mysql_repo = UserMySQLRepository(app_config["users"]["fields"]);
+test_user_service = UserService(test_user_mysql_repo, test_user_validator);
+
 test_event_emitter = EventEmitter();
-test_post_validator = PostValidator(app_config["posts"]);
+test_post_validator = PostValidator(app_config["posts"], test_user_service);
 test_post_mysql_repo = PostMySQLRepository(app_config["posts"]["fields"]);
 test_post_service = PostService(test_post_mysql_repo, test_post_validator, test_event_emitter);
 
@@ -151,21 +157,21 @@ def test_should_return_false_when_post_does_not_exist_in_database():
 
 ###Negative Tests###
 def test_should_throw_exception_when_attempting_to_create_invalid_post():
-    with pytest.raises(PostServiceError) as exception_info:
+    with pytest.raises(PostServiceException) as exception_info:
         test_post = test_post_service.create_post();
 
     assert "PostDataEmpty" in str(exception_info.value);
 
 
 def test_should_throw_exception_when_no_user_id_provided():
-    with pytest.raises(PostServiceError) as exception_info:
+    with pytest.raises(PostServiceException) as exception_info:
         test_post = test_post_service.create_post(body="Everybody wants a happy ending, right? But it doesn’t always roll that way.");
 
     assert "MissingOrInvalidUserId" in str(exception_info.value);
 
 
 def test_should_throw_exception_on_posts_that_exceed_length_limit():
-    with pytest.raises(PostServiceError) as exception_info:
+    with pytest.raises(PostServiceException) as exception_info:
         test_post = test_post_service.create_post(
             body="I'm baby hammock disrupt pop-up, ugh bushwick taxidermy before they sold out gentrify coloring book. Cardigan deep v taiyaki occupy. Hashtag cray dreamcatcher try-hard blog.",
             user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
@@ -176,11 +182,22 @@ def test_should_throw_exception_on_posts_that_exceed_length_limit():
 
 
 def test_should_throw_exception_on_posts_with_invalid_user_ids():
-    with pytest.raises(PostServiceError) as exception_info:
+    with pytest.raises(PostServiceException) as exception_info:
         test_post = test_post_service.create_post(
             body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
             user_id="@tstark"
         );
 
     assert "MissingOrInvalidUserId" in str(exception_info.value);
+
+
+def test_should_throw_exception_on_posts_with_non_existent_user_ids():
+    with pytest.raises(PostServiceException) as exception_info:
+        test_post = test_post_service.create_post(
+            body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
+            user_id="1a417a6b-8e3f-4e4d-abb7-fc322be611e7",
+            author="@tstark"
+        );
+
+    assert "UserDoesNotExist" in str(exception_info.value);
 

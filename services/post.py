@@ -1,4 +1,4 @@
-from services.exceptions import PostServiceError;
+from services.exceptions import PostServiceException;
 import pprint;
 
 pp = pprint.PrettyPrinter(indent=2);
@@ -78,8 +78,6 @@ class Post():
 
 class PostService():
 
-  # Manages collection operations on `Post` objects
-
     def __init__(self, repo, validator, event_emitter):
         self._repo = repo;
         self._validator = validator;
@@ -143,24 +141,29 @@ class PostService():
 
 class PostValidator():
 
-    def __init__(self, config):
+    def __init__(self, config, UserService):
+
         self._config = config;
+        self._UserService = UserService;
 
     def validate(self, post_data):
         if len(post_data.keys()) == 0:
-            raise PostServiceError(error_type="PostDataEmpty");
+            raise PostServiceException(error_type="PostDataEmpty");
 
         if "body" not in post_data:
-            raise PostServiceError(error_type="MissingOrInvalidPostBody");
+            raise PostServiceException(error_type="MissingOrInvalidPostBody");
 
         if "user_id" not in post_data:
-            raise PostServiceError(error_type="MissingOrInvalidUserId");
+            raise PostServiceException(error_type="MissingOrInvalidUserId");
 
         if len(post_data["body"]) > self._config["post_character_limit"]:
-            raise PostServiceError(error_type="PostCharacterLimitExceeded")
+            raise PostServiceException(error_type="PostCharacterLimitExceeded")
 
         if len(post_data["user_id"]) < 32:
-            raise PostServiceError(error_type="MissingOrInvalidUserId");
+            raise PostServiceException(error_type="MissingOrInvalidUserId")
+
+        if self._UserService.user_exists(post_data["user_id"]) != True:
+            raise PostServiceException(error_type="UserDoesNotExist");
 
 ####PostValidator####
 
