@@ -1,3 +1,4 @@
+import re;
 import urllib.request;
 import pprint;
 from services.exceptions import UserServiceException;
@@ -165,13 +166,14 @@ class UserValidator():
 
     def __init__(self, config):
         self._config = config;
+        self._email_regex = config["email_regex"];
 
     def validate(self, user_service, user_data):
         if len(user_data.keys()) == 0:
             raise UserServiceException(error_type="UserDataEmpty");
 
         if "email_address" not in user_data:
-            raise UserServiceException(error_type="MissingOrInvalidEmail");
+            raise UserServiceException(error_type="MissingOrInvalidEmail.Missing");
 
         if "phone_number" not in user_data:
             raise UserServiceException(error_type="MissingOrInvalidPhone");
@@ -185,7 +187,10 @@ class UserValidator():
         if "handle" not in user_data:
             raise UserServiceException(error_type="MissingOrInvalidHandle");
 
-        if user_service.email_address_exists(user_data["email_address"]) == True: raise UserServiceException(error_type="UserEmailAlreadyExists");
+        if user_service.email_address_exists(user_data["email_address"]) == True: raise UserServiceException(error_type="MissingOrInvalidEmail.EmailExists");
+        print(re.findall(self._email_regex, user_data["email_address"]))
+
+        if len(re.findall(self._email_regex, user_data["email_address"])) != 1: raise UserServiceException(error_type="MissingOrInvalidEmail.Format");
 
 
 ####UserValidator####

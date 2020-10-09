@@ -46,6 +46,7 @@ app_config = {
       "last_name": 6,
       "created_date": 7,
       "last_modified": 8
-    }
+    },
+    "email_regex": "^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$"
   }
 }

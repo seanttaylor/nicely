@@ -6,30 +6,11 @@ from services.exceptions import UserServiceException;
 from app_config.app import app_config;
 from services.user import UserService, UserValidator, User;
 from lib.repository.user.my_sql import UserMySQLRepository;
+from tests.utils.utils import random_email_address, random_phone_number;
 
 test_user_validator = UserValidator(app_config["users"]);
 test_user_mysql_repo = UserMySQLRepository(app_config["users"]["fields"]);
 test_user_service = UserService(test_user_mysql_repo, test_user_validator);
-
-
-def random_phone_number():
-    p=list('0000000000')
-    p[0] = str(random.randint(1,9))
-    for i in [1,2,6,7,8]:
-        p[i] = str(random.randint(0,9))
-    for i in [3,4]:
-        p[i] = str(random.randint(0,8))
-    if p[3]==p[4]==0:
-        p[5]=str(random.randint(1,8))
-    else:
-        p[5]=str(random.randint(0,8))
-    n = range(10)
-    if p[6]==p[7]==p[8]:
-        n = (i for i in n if i!=p[6])
-    p[9] = str(random.choice(n))
-    p = ''.join(p)
-    return p[:3] + '-' + p[3:6] + '-' + p[6:]
-
 
 ####Tests####
 
@@ -39,7 +20,7 @@ def test_should_return_new_user_instance():
     test_user = test_user_service.create_user(
         handle="@hulk-{}".format(test_date),
         motto="Hulk smash!",
-        email_address="bbanner-{}@avengers.io".format(test_date),
+        email_address=random_email_address(),
         first_name="Bruce",
         last_name="Banner",
         phone_number=random_phone_number()
@@ -54,7 +35,7 @@ def test_should_return_list_of_user_instances():
     test_user = test_user_service.create_user(
         handle="@hulk-{}".format(test_date),
         motto="Hulk smash!",
-        email_address="bbanner-{}@avengers.io".format(test_date),
+        email_address=random_email_address(),
         first_name="Bruce",
         last_name="Banner",
         phone_number=random_phone_number()
@@ -79,7 +60,7 @@ def test_should_return_user_id_on_save():
     test_user = test_user_service.create_user(
         handle="@hulk-{}".format(test_date),
         motto="Hulk smash!",
-        email_address="bbanner-{}@avengers.io".format(test_date),
+        email_address=random_email_address(),
         first_name="Bruce",
         last_name="Banner",
         phone_number=random_phone_number()
@@ -95,7 +76,7 @@ def test_should_return_updated_user_first_name():
     test_user = test_user_service.create_user(
         handle="@hulk-{}".format(test_date),
         motto="Hulk smash!",
-        email_address="bbanner-{}@avengers.io".format(test_date),
+        email_address=random_email_address(),
         first_name="Bruce",
         last_name="Banner",
         phone_number=random_phone_number()
@@ -112,7 +93,7 @@ def test_should_return_updated_user_last_name():
     test_user = test_user_service.create_user(
         handle="@hulk-{}".format(test_date),
         motto="Hulk smash!",
-        email_address="bbanner-{}@avengers.io".format(test_date),
+        email_address=random_email_address(),
         first_name="Bruce",
         last_name="Banner",
         phone_number=random_phone_number()
@@ -131,7 +112,7 @@ def test_should_return_updated_user_motto():
     test_user = test_user_service.create_user(
         handle="@hulk-{}".format(test_date),
         motto="Hulk smash!",
-        email_address="bbanner-{}@avengers.io".format(test_date),
+        email_address=random_email_address(),
         first_name="Bruce",
         last_name="Banner",
         phone_number=random_phone_number()
@@ -149,7 +130,7 @@ def test_should_return_updated_user_phone_number():
     test_user = test_user_service.create_user(
         handle="@hulk-{}".format(test_date),
         motto="Hulk smash!",
-        email_address="bbanner-{}@avengers.io".format(test_date),
+        email_address=random_email_address(),
         first_name="Bruce",
         last_name="Banner",
         phone_number=random_phone_number()
@@ -183,14 +164,14 @@ def test_should_throw_exception_when_email_address_is_missing():
             phone_number=random_phone_number()
         );
 
-    assert "MissingOrInvalidEmail" in str(exception_info.value);
+    assert "MissingOrInvalidEmail.Missing" in str(exception_info.value);
 
 
 def test_should_throw_exception_when_first_name_is_missing():
     with pytest.raises(UserServiceException) as exception_info:
         test_date = datetime.now();
         test_user = test_user_service.create_user(
-            email_address="bbanner-{}@avengers.io".format(test_date),
+            email_address=random_email_address(),
             handle="@bbanner-{}".format(test_date),
             last_name="Banner",
             phone_number=random_phone_number()
@@ -203,7 +184,7 @@ def test_should_throw_exception_when_last_name_is_missing():
     with pytest.raises(UserServiceException) as exception_info:
         test_date = datetime.now();
         test_user = test_user_service.create_user(
-            email_address="bbanner-{}@avengers.io".format(test_date),
+            email_address=random_email_address(),
             handle="@bbanner-{}".format(test_date),
             first_name="Bruce",
             phone_number=random_phone_number()
@@ -216,7 +197,7 @@ def test_should_throw_exception_when_handle_is_missing():
     with pytest.raises(UserServiceException) as exception_info:
         test_date = datetime.now();
         test_user = test_user_service.create_user(
-            email_address="bbanner-{}@avengers.io".format(test_date),
+            email_address=random_email_address(),
             first_name="Bruce",
             last_name="Banner",
             phone_number=random_phone_number()
@@ -229,7 +210,7 @@ def test_should_throw_exception_when_phone_number_is_missing():
     with pytest.raises(UserServiceException) as exception_info:
         test_date = datetime.now();
         test_user = test_user_service.create_user(
-            email_address="bbanner-{}@avengers.io".format(test_date),
+            email_address=random_email_address(),
             first_name="Bruce",
             last_name="Banner"
         );
@@ -240,7 +221,7 @@ def test_should_throw_exception_when_phone_number_is_missing():
 def test_should_throw_exception_when_creating_user_with_email_that_already_exists():
     with pytest.raises(UserServiceException) as exception_info:
         test_date = datetime.now();
-        test_email_address = "bbanner-{}@avengers.io".format(test_date);
+        test_email_address = random_email_address();
         test_user = test_user_service.create_user(
             handle="@hulk-{}".format(test_date),
             motto="Hulk smash!",
@@ -260,4 +241,19 @@ def test_should_throw_exception_when_creating_user_with_email_that_already_exist
             phone_number=random_phone_number()
         );
 
-    assert "UserEmailAlreadyExists" in str(exception_info.value);
+    assert "MissingOrInvalidEmail.EmailExists" in str(exception_info.value);
+
+
+def test_should_throw_exception_when_creating_user_with_invalid_email_address():
+    with pytest.raises(UserServiceException) as exception_info:
+        test_date = datetime.now();
+        test_user = test_user_service.create_user(
+            handle="@hulk-{}".format(test_date),
+            motto="Hulk smash!",
+            email_address="bogus_email",
+            first_name="Bruce",
+            last_name="Banner",
+            phone_number=random_phone_number()
+        );
+
+    assert "MissingOrInvalidEmail.Format" in str(exception_info.value);

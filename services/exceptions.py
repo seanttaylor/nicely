@@ -43,14 +43,15 @@ class CommentServiceError(Exception):
 ###UserService###
 class UserServiceException(Exception):
     _messages = {
-        "MissingOrInvalidEmail": "ValidationError: 'email_address' of user is missing or invalid",
         "MissingOrInvalidPhone": "ValidationError: 'phone_number' of user is missing or invalid",
         "MissingOrInvalidFirstName": "ValidationError: 'first_name' of user missing or invalid",
         "MissingOrInvalidLastName": "ValidationError: 'last_name' of user is missing or invalid",
         "MissingOrInvalidHandle": "ValidationError: 'handle' of user is missing or invalid",
         "MissingOrInvalidUserId": "ValidationError: 'id' of user missing or invalid",
         "UserDataEmpty": "ValidationError: cannot create user; no arguments given",
-        "UserEmailAlreadyExists": "ValidationError: cannot create user; email address already exists"
+        "MissingOrInvalidEmail.Missing": "ValidationError: 'email_address' of user is missing",
+        "MissingOrInvalidEmail.EmailExists": "ValidationError: cannot create user; email address already exists",
+        "MissingOrInvalidEmail.Format": "ValidationError: cannot create user; email address invalid format"
     };
 
     def __init__(self, **kwargs):
