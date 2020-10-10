@@ -16,6 +16,7 @@ from lib.publisher.stdout import StdoutPublisher;
 from lib.publisher.sse import SSEPublisher;
 from lib.events.event_emitter import EventEmitter;
 from services.feed import FeedService;
+from tests.utils.utils import random_email_address, random_phone_number, random_user_handle
 
 
 def main():
@@ -29,20 +30,30 @@ def main():
     post_service = PostService(post_mysql_repo, post_validator, event_emitter);
     feed_service = FeedService(post_service, SSEPublisher(), event_emitter);
 
-    post = post_service.create_post(
-        body="Everybody wants a happy ending, right? But it doesn’t always roll #that way.",
-        user_id="1a417a6b-8e3f-4e4d-abb7-fc322be611e7",
-        author="@tstark"
+    test_user_no_1 = user_service.create_user(
+        handle=random_user_handle(),
+        motto="Hulk smash!",
+        email_address=random_email_address(),
+        first_name="Bruce",
+        last_name="Banner",
+        phone_number=random_phone_number()
     );
+    test_user_no_1.save();
 
-    post_id = post.save();
+    test_user_no_2 = user_service.create_user(
+        handle=random_user_handle(),
+        motto="Let's do this!",
+        email_address=random_email_address(),
+        first_name="Steve",
+        last_name="Rogers",
+        phone_number=random_phone_number()
+    );
+    test_user_no_2.save();
+    test_user_no_2.follow(test_user_no_1);
 
-    #user_service = UserService(repo, UserValidator, PostService, CommentService)
-    #user = user_service.create_user({})
-    #post = user.create_post({})
-    #comment = user.create_comment({})
-    #comment_id = comment.save()
-    #post_id = post.save()
+    print("is_following?", test_user_no_2.is_following(test_user_no_1))
+
+
 
 
 

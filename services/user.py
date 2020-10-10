@@ -46,7 +46,6 @@ class User():
           "first_name": self._data["first_name"],
           "last_name": self._data["last_name"]
         });
-
         self._id = user["id"];
         self._data["created_date"] = user["created_date"];
         self._data["last_modified"] = None;
@@ -113,6 +112,27 @@ class User():
         self._data["last_modified"] = user["last_modified"];
 
         return user["id"];
+
+
+    def follow_user(self, target_user):
+        """
+        Subscribe the current user to the feed of another user on the platform
+        @param (object) self
+        @param (User) target_user - an instance of the User class; the user to be followed
+        @returns (None)
+        """
+
+        self._repo.create_subscription(self._id, target_user._id);
+
+
+    def is_following(self, target_user):
+        """
+        Indicates whether the current instance of User follows the user specified (i.e. target_user)
+        @param (object) self
+        @param (User) target_user - an instance of the User class; the user being inquired about
+        @return (bool)
+        """
+        return self._repo.subscription_exists(self._id, target_user._id) == 1
 
 
 ####User####

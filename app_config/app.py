@@ -41,11 +41,10 @@ app_config = {
       "handle": 1,
       "email_address": 2,
       "motto": 3,
-      "is_verified": 4,
       "first_name": 5,
       "last_name": 6,
-      "created_date": 7,
-      "last_modified": 8
+      "follower_count":7,
+      "created_date": 8
     },
     "email_regex": "^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$",
     "handle_regex": "(?<![\w.-])@[A-Za-z][\w-]+"
