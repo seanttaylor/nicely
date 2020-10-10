@@ -127,12 +127,22 @@ class User():
 
     def is_following(self, target_user):
         """
-        Indicates whether the current instance of User follows the user specified (i.e. target_user)
+        Indicates whether the current instance of User follows a user specified (i.e. target_user)
         @param (object) self
         @param (User) target_user - an instance of the User class; the user being inquired about
         @return (bool)
         """
         return self._repo.subscription_exists(self._id, target_user._id) == 1
+
+
+    def get_followers(self):
+        """
+        Returns a list of the users following the current user
+        @param (object) self
+        @return (list)
+        """
+        users = self._repo.get_followers_of(self._id);
+        return list(map(lambda u: User(self._repo, u), users))
 
 
 ####User####

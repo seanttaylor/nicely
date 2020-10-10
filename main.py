@@ -49,9 +49,9 @@ def main():
         phone_number=random_phone_number()
     );
     test_user_no_2.save();
-    test_user_no_2.follow(test_user_no_1);
+    test_user_no_2.follow_user(test_user_no_1);
 
-    print("is_following?", test_user_no_2.is_following(test_user_no_1))
+    list(map(lambda u: print(u),test_user_no_1.get_followers()));
 
 
 

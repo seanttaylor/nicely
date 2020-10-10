@@ -158,6 +158,21 @@ class UserMySQLRepository(IUserRepository):
         return result[0][0];
 
 
+    def get_followers_of(self, current_user_id):
+        user_list = [];
+        db_cursor = self._db_connection.cursor();
+        query = ("SELECT users.id, users.handle, users.email_address, users.motto, users.is_verified, users.first_name, users.last_name, users.follower_count, users.created_date, user_followers.* FROM user_followers JOIN users ON user_followers.follower_id = users.id WHERE user_followers.user_id = '{}'".format(current_user_id));
+        db_cursor.execute(query);
+
+        result = db_cursor.fetchall();
+        db_cursor.close();
+
+        for user in result:
+            user_list.append(self.on_read_user(user));
+
+        return user_list;
+
+
     def delete(self, id):
         pass;
 
