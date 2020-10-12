@@ -136,6 +136,12 @@ class PostService():
        return len(result) == 1 and result[0]["id"] == id;
 
 
+    def get_posts_by_subscriber(self, id):
+       posts = self._repo.get_posts_by_subscriber(id);
+       return list(map(lambda p: self._Post(self._repo, p), posts));
+
+
+
 
 ####PostService####
 

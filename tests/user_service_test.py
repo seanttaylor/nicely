@@ -4,6 +4,7 @@ import random;
 from datetime import datetime;
 from services.exceptions import UserServiceException;
 from app_config.app import app_config;
+from services.post import Post;
 from services.user import UserService, UserValidator, User;
 from lib.repository.user.my_sql import UserMySQLRepository;
 from tests.utils.utils import random_email_address, random_phone_number, random_user_handle

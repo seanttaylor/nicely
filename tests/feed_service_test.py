@@ -8,6 +8,7 @@ from lib.repository.user.my_sql import UserMySQLRepository;
 from lib.repository.post.my_sql import PostMySQLRepository;
 from lib.publisher.stdout import StdoutPublisher;
 from lib.events.event_emitter import EventEmitter;
+from tests.utils.utils import random_email_address, random_phone_number, random_user_handle
 
 test_user_validator = UserValidator(app_config["users"]);
 test_user_mysql_repo = UserMySQLRepository();
@@ -91,3 +92,45 @@ def test_should_return_list_of_most_recent_published_posts():
 
     assert isinstance(test_posts, list) == True;
     assert isinstance(test_posts[0], Post) == True;
+
+
+def test_should_return_a_list_of_posts_from_all_followed_users():
+    test_user_handle = random_user_handle();
+    test_user_no_1 = test_user_service.create_user(
+        handle=test_user_handle,
+        motto="Hulk smash!",
+        email_address=random_email_address(),
+        first_name="Bruce",
+        last_name="Banner",
+        phone_number=random_phone_number()
+    );
+
+    test_user_no_2 = test_user_service.create_user(
+        handle=random_user_handle(),
+        motto="Let's do this!",
+        email_address=random_email_address(),
+        first_name="Steve",
+        last_name="Rogers",
+        phone_number=random_phone_number()
+    );
+    test_user_no_1_id = test_user_no_1.save();
+    test_user_no_2.save();
+
+    test_post = test_post_service.create_post(
+        body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
+        user_id=test_user_no_1_id,
+        author=test_user_handle
+    );
+
+    test_post.save();
+    test_user_no_2.follow_user(test_user_no_1);
+
+    test_user_no_2_feed = test_feed_service.get_feed_of(test_user_no_2);
+
+    assert type(test_user_no_2_feed) == list;
+    assert test_user_no_2_feed[0]._data["handle"] == test_user_handle;
+    assert isinstance(test_user_no_2_feed[0], Post);
+    assert len(test_user_no_2_feed) == 1;
+
+
+

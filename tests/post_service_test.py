@@ -9,6 +9,7 @@ from lib.repository.user.my_sql import UserMySQLRepository;
 from lib.repository.post.my_sql import PostMySQLRepository;
 from lib.events.event_emitter import EventEmitter;
 
+
 test_user_validator = UserValidator(app_config["users"]);
 test_user_mysql_repo = UserMySQLRepository();
 test_user_service = UserService(test_user_mysql_repo, test_user_validator);

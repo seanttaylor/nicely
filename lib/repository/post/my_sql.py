@@ -140,16 +140,33 @@ class PostMySQLRepository(IPostRepository):
         db_cursor.close();
 
 
+    def get_posts_by_subscriber(self, id):
+        post_list = [];
+        db_cursor = self._db_connection.cursor();
+        query = ("SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, users.handle FROM posts JOIN user_followers ON posts.user_id = user_followers.user_id JOIN users ON posts.user_id = users.id WHERE follower_id = '{}'".format(id));
+
+        db_cursor.execute(query);
+        result = db_cursor.fetchall();
+
+        for post in result:
+          post_list.append(self.on_read_post(post));
+
+        db_cursor.close();
+
+        print(post_list);
+        return post_list;
+
+
     def on_read_post(self, record):
         return {
           "id": record[0],
           "user_id": record[1],
-          "author": record[2],
-          "body": record[3],
-          "comment_count": record[4],
-          "like_count": record[5],
-          "sequence_no": record[6],
-          "created_date": record[7]
+          "body": record[2],
+          "comment_count": record[3],
+          "like_count": record[4],
+          "sequence_no": record[5],
+          "created_date": record[6],
+          "handle": record[7]
         }
 
 ####PostMySQLRepository###

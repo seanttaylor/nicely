@@ -1,6 +1,13 @@
 class FeedService():
 
     def __init__(self, PostService, PublishService, event_emitter):
+        """
+        @param (object) self
+        @param (PostService) PostService - an instance of the PostService class
+        @param (PublishService) PublishService - an instance of the PublishService class
+        @param (event_emitter) event_emitter - an implementation of the IEventEmitter interface
+        @return (None)
+        """
         self._PostService = PostService;
         self._PublishService = PublishService;
         self._event_emitter = event_emitter;
@@ -58,6 +65,17 @@ class FeedService():
         @returns (None)
         """
         self._PublishService.publish(event_data.value());
+
+
+    def get_feed_of(self, user):
+        """
+        Returns a list of posts from all users a specified user is following
+        @param (object) self
+        @param (User) user - an instance of the User class
+        @return (list)
+        """
+        return self._PostService.get_posts_by_subscriber(user._id);
+
 
 
 
