@@ -141,7 +141,17 @@ class User():
         @param (object) self
         @return (list)
         """
-        users = self._repo.get_followers_of(self._id);
+        users = self._repo.get_subscribers_of(self._id);
+        return list(map(lambda u: User(self._repo, u), users))
+
+
+    def follows(self):
+        """
+        Returns a list of users the current user is following
+        @param (object) self
+        @return (list)
+        """
+        users = self._repo.get_user_subscriptions(self._id);
         return list(map(lambda u: User(self._repo, u), users))
 
 
