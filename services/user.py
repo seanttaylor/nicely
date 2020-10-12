@@ -13,6 +13,7 @@ class User():
         self._id = doc.get("id", None);
         self._data["is_verified"] = doc.get("is_verified", None);
         self._data["motto"] = doc.get("motto", None);
+        self._data["follower_count"] = doc.get("follower_count", 0);
 
 
     def __str__(self):
@@ -26,7 +27,8 @@ class User():
             "first_name": self._data["first_name"],
             "last_name": self._data["last_name"],
             "email_address": self._data["email_address"],
-            "is_verified": self._data["is_verified"]
+            "is_verified": self._data["is_verified"],
+            "follower_count": self._data["follower_count"]
           }
         });
         return "####"
@@ -121,8 +123,8 @@ class User():
         @param (User) target_user - an instance of the User class; the user to be followed
         @returns (None)
         """
-
         self._repo.create_subscription(self._id, target_user._id);
+        target_user._data["follower_count"] += 1;
 
 
     def is_following(self, target_user):

@@ -137,12 +137,20 @@ class UserMySQLRepository(IUserRepository):
 
 
     def create_subscription(self, current_user_id, target_user_id):
-        db_cursor = self._db_connection.cursor();
-        query = ("INSERT INTO user_followers (user_id, follower_id) VALUES(%s, %s)");
+        try:
+            db_cursor = self._db_connection.cursor();
+            insert_subscription = ("INSERT INTO user_followers (user_id, follower_id) VALUES(%s, %s)");
+            increment_follower_count = ("UPDATE users SET follower_count = follower_count + 1 WHERE id = '{}'".format(target_user_id));
 
-        db_cursor.execute(query, (target_user_id, current_user_id));
-        self._db_connection.commit();
-        db_cursor.close();
+            db_cursor.execute(insert_subscription, (target_user_id, current_user_id));
+            db_cursor.execute(increment_follower_count);
+            self._db_connection.commit();
+
+        except mysql.connector.Error as transaction_error:
+            self._db_connection.rollback();
+            print("TransactionError: {}".format(transaction_error));
+        finally:
+            db_cursor.close();
 
 
     def subscription_exists(self, current_user_id, target_user_id):

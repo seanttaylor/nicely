@@ -201,7 +201,6 @@ def test_should_return_a_list_of_followers():
     assert len(followers_list) == 1;
 
 def test_should_return_a_list_of_users_a_specified_user_follows():
-    ###PICKUP HERE###WRITE TESTS###
     test_user_no_1 = test_user_service.create_user(
         handle=random_user_handle(),
         motto="Hulk smash!",
@@ -228,6 +227,31 @@ def test_should_return_a_list_of_users_a_specified_user_follows():
     assert isinstance(users_followed_list[0], User);
     assert len(users_followed_list) == 1;
     assert users_followed_list[0]._id == test_user_no_1_id;
+
+
+def test_should_increment_a_specified_user_follower_count():
+    test_user_no_1 = test_user_service.create_user(
+        handle=random_user_handle(),
+        motto="Hulk smash!",
+        email_address=random_email_address(),
+        first_name="Bruce",
+        last_name="Banner",
+        phone_number=random_phone_number()
+    );
+    test_user_no_1_id = test_user_no_1.save();
+
+    test_user_no_2 = test_user_service.create_user(
+        handle=random_user_handle(),
+        motto="Let's do this!",
+        email_address=random_email_address(),
+        first_name="Steve",
+        last_name="Rogers",
+        phone_number=random_phone_number()
+    );
+    test_user_no_2.save();
+    test_user_no_2.follow_user(test_user_no_1);
+
+    assert test_user_no_1._data["follower_count"] == 1;
 
 
 ###Negative Tests###
