@@ -14,16 +14,16 @@ from lib.repository.comment.my_sql import CommentMySQLRepository;
 from lib.events.event_emitter import EventEmitter
 
 test_user_validator = UserValidator(app_config["users"]);
-test_user_mysql_repo = UserMySQLRepository(app_config["users"]["fields"]);
+test_user_mysql_repo = UserMySQLRepository();
 test_user_service = UserService(test_user_mysql_repo, test_user_validator);
 
 test_event_emitter = EventEmitter();
 test_post_validator = PostValidator(app_config["posts"], test_user_service);
-test_post_mysql_repo = PostMySQLRepository(app_config["posts"]["fields"]);
+test_post_mysql_repo = PostMySQLRepository();
 test_post_service = PostService(test_post_mysql_repo, test_post_validator, test_event_emitter);
 
 test_comment_validator = CommentValidator(test_post_service, test_user_service);
-test_comment_mysql_repo = CommentMySQLRepository(app_config["comments"]["fields"]);
+test_comment_mysql_repo = CommentMySQLRepository();
 test_comment_service = CommentService(test_comment_mysql_repo, test_comment_validator);
 
 ####Tests####

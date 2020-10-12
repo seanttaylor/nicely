@@ -14,18 +14,16 @@ class UserMySQLRepository(IUserRepository):
 
     """
     @param (object) self
-    @param (dict) field_map - Map of fields returned for database queries returned from MySQL connector; used to create an instance of a specific class after the raw data is fetched from the database.
     @returns (None)
     """
 
-    def __init__(self, field_map):
+    def __init__(self):
         self._db_connection = mysql.connector.connect(
           host = os.getenv("DATABASE_HOSTNAME"),
           user = os.getenv("DATABASE_USERNAME"),
           password = os.getenv("DATABASE_PASSWORD"),
           database = os.getenv("DATABASE_NAME")
         );
-        self._field_map = field_map;
 
 
     def create(self, doc):

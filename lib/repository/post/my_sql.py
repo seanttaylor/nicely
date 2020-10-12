@@ -14,10 +14,9 @@ class PostMySQLRepository(IPostRepository):
 
 
 
-    def __init__(self, field_map):
+    def __init__(self):
         """
         @param (object) self
-        @param (dict) field_map - Map of fields returned for database queries returned from MySQL connector; used to create an instance of a specific class after the raw data is fetched from the database.
         @returns (None)
         """
         self._db_connection = mysql.connector.connect(
@@ -26,7 +25,6 @@ class PostMySQLRepository(IPostRepository):
           password = os.getenv("DATABASE_PASSWORD"),
           database = os.getenv("DATABASE_NAME")
         );
-        self._field_map = field_map;
 
 
     def create(self, doc):
@@ -56,7 +54,7 @@ class PostMySQLRepository(IPostRepository):
     def find_all(self):
         post_list = []
         db_cursor = self._db_connection.cursor();
-        db_cursor.execute("SELECT posts.*, users.handle FROM posts JOIN users ON posts.user_id = users.id");
+        db_cursor.execute("SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, users.handle FROM posts JOIN users ON posts.user_id = users.id");
         result = db_cursor.fetchall();
 
         for post in result:
@@ -144,14 +142,14 @@ class PostMySQLRepository(IPostRepository):
 
     def on_read_post(self, record):
         return {
-          "id": record[self._field_map["id"]],
-          "user_id": record[self._field_map["user_id"]],
-          "author": record[self._field_map["author"]],
-          "body": record[self._field_map["body"]],
-          "comment_count": record[self._field_map["comment_count"]],
-          "like_count": record[self._field_map["like_count"]],
-          "sequence_no": record[self._field_map["sequence_no"]],
-          "created_date": record[self._field_map["created_date"]]
+          "id": record[0],
+          "user_id": record[1],
+          "author": record[2],
+          "body": record[3],
+          "comment_count": record[4],
+          "like_count": record[5],
+          "sequence_no": record[6],
+          "created_date": record[7]
         }
 
 ####PostMySQLRepository###

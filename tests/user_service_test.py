@@ -9,7 +9,7 @@ from lib.repository.user.my_sql import UserMySQLRepository;
 from tests.utils.utils import random_email_address, random_phone_number, random_user_handle
 
 test_user_validator = UserValidator(app_config["users"]);
-test_user_mysql_repo = UserMySQLRepository(app_config["users"]["fields"]);
+test_user_mysql_repo = UserMySQLRepository();
 test_user_service = UserService(test_user_mysql_repo, test_user_validator);
 
 ####Tests####

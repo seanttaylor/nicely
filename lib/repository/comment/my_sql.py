@@ -12,10 +12,9 @@ class CommentMySQLRepository(ICommentRepository):
     _table_name = "comments";
 
 
-    def __init__(self, field_map):
+    def __init__(self):
         """
         @param (object) self
-        @param (dict) field_map - Map of fields returned for database queries returned from MySQL connector; used to create an instance of a specific class after the raw data is fetched from the database.
         @returns (None)
         """
         self._db_connection = mysql.connector.connect(
@@ -24,7 +23,6 @@ class CommentMySQLRepository(ICommentRepository):
           password = os.getenv("DATABASE_PASSWORD"),
           database = os.getenv("DATABASE_NAME")
         );
-        self._field_map = field_map;
 
 
     def create(self, doc):
@@ -54,7 +52,7 @@ class CommentMySQLRepository(ICommentRepository):
     def find_all_comments(self):
         comment_list = []
         db_cursor = self._db_connection.cursor();
-        db_cursor.execute("SELECT * FROM comments");
+        db_cursor.execute("SELECT id, user_id, post_id, body, like_count, created_date FROM comments");
         result = db_cursor.fetchall();
 
         for comment in result:
@@ -86,12 +84,12 @@ class CommentMySQLRepository(ICommentRepository):
 
     def on_read_comment(self, record):
         return {
-          "id": record[self._field_map["id"]],
-          "post_id": record[self._field_map["post_id"]],
-          "user_id": record[self._field_map["user_id"]],
-          "body": record[self._field_map["body"]],
-          "like_count": record[self._field_map["like_count"]],
-          "created_date": record[self._field_map["created_date"]]
+          "id": record[0],
+          "post_id": record[1],
+          "user_id": record[2],
+          "body": record[3],
+          "like_count": record[4],
+          "created_date": record[5]
         }
 
 ####CommentMySQLRepository###
