@@ -18,8 +18,8 @@ services:
       - "3306:3306"
   app:
     container_name: nicely_app
-    command: pytest --cov-report term-missing --cov=.
-    #command: python main.py
+    #command: pytest --cov-report term-missing --cov=.
+    command: python main.py
     depends_on:
       - db
     environment:
@@ -27,6 +27,8 @@ services:
       DATABASE_USERNAME: root
       DATABASE_PASSWORD: root
       DATABASE_NAME: asiago
+      FAKE_COMMIT_HASH: cd7daa643ffa505ae3b465beaa583df42246f4f2
+      FLASK_ENV: development
     volumes:
       - ./:/app
     build:
@@ -34,6 +36,6 @@ services:
     networks:
       - shared_network
     ports:
-      - "3001:3001"
+      - "5000:5000"
 networks:
   shared_network:
