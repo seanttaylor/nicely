@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS `users`
  `first_name`     varchar(32) NOT NULL ,
  `last_name`      varchar(32) NOT NULL ,
  `follower_count` integer NOT NULL DEFAULT 0,
+ `avatar_URL`     mediumtext NULL ,
  `last_modified`  mediumtext NULL ,
  `created_date`   mediumtext NOT NULL ,
 
