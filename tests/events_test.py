@@ -1,24 +1,7 @@
 ####EventEmitter Unit Tests####
-
-
 from lib.repository.post.my_sql import PostMySQLRepository;
 from lib.events.event_emitter import EventEmitter, ApplicationEventData;
-
-class MockEventHandler():
-
-    def __init__(self):
-        self.method_calls = {
-            "fire_fake_event": False
-        };
-
-
-    def fake_event_handler(self, event_data):
-        self.method_calls["fake_event_handler"] = True;
-        return True;
-
-
-    def was_called(self, method_name):
-        return self.method_calls[method_name];
+from tests.mocks.mocks import MockEventHandler;
 
 
 ####Tests####

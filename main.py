@@ -23,10 +23,10 @@ def main():
     print(startup_config["launch_banner"]);
     event_emitter = EventEmitter();
     user_validator = UserValidator(app_config["users"]);
-    user_mysql_repo = UserMySQLRepository(app_config["users"]["fields"]);
+    user_mysql_repo = UserMySQLRepository();
     user_service = UserService(user_mysql_repo, user_validator);
     post_validator = PostValidator(app_config["posts"], user_service);
-    post_mysql_repo = PostMySQLRepository(app_config["posts"]["fields"]);
+    post_mysql_repo = PostMySQLRepository();
     post_service = PostService(post_mysql_repo, post_validator, event_emitter);
     feed_service = FeedService(post_service, SSEPublisher(), event_emitter);
 

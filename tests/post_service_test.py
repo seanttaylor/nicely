@@ -8,6 +8,7 @@ from services.user import UserService, UserValidator;
 from lib.repository.user.my_sql import UserMySQLRepository;
 from lib.repository.post.my_sql import PostMySQLRepository;
 from lib.events.event_emitter import EventEmitter;
+from tests.mocks.mocks import MockComment;
 
 
 test_user_validator = UserValidator(app_config["users"]);
@@ -18,26 +19,6 @@ test_event_emitter = EventEmitter();
 test_post_validator = PostValidator(app_config["posts"], test_user_service);
 test_post_mysql_repo = PostMySQLRepository();
 test_post_service = PostService(test_post_mysql_repo, test_post_validator, test_event_emitter);
-
-
-class MockComment():
-
-    def __init__(self):
-        self.method_calls = {
-            "on_post": False,
-            "save": False
-        };
-
-    def on_post(self, id):
-        self.method_calls["on_post"] = True;
-        return True;
-
-    def save(self):
-        self.method_calls["save"] = True;
-        return True;
-
-    def was_called(self, method_name):
-        return self.method_calls[method_name];
 
 
 ####Tests####

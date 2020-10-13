@@ -9,6 +9,7 @@ from lib.repository.post.my_sql import PostMySQLRepository;
 from lib.publisher.stdout import StdoutPublisher;
 from lib.events.event_emitter import EventEmitter;
 from tests.utils.utils import random_email_address, random_phone_number, random_user_handle
+from tests.mocks.mocks import MockPublisher, MockPostService, MockEventEmitter;
 
 test_user_validator = UserValidator(app_config["users"]);
 test_user_mysql_repo = UserMySQLRepository();
@@ -19,49 +20,6 @@ test_post_validator = PostValidator(app_config["posts"], test_user_service);
 test_post_mysql_repo = PostMySQLRepository();
 test_post_service = PostService(test_post_mysql_repo, test_post_validator, test_event_emitter);
 test_feed_service = FeedService(test_post_service, StdoutPublisher(), test_event_emitter);
-
-
-class MockPublisher():
-
-    def __init__(self):
-        self.method_calls = {
-            "publish": False
-        };
-
-
-    def publish(self, fake_post):
-        self.method_calls["publish"] = True;
-        return True;
-
-    def was_called(self, method_name):
-        return self.method_calls[method_name];
-
-
-class MockPostService():
-
-    def __init__(self):
-        self.method_calls = {};
-
-
-    def was_called(self, method_name):
-        return self.method_calls[method_name];
-
-
-class MockEventEmitter():
-
-    def __init__(self):
-        self.method_calls = {
-            "on": False
-        };
-
-
-    def on(self, event_name, event_handler):
-        self.method_calls["on"] = True;
-        return True;
-
-
-    def was_called(self, method_name):
-        return self.method_calls[method_name];
 
 ####Tests####
 
