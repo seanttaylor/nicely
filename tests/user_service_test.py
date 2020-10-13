@@ -255,6 +255,32 @@ def test_should_increment_a_specified_user_follower_count():
     assert test_user_no_1._data["follower_count"] == 1;
 
 
+def test_should_unfollow_the_current_user_from_a_specified_user():
+    test_user_no_1 = test_user_service.create_user(
+        handle=random_user_handle(),
+        motto="Hulk smash!",
+        email_address=random_email_address(),
+        first_name="Bruce",
+        last_name="Banner",
+        phone_number=random_phone_number()
+    );
+    test_user_no_1_id = test_user_no_1.save();
+
+    test_user_no_2 = test_user_service.create_user(
+        handle=random_user_handle(),
+        motto="Let's do this!",
+        email_address=random_email_address(),
+        first_name="Steve",
+        last_name="Rogers",
+        phone_number=random_phone_number()
+    );
+    test_user_no_2.save();
+    test_user_no_2.follow_user(test_user_no_1);
+    test_user_no_2.unfollow_user(test_user_no_1);
+
+    assert test_user_no_1._data["follower_count"] == 0;
+
+
 ###Negative Tests###
 def test_should_throw_exception_when_attempting_to_create_invalid_user():
     with pytest.raises(UserServiceException) as exception_info:

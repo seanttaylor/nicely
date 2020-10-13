@@ -127,6 +127,17 @@ class User():
         target_user._data["follower_count"] += 1;
 
 
+    def unfollow_user(self, target_user):
+        """
+        Unsubscribe the current user from the feed of another user on the platform
+        @param (object) self
+        @param (User) target_user - an instance of the User class; the user to be un-followed
+        @returns (None)
+        """
+        self._repo.remove_subscription(self._id, target_user._id);
+        target_user._data["follower_count"] -= 1;
+
+
     def is_following(self, target_user):
         """
         Indicates whether the current instance of User follows a user specified (i.e. target_user)

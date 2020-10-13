@@ -153,6 +153,23 @@ class UserMySQLRepository(IUserRepository):
             db_cursor.close();
 
 
+    def remove_subscription(self, current_user_id, target_user_id):
+        try:
+            db_cursor = self._db_connection.cursor();
+            remove_subscription = ("DELETE FROM user_followers WHERE follower_id = '{}'".format(current_user_id));
+            decrement_follower_count = ("UPDATE users SET follower_count = follower_count - 1 WHERE id = '{}'".format(target_user_id));
+
+            db_cursor.execute(remove_subscription);
+            db_cursor.execute(decrement_follower_count);
+            self._db_connection.commit();
+
+        except mysql.connector.Error as transaction_error:
+            self._db_connection.rollback();
+            print("TransactionError: {}".format(transaction_error));
+        finally:
+            db_cursor.close();
+
+
     def subscription_exists(self, current_user_id, target_user_id):
         db_cursor = self._db_connection.cursor();
         query = ("SELECT COUNT(*) FROM user_followers WHERE user_id = '{}' AND follower_id = '{}'".format(target_user_id, current_user_id));
