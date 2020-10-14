@@ -35,7 +35,9 @@ def main():
     post_service = PostService(post_mysql_repo, post_validator, event_emitter);
     feed_service = FeedService(post_service, SSEPublisher(), event_emitter);
 
-    api.add_resource(StatusAPI, '/status');
+    api.add_resource(StatusAPI, "/status");
+    #api.add_resource(PostAPIFactory(post_service), "/api/v1/posts")
+
     app.run(debug=True, host="0.0.0.0");
 
 if __name__ == "__main__": main();
