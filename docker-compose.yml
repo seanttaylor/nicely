@@ -18,10 +18,11 @@ services:
       - "3306:3306"
   app:
     container_name: nicely_app
-    #command: pytest --cov-report term-missing --cov=.
-    command: python main.py
-    depends_on:
-      - db
+    command: pytest --cov-report term-missing --cov=.
+    #command: python main.py
+    restart: on-failure:5
+    #depends_on:
+    #  - db
     environment:
       DATABASE_HOSTNAME: db
       DATABASE_USERNAME: root
