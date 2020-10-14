@@ -21,8 +21,8 @@ services:
     command: pytest --cov-report term-missing --cov=.
     #command: python main.py
     restart: on-failure:5
-    #depends_on:
-    #  - db
+    depends_on:
+      - db
     environment:
       DATABASE_HOSTNAME: db
       DATABASE_USERNAME: root
