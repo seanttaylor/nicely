@@ -32,7 +32,7 @@ def test_should_return_new_comment_instance():
     test_post = test_post_service.create_post(
         body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        author="@tstark"
+        handle="@tstark"
     );
     test_post_id = test_post.save();
 
@@ -50,7 +50,7 @@ def test_should_return_list_of_comment_instances():
     test_post = test_post_service.create_post(
         body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        author="@tstark"
+        handle="@tstark"
     );
     test_post_id = test_post.save();
 
@@ -75,7 +75,7 @@ def test_should_return_comment_id_on_save():
     test_post = test_post_service.create_post(
         body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        author="@tstark"
+        handle="@tstark"
     );
     test_post_id = test_post.save();
 
@@ -93,7 +93,7 @@ def test_should_return_updated_comment_matching_test_text():
     test_post = test_post_service.create_post(
         body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        author="@tstark"
+        handle="@tstark"
     );
     test_post_id = test_post.save();
 
@@ -114,7 +114,7 @@ def test_should_increment_comment_like_count():
     test_post = test_post_service.create_post(
         body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        author="@tstark"
+        handle="@tstark"
     );
     test_doc_id = test_post.save();
     test_comment = test_comment_service.create_comment(
@@ -174,7 +174,7 @@ def test_should_throw_exception_when_user_id_does_not_exist():
         test_post = test_post_service.create_post(
             body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
             user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-            author="@tstark"
+            handle="@tstark"
         );
         test_post_id = test_post.save();
 

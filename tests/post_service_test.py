@@ -27,7 +27,7 @@ def test_should_return_new_post_instance():
     test_post = test_post_service.create_post(
         body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        author="@tstark"
+        handle="@tstark"
     );
     test_post.save();
 
@@ -38,7 +38,7 @@ def test_should_return_list_of_post_instances():
     test_post = test_post_service.create_post(
         body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        author="@tstark"
+        handle="@tstark"
     );
     test_doc_id = test_post.save();
     result = test_post_service.find_all_posts();
@@ -51,7 +51,7 @@ def test_should_return_specified_post_matching_id():
     test_post = test_post_service.create_post(
         body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        author="@tstark"
+        handle="@tstark"
     );
     test_doc_id = test_post.save();
     result = test_post_service.find_post_by_id(test_doc_id);
@@ -71,7 +71,7 @@ def test_should_return_post_id_on_save():
     test_post = test_post_service.create_post(
         body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        author="@tstark"
+        handle="@tstark"
     );
     test_doc_id = test_post.save();
 
@@ -83,7 +83,7 @@ def test_should_return_updated_post_body_matching_text():
     test_post = test_post_service.create_post(
         body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        author="@tstark"
+        handle="@tstark"
     );
     test_doc_id = test_post.save();
     test_post.edit(test_edit);
@@ -96,7 +96,7 @@ def test_should_mark_post_as_published():
     test_post = test_post_service.create_post(
         body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        author="@tstark"
+        handle="@tstark"
     );
     test_doc_id = test_post.save();
 
@@ -111,7 +111,7 @@ def test_should_call_comment_on_post_and_save_methods():
     test_post = test_post_service.create_post(
         body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        author="@tstark"
+        handle="@tstark"
     );
     test_doc_id = test_post.save();
     test_post.add_comment(test_comment);
@@ -124,7 +124,7 @@ def test_should_return_true_when_post_exists_in_database():
     test_post = test_post_service.create_post(
         body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        author="@tstark"
+        handle="@tstark"
     );
     test_post_id = test_post.save();
 
@@ -157,7 +157,7 @@ def test_should_throw_exception_on_posts_that_exceed_length_limit():
         test_post = test_post_service.create_post(
             body="I'm baby hammock disrupt pop-up, ugh bushwick taxidermy before they sold out gentrify coloring book. Cardigan deep v taiyaki occupy. Hashtag cray dreamcatcher try-hard blog.",
             user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-            author="@tstark"
+            handle="@tstark"
         );
 
     assert "PostCharacterLimitExceeded" in str(exception_info.value);
@@ -178,7 +178,7 @@ def test_should_throw_exception_on_posts_with_non_existent_user_ids():
         test_post = test_post_service.create_post(
             body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
             user_id="1a417a6b-8e3f-4e4d-abb7-fc322be611e7",
-            author="@tstark"
+            handle="@tstark"
         );
 
     assert "UserDoesNotExist" in str(exception_info.value);

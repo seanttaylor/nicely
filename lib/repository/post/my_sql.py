@@ -43,7 +43,7 @@ class PostMySQLRepository(IPostRepository):
 
     def find_one(self, id):
         db_cursor = self._db_connection.cursor();
-        query = ("SELECT posts.*, users.handle FROM posts JOIN users ON posts.user_id = users.id  WHERE posts.id = '{}'".format(id));
+        query = ("SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, users.handle FROM posts JOIN users ON posts.user_id = users.id  WHERE posts.id = '{}'".format(id));
 
         db_cursor.execute(query);
         result = db_cursor.fetchall();

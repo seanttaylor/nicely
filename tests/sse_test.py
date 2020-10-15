@@ -24,7 +24,7 @@ def test_should_return_new_string_complying_with_event_stream_format():
     test_post = test_post_service.create_post(
         body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
         user_id="e98417a8-d912-44e0-8d37-abe712ca840f",
-        author="@tstark"
+        handle="@tstark"
     );
     test_post.save();
 

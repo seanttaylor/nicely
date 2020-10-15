@@ -77,7 +77,7 @@ def test_should_return_a_list_of_posts_from_all_followed_users():
     test_post = test_post_service.create_post(
         body="Everybody wants a happy ending, right? But it doesn’t always roll that way.",
         user_id=test_user_no_1_id,
-        author=test_user_handle
+        handle=test_user_handle
     );
 
     test_post.save();

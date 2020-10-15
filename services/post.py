@@ -1,77 +1,93 @@
 from services.exceptions import PostServiceException;
+import json;
 import pprint;
 
 pp = pprint.PrettyPrinter(indent=2);
 
 class Post():
 
-  def __init__(self, repo, doc):
-    self._data = doc;
-    self._repo = repo;
-    self._id = doc.get("id", None);
-
-  def __str__(self):
-    pp.pprint({
-      "id": self._id,
-      "created_date": self._data["created_date"],
-      "last_modified": self._data.get("last_modified", None),
-      "data": {
-        "user_id": self._data["user_id"],
-        "body": self._data["body"],
-        "author": self._data["author"],
-        "comment_count": self._data.get("comment_count", 0)
-      }
-    });
-    return "#####"
+    def __init__(self, repo, doc):
+        self._data = doc;
+        self._repo = repo;
+        self._id = doc.get("id", None);
 
 
-  def save(self):
-    """
-    Saves a new post to the data store.
-    @param (object) self
-    @returns (str) - a uuid for the new post
-    """
-    post = self._repo.create({
-      "body": self._data["body"],
-      "user_id": self._data["user_id"]
-    });
-
-    self._id = post["id"];
-    self._data["created_date"] = post["created_date"];
-    self._data["last_modified"] = None;
-
-    return post["id"];
+    def __str__(self):
+        pp.pprint({
+          "id": self._id,
+          "created_date": self._data["created_date"],
+          "last_modified": self._data.get("last_modified", None),
+          "data": {
+            "user_id": self._data["user_id"],
+            "body": self._data["body"],
+            "author": self._data["handle"],
+            "comment_count": self._data.get("comment_count", 0)
+          }
+        });
+        return "#####"
 
 
-  def add_comment(self, comment):
-    """
-    Associates a comment with a post; updates post['comment_count'] property.
-    @param (object) self
-    @param (Comment) comment - an instance of the Comment class
-    @returns (str) - a uuid for the new post
-    """
-    comment.on_post(self._id);
-    comment.save();
-    self._repo.incr_comment_count(self._id);
-    if "comment_count" in self._data:
-      self._data["comment_count"] = self._data["comment_count"] + 1
-    else:
-      self._data["comment_count"] = 1
+    def toJSON(self):
+        return {
+          "id": self._id,
+          "created_date": self._data["created_date"],
+          "last_modified": self._data.get("last_modified", None),
+          "data": {
+            "user_id": self._data["user_id"],
+            "body": self._data["body"],
+            "author": self._data["handle"],
+            "comment_count": self._data.get("comment_count", 0)
+          }
+        };
 
 
-  def edit(self, text):
-    """
-    Updates the post['body'] property; saves the update to the data store
-    @param (object) self
-    @param (str) text - the updated text
-    @returns (None)
-    """
-    id = self._id;
-    last_modified = self._repo.edit_post(id, text)["last_modified"];
-    self._data["body"] = text;
-    self._data["last_modified"] = last_modified;
+    def save(self):
+        """
+        Saves a new post to the data store.
+        @param (object) self
+        @returns (str) - a uuid for the new post
+        """
+        post = self._repo.create({
+          "body": self._data["body"],
+          "user_id": self._data["user_id"]
+        });
 
-    return self;
+        self._id = post["id"];
+        self._data["created_date"] = post["created_date"];
+        self._data["last_modified"] = None;
+
+        return post["id"];
+
+
+    def add_comment(self, comment):
+        """
+        Associates a comment with a post; updates post['comment_count'] property.
+        @param (object) self
+        @param (Comment) comment - an instance of the Comment class
+        @returns (str) - a uuid for the new post
+        """
+        comment.on_post(self._id);
+        comment.save();
+        self._repo.incr_comment_count(self._id);
+        if "comment_count" in self._data:
+          self._data["comment_count"] = self._data["comment_count"] + 1
+        else:
+          self._data["comment_count"] = 1
+
+
+    def edit(self, text):
+        """
+        Updates the post['body'] property; saves the update to the data store
+        @param (object) self
+        @param (str) text - the updated text
+        @returns (None)
+        """
+        id = self._id;
+        last_modified = self._repo.edit_post(id, text)["last_modified"];
+        self._data["body"] = text;
+        self._data["last_modified"] = last_modified;
+
+        return self;
 
 ####Post####
 
