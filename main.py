@@ -40,11 +40,12 @@ def main():
     hal_service = HALHyperMediaService();
 
     app.register_blueprint(StatusAPIBlueprintFactory(hypermedia=hal_service));
-    app.register_blueprint(PostAPIBlueprintFactory(service=post_service));
+    app.register_blueprint(PostAPIBlueprintFactory(service=post_service, hypermedia_service=hal_service));
+
 
     @app.route("/")
     def index():
-        return json.dumps(hal_service.api_root);
+        return (json.dumps(hal_service.api_root), {"content-type": "application/hal+json"});
 
     app.run(debug=True, host="0.0.0.0");
 
