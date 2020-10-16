@@ -42,11 +42,14 @@ def main():
     app.register_blueprint(StatusAPIBlueprintFactory(hypermedia=hal_service));
     app.register_blueprint(PostAPIBlueprintFactory(service=post_service, hypermedia_service=hal_service));
 
-
-    @app.route("/")
-    def index():
+    @app.route("/api/v1")
+    def api_root():
         return (json.dumps(hal_service.api_root), {"content-type": "application/hal+json"});
+    
+    @app.route("/index.html")
+    def index():
+        return app.send_static_file("index.html")
 
-    app.run(debug=True, host="0.0.0.0");
+    app.run(debug=True, host="0.0.0.0", threaded=True);
 
 if __name__ == "__main__": main();

@@ -18,7 +18,6 @@ def PostAPIBlueprintFactory(**kwargs):
         };
         
         return (json.dumps(hal_service.toHAL(curie="feed:posts", data=payload)), {"content-type": "application/hal+json"});
-
         #return (json.dumps(payload), {"content-type": "application/json"});
 
 

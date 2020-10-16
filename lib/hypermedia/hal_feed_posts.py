@@ -1,23 +1,21 @@
+from lib.hypermedia.hal_curies import curies;
+from lib.hypermedia.hal_rel import link_rels;
+
 def feed_post_to_HAL(post):
     return {
         "_links": {
             "self": {
-                "href": "/api/v1/users/{user_id}/posts/{post_id}".format(user_id=post["data"]["user_id"], post_id=post["id"]),
-                "title": "Get latest published posts from users in reverse chronological order"
+                "href": "/api/v1/users/{user_id}/posts/{post_id}".format(user_id=post["data"]["user_id"], post_id=post["id"])
             },
-            "post_comments": {
-                "href": "/api/v1/users/{user_id}/posts/{post_id}/comments".format(user_id=post["data"]["user_id"], post_id=post["id"]),
-                "title": "View or create comments on this post"
+            "post:comments": {
+                "href": "/{id}/comments".format(id=post["id"])
             },
-            "user_feed": {
-                "href": "/api/v1/users/{id}/posts/{id}",
-                "title": "Create an *unpublished* post by a specified user, view all published posts by a specified user or edit an existing post with provided {id} param; viewing unpublished posts or editing existing posts only available to the authenticated author of the post",
-                "templated": True,
-                "ny_auth_required": True
+            "user:posts": {
+                "href": "/{id}/posts".format(id=post["data"]["user_id"])
             },
-            "user": {
-                "href": "/api/v1/users/{user_id}".format(user_id=post["data"]["user_id"]),
-                "title": "Learn more about this user",
+            "user:account": {
+                "href": "/{id}".format(id=post["data"]["user_id"]),
+                "title": "View this user's profile"
             }
         },
         "author": post["data"]["author"],
@@ -33,36 +31,22 @@ def feed_posts(data=[]):
                 "href": "/api/v1/feed",
                 "title": "Get latest published posts from users in reverse chronological order",
             },
-            "docs": {
-                "href": "/api/docs/latest/index.html#feed",
-                "title": "The Feed documentation"
-            },
-            "curies": [
-                {
-                    "name": "nicely",
-                    "href": "/api/schemas/{rel}/latest",
-                    "title": "Learn more about Compact URIs at https://tools.ietf.org/html/draft-kelly-json-hal-06#section-8.2",
-                    "templated": True
-                }
-            ],
-            "nicely:users": {
+            "docs": link_rels["docs"],
+            "curies": curies,
+            "schema:users": {
                 "href": "/user"
             },
-            "nicely:posts": {
+            "schema:posts": {
                 "href": "/posts"
             },
-            "nicely:comments": {
+            "schema:comments": {
                 "href": "/comments"
             },
-            "realtime_updates": {
-                "href": "/api/sse",
-                "title": "Connect to this endpoint to receive real-time updates of new posts over the wire (compliant with Server-Sent Events specification)",
-                "ny_auth_required": True
+           "feed:realtime_updates": {
+                "href": "/subscribe",
+                "title": "Subscribe to real-time updates as new posts are published to the feed"
             },
-            "status": {
-                "href": "/status",
-                "title": "Get the status of the platfrom (i.e. is it down?)"
-            }
+            "status": link_rels["status"]
         },
         "_embedded": {
             "posts": list(map(lambda p: feed_post_to_HAL(p), data["data"]))
