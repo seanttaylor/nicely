@@ -28,8 +28,16 @@ link_rels = {
         "ny_auth_required": True
     },
     "docs": {
-        "href": "/api/docs/latest/index.html#feed",
-        "title": "The Feed documentation"
+        "href": "https://github.com/seanttaylor/nicely",
+        "title": "Nicely platform API documentation"
+    },
+    "spec": {
+        "href": "https://tools.ietf.org/html/draft-kelly-json-hal-06",
+        "title": "Specification for the HAL hypermedia format this API complies with"
+    },
+    "westl": {
+        "href": "/static/js/westl.json",
+        "title": "Web Services Transition Language document specifiying application state transitions in hypertext"
     },
     "status": {
         "href": "/status",

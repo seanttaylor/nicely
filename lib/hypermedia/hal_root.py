@@ -22,7 +22,7 @@ hal_root = {
             "title": "Subscribe to real-time updates as new posts are published to the feed"
         },
         "feed:posts": {
-            "href": "/",
+            "href": "#",
             "title": "See all recently published posts"
         },        
         "post:comments": {
@@ -41,6 +41,8 @@ hal_root = {
             "templated": True
         },
         "status": link_rels["status"],
-        "docs": link_rels["docs"]
+        "docs": link_rels["docs"],
+        "spec": link_rels["spec"],
+        "westl": link_rels["westl"]
     }
 }

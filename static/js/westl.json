@@ -1,0 +1,25 @@
+{
+    "__comments": "An riff on Mike Amundsen's Web Services Transition Language. Learn more here: http://rwcbook.github.io/wstl-spec/",
+    "version": "0.0.1",
+    "contact": "platform_engineering@omegalabs.io",
+    "schema": "/static/schemas/westly.json",
+    "docs": "",
+    "westl@nicely": {
+      "transitions": {
+        "feed:posts": {
+          "name": "feed",
+          "rel": "feed:posts",
+          "safe": true,
+          "method": "GET",
+          "title": "Get Nicely main feed"
+        },
+        "user:posts": {
+            "name": "feed",
+            "rel": "user:posts",
+            "safe": false,
+            "method": "GET",
+            "title": "Get posts for this user"
+          }
+      }
+    }
+}

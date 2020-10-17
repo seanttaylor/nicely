@@ -8,14 +8,16 @@ def feed_post_to_HAL(post):
                 "href": "/api/v1/users/{user_id}/posts/{post_id}".format(user_id=post["data"]["user_id"], post_id=post["id"])
             },
             "post:comments": {
-                "href": "/{id}/comments".format(id=post["id"])
+                "href": "/{id}/comments".format(id=post["id"]),
+                "title": "Comments on this post"
             },
             "user:posts": {
-                "href": "/{id}/posts".format(id=post["data"]["user_id"])
+                "href": "/{id}/posts".format(id=post["data"]["user_id"]),
+                "title": "Posts from this user"
             },
             "user:account": {
                 "href": "/{id}".format(id=post["data"]["user_id"]),
-                "title": "View this user's profile"
+                "title": "This user's profile"
             }
         },
         "author": post["data"]["author"],
@@ -31,16 +33,19 @@ def feed_posts(data=[]):
                 "href": "/api/v1/feed",
                 "title": "Get latest published posts from users in reverse chronological order",
             },
-            "docs": link_rels["docs"],
+            "spec": link_rels["spec"],
             "curies": curies,
             "schema:users": {
-                "href": "/user"
+                "href": "/user",
+                "title": "User JSON Schema document"
             },
             "schema:posts": {
-                "href": "/posts"
+                "href": "/posts",
+                "title": "Post JSON Schema document"
             },
             "schema:comments": {
-                "href": "/comments"
+                "href": "/comments",
+                "title": "Comment JSON Schema document"
             },
            "feed:realtime_updates": {
                 "href": "/subscribe",
