@@ -36,6 +36,8 @@ class Post():
             "user_id": self._data["user_id"],
             "body": self._data["body"],
             "author": self._data["handle"],
+            "first_name": self._data["first_name"],
+            "last_name": self._data["last_name"],
             "comment_count": self._data.get("comment_count", 0)
           }
         };

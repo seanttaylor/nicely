@@ -74,6 +74,8 @@ INSERT INTO users (id, handle, email_address, phone_number, first_name, last_nam
 
 INSERT INTO posts (id, user_id, body, created_date) VALUES("d343fd4b-654a-40ae-bb54-05dd1f5b4791", "e98417a8-d912-44e0-8d37-abe712ca840f", "Playboy. Billionaire. Genius.", "2020-09-26T23:08:27.645Z");
 
+INSERT INTO posts (id, user_id, body, created_date) VALUES("6b5839c1-126b-4713-938d-52e91dbeadf0", "b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09", "You're all not worthy.", "2020-09-26T23:08:27.645Z");
+
 INSERT INTO comments (id, post_id, user_id, body, created_date) VALUES("a3a8b0dc-abb8-47d9-9545-00e6c24cc12d", "d343fd4b-654a-40ae-bb54-05dd1f5b4791", "@thor", "Yawn.", "2020-09-26T23:08:27.645Z");
 
 

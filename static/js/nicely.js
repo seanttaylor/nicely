@@ -1,3 +1,5 @@
+import {Card} from "./components/card.js";
+
 function HypermediaApplication({rootURI}={}) {
     if (rootURI === undefined) {
         throw Error("A root URI is required to bootstrap the application");
@@ -7,6 +9,10 @@ function HypermediaApplication({rootURI}={}) {
     const app = {};
     app.config = {};
     app.config.dom = {
+        "root": {
+            "selector": "body",
+            "node": document.querySelector("body")
+        },
         "uiHandle": {
             "selector": "#nicely",
             "node": document.querySelector("#nicely")
@@ -27,7 +33,7 @@ function HypermediaApplication({rootURI}={}) {
     }
 
     /**
-     * Fetches the Application Web Services Transition Language spec
+     * Fetches the application Web Services Transition Language spec
      * @param Object linksDoc - the "_links" object from the API root containing all link relations for the current resource
      */
 
@@ -35,7 +41,7 @@ function HypermediaApplication({rootURI}={}) {
         const {westl} = linksDoc;
         const result = await fetch(westl.href);
         const response = await result.json();
-        app.config.westl = response["westl@nicely"];
+        app.config.westl = response;
     }
 
     /**
@@ -54,14 +60,17 @@ function HypermediaApplication({rootURI}={}) {
 
     /**
      * Move to a new application state
-     * @param String curie - a compact URI related to an application resource
-     * @returns String - the full URL of the resource the CURIE references 
+     * @param String transitionName - name of a valid app transition specified in the westl document
+     * @returns String - the full URL of the resource the transitionName references 
      */
-    async function transition(curie) {
+    async function transition(transitionName) {
+        const transitionRef = app["config"]["westl"]["transitions"][transitionName];
+        const curie = transitionRef.rel;
         const URL = expandCURIE(curie);
-        const method = app.config.westl.transitions[curie]["method"] || "GET";
+        const method = transitionRef.method || "GET";
         const result = await fetch(URL, {method});
         const response = await result.json();
+        //TODO: Include conditional logic to attach facilitate alternative event registration and emission behavior outside browser context
         const uiHandle =  app.config.dom.uiHandle.node;
 
         uiHandle.dispatchEvent(new CustomEvent(`tx:${curie}`, {detail: response}));
@@ -84,22 +93,31 @@ function HypermediaApplication({rootURI}={}) {
         loadCurrentCURIEs(apiRoot._links.curies);
         loadCurrentLinkRelations(apiRoot._links); 
         await loadApplicationWESTLConfiguration(apiRoot._links);
-        transition("feed:posts");
+        transition("allFeedPosts");
     } 
 
-    return {addEventListener, init, transition};
+    return {addEventListener, init, transition, config: app.config};
 }
 
 
 (async function $() {
-    
+    var myApp;
     function onTxFeedPosts({detail}) {
-        console.log(detail);
-        //RENDER HERE//
+        const postList = detail._embedded.posts.map((post)=> {            
+            return m(Card, {
+                handle: post["author"], 
+                body: post["body"], 
+                firstName: post["first_name"],
+                lastName: post["last_name"],
+                createdDate: dateFns.distanceInWords(new Date(post["created_date"]), new Date())
+            });
+        });
+        
+        m.render(myApp.config.dom.root.node, postList);
     }
 
     try {
-        const myApp = HypermediaApplication({rootURI: "http://localhost:5000/api/v1"});
+        myApp = HypermediaApplication({rootURI: "http://localhost:5000/api/v1"});
         myApp.addEventListener("tx:feed:posts", onTxFeedPosts);
         await myApp.init();
     } catch(e) {

@@ -4,22 +4,28 @@
     "contact": "platform_engineering@omegalabs.io",
     "schema": "/static/schemas/westly.json",
     "docs": "",
-    "westl@nicely": {
-      "transitions": {
-        "feed:posts": {
-          "name": "feed",
-          "rel": "feed:posts",
-          "safe": true,
-          "method": "GET",
-          "title": "Get Nicely main feed"
+    "app": "nicely",
+    "transitions": {
+        "allFeedPosts": {
+            "name": "allFeedPosts",
+            "rel": "feed:posts",
+            "safe": true,
+            "method": "GET",
+            "title": "Get Nicely main feed"
         },
-        "user:posts": {
-            "name": "feed",
+        "allUserPosts": {
+            "name": "allUserPosts",
+            "rel": "user:posts",
+            "safe": true,
+            "method": "GET",
+            "title": "Get posts for a specified user"
+        },
+        "createPost": {
+            "name": "createPost",
             "rel": "user:posts",
             "safe": false,
-            "method": "GET",
-            "title": "Get posts for this user"
-          }
-      }
+            "method": "POST",
+            "title": "Create a new post as current user"
+        }
     }
 }

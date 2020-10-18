@@ -21,6 +21,8 @@ def feed_post_to_HAL(post):
             }
         },
         "author": post["data"]["author"],
+        "first_name": post["data"]["first_name"],
+        "last_name": post["data"]["last_name"],
         "body": post["data"]["body"],
         "comment_count": post["data"]["comment_count"],
         "created_date": post["created_date"]

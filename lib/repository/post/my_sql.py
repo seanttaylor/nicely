@@ -30,7 +30,7 @@ class PostMySQLRepository(IPostRepository):
     def create(self, doc):
         db_cursor = self._db_connection.cursor();
         my_uuid = str(uuid.uuid4());
-        created_date = datetime.now();
+        created_date = datetime.now().isoformat();
         query = ("INSERT INTO posts (id, user_id, body, created_date) VALUES (%s, %s, %s, %s)");
 
         doc.update({"id": my_uuid, "created_date": created_date});
@@ -43,7 +43,7 @@ class PostMySQLRepository(IPostRepository):
 
     def find_one(self, id):
         db_cursor = self._db_connection.cursor();
-        query = ("SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, users.handle FROM posts JOIN users ON posts.user_id = users.id  WHERE posts.id = '{}'".format(id));
+        query = ("SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, users.handle, users.first_name, users.last_name FROM posts JOIN users ON posts.user_id = users.id  WHERE posts.id = '{}'".format(id));
 
         db_cursor.execute(query);
         result = db_cursor.fetchall();
@@ -54,7 +54,7 @@ class PostMySQLRepository(IPostRepository):
     def find_all(self):
         post_list = []
         db_cursor = self._db_connection.cursor();
-        db_cursor.execute("SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, users.handle FROM posts JOIN users ON posts.user_id = users.id");
+        db_cursor.execute("SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, users.handle, users.first_name, users.last_name FROM posts JOIN users ON posts.user_id = users.id");
         result = db_cursor.fetchall();
 
         for post in result:
@@ -143,7 +143,7 @@ class PostMySQLRepository(IPostRepository):
     def get_posts_by_subscriber(self, id):
         post_list = [];
         db_cursor = self._db_connection.cursor();
-        query = ("SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, users.handle FROM posts JOIN user_followers ON posts.user_id = user_followers.user_id JOIN users ON posts.user_id = users.id WHERE follower_id = '{}'".format(id));
+        query = ("SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, users.handle, users.first_name, users.last_name FROM posts JOIN user_followers ON posts.user_id = user_followers.user_id JOIN users ON posts.user_id = users.id WHERE follower_id = '{}'".format(id));
 
         db_cursor.execute(query);
         result = db_cursor.fetchall();
@@ -166,7 +166,9 @@ class PostMySQLRepository(IPostRepository):
           "like_count": record[4],
           "sequence_no": record[5],
           "created_date": record[6],
-          "handle": record[7]
+          "handle": record[7],
+          "first_name": record[8],
+          "last_name": record[9]
         }
 
 ####PostMySQLRepository###
