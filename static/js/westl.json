@@ -13,6 +13,13 @@
             "method": "GET",
             "title": "Get Nicely main feed"
         },
+        "subscribeToFeed": {
+            "name": "subscribeToFeed",
+            "rel": "feed:realtime_updates",
+            "safe": true,
+            "method": "GET",
+            "title": "Subscribe client to main feed"
+        },
         "allUserPosts": {
             "name": "allUserPosts",
             "rel": "user:posts",

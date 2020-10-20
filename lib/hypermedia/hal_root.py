@@ -19,7 +19,8 @@ hal_root = {
         },
         "feed:realtime_updates": {
             "href": "/subscribe",
-            "title": "Subscribe to real-time updates as new posts are published to the feed"
+            "title": "Subscribe to real-time updates as new posts are published to the feed",
+            "name": "feed:realtime_updates"
         },
         "feed:posts": {
             "href": "#",

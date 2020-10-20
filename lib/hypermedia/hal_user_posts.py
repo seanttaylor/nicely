@@ -1,7 +1,7 @@
 from lib.hypermedia.hal_curies import curies;
 from lib.hypermedia.hal_rel import link_rels;
 
-def feed_post_to_HAL(post):
+def user_post_to_HAL(post):
     return {
         "_links": {
             "self": {
@@ -28,7 +28,7 @@ def feed_post_to_HAL(post):
         "created_date": post["created_date"]
     }
 
-def feed_posts(data=[]):
+def user_post(data=[]):
     doc = {
         "_links": {
             "self": {
@@ -51,15 +51,11 @@ def feed_posts(data=[]):
             },
            "feed:realtime_updates": {
                 "href": "/subscribe",
-                "title": "Subscribe to real-time updates as new posts are published to the feed",
-                "name": "feed:realtime_updates"
+                "title": "Subscribe to real-time updates as new posts are published to the feed"
             },
             "status": link_rels["status"]
         },
-        "_embedded": {
-            "posts": list(map(lambda p: feed_post_to_HAL(p), data["data"]))
-        },
-        "entries": data["entries"]
+        **list(map(lambda p: user_post_to_HAL(p), data["data"]))[0]
     }
 
     return doc;

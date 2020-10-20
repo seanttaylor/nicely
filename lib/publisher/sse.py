@@ -14,6 +14,15 @@ class SSEPublisher(IPublisher):
     def publish(self, post):
         event = sse.of(event_name="NewPost", event_data=post._data);
         print(event);
-        return event;
+        return self._flask_response(event, mimetype="text/event-stream");
 
+    
+    def setup(self, flask_response):
+        """
+        Adds additional configuration necessary to execute the publish method after class is instantiated
+        @param (object) self
+        @param (flask.Response) flask_response - the flask.Response method
+        @returns (None)
+        """    
+        self._flask_response = flask_response;
 

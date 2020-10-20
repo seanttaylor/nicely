@@ -35,12 +35,17 @@ def main():
     user_service = UserService(user_mysql_repo, user_validator);
     post_validator = PostValidator(app_config["posts"], user_service);
     post_mysql_repo = PostMySQLRepository();
+    sse_publisher = SSEPublisher();
     post_service = PostService(post_mysql_repo, post_validator, event_emitter);
-    feed_service = FeedService(post_service, SSEPublisher(), event_emitter);
+    feed_service = FeedService(post_service, sse_publisher, event_emitter);
     hal_service = HALHyperMediaService();
 
     app.register_blueprint(StatusAPIBlueprintFactory(hypermedia=hal_service));
-    app.register_blueprint(PostAPIBlueprintFactory(service=post_service, hypermedia_service=hal_service));
+    app.register_blueprint(PostAPIBlueprintFactory(
+        data_service=post_service, 
+        hypermedia_service=hal_service,
+        publish_service=sse_publisher
+    ));
 
     @app.route("/api/v1")
     def api_root():

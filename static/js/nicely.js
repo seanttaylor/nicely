@@ -50,7 +50,7 @@ function HypermediaApplication({rootURI}={}) {
      * @returns String - the full URL of the resource the CURIE references 
      */
     function expandCURIE(curie) {
-        const [curieIdentifier, relIdentifier] = curie.split(":");
+        const [curieIdentifier] = curie.split(":");
         const curieRootURI = app.currentCuries[curieIdentifier]["href"];
         const relURI = app.currentLinkRelations[curie]["href"];
         const expandedURL = `${curieRootURI}${relURI}`;
@@ -68,12 +68,17 @@ function HypermediaApplication({rootURI}={}) {
         const curie = transitionRef.rel;
         const URL = expandCURIE(curie);
         const method = transitionRef.method || "GET";
-        const result = await fetch(URL, {method});
-        const response = await result.json();
-        //TODO: Include conditional logic to attach facilitate alternative event registration and emission behavior outside browser context
-        const uiHandle =  app.config.dom.uiHandle.node;
-
-        uiHandle.dispatchEvent(new CustomEvent(`tx:${curie}`, {detail: response}));
+        try {
+            //TODO: Include conditional logic to attach facilitate alternative event registration and emission behavior outside browser context
+            const result = await fetch(URL, {method});
+            const response = await result.json();
+            const uiHandle =  app.config.dom.uiHandle.node;
+          
+            uiHandle.dispatchEvent(new CustomEvent(`tx:${curie}`, {detail: response}));
+        } catch(e) {
+            console.error(e);
+        }
+       
     }
 
     /**
@@ -94,6 +99,11 @@ function HypermediaApplication({rootURI}={}) {
         loadCurrentLinkRelations(apiRoot._links); 
         await loadApplicationWESTLConfiguration(apiRoot._links);
         transition("allFeedPosts");
+        const realtimeUpdatesURL = expandCURIE(apiRoot["_links"]["feed:realtime_updates"]["name"]);
+        
+        const source = new EventSource(realtimeUpdatesURL);
+        source.addEventListener("NewPost", console.log);
+        
     } 
 
     return {addEventListener, init, transition, config: app.config};
