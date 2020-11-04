@@ -1,13 +1,13 @@
-FROM python:3.8
+FROM node:12-alpine
 
-LABEL Maintainer="platform_engineering@omegalabs.io"
+COPY . /src
 
-WORKDIR /app
+RUN chown node -R /src
 
-COPY . /app
+WORKDIR /src
 
-RUN pip --version
+RUN npm ci --only=production
 
-RUN pip install -r requirements.txt
+EXPOSE 3000
 
-CMD [ "python", "main.py" ]
+CMD [ "npm", "start" ]

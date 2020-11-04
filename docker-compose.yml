@@ -16,26 +16,24 @@ services:
       - shared_network
     ports:
       - "3306:3306"
-  app:
+  nicely_app:
     container_name: nicely_app
-    #command: pytest --cov-report term-missing --cov=.
-    command: python main.py
     depends_on:
       - db
     environment:
+      COMMIT_HASH: cd7daa643ffa505ae3b465beaa583df42246f4f2
       DATABASE_HOSTNAME: db
       DATABASE_USERNAME: root
       DATABASE_PASSWORD: root
       DATABASE_NAME: asiago
-      FAKE_COMMIT_HASH: cd7daa643ffa505ae3b465beaa583df42246f4f2
-      FLASK_ENV: development
     volumes:
-      - ./:/app
+      - ./:/src
     build:
         context: .
+    command: npm test
     networks:
       - shared_network
     ports:
-      - "5000:5000"
+      - "3000:3000"
 networks:
   shared_network:

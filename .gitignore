@@ -6,13 +6,6 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-# Optimized Python bytecode
-__pycache__/
-
-# PyTest
-.pytest_cache
-.coverage
-
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
@@ -90,8 +83,8 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 
+# Developer Docker Compose
+docker-compose.dev.yml
+
 # VSCode
 .vscode
-
-#Nicely local data
-data.json

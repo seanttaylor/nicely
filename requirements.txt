@@ -1,7 +1,0 @@
-events
-Flask
-flask_restful
-mysql-connector-python
-pytest
-pytest-cov
-PyPubSub
