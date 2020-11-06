@@ -1,5 +1,6 @@
 const globalConfig = require("./config");
 const http = require("http");
+const path = require("path");
 const express = require("express");
 const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
@@ -14,7 +15,6 @@ const asiagoDatabaseConnector = new DatabaseConnector();
 const serverPort = process.env.SERVER_PORT || 3000;
 
 /********************************SERVICES**************************************/
-
 /**UserService**/
 const { UserService } = require("./src/services/user");
 const UserRepository = require("./src/lib/repository/user/mysql");
@@ -32,11 +32,17 @@ const postService = new PostService({
     userService,
     eventEmitter
 });
+
+/**PublishService**/
+const IPublisher = require("./src/interfaces/publisher");
+const SSEPublisher = require("./src/lib/publisher/sse");
+const ssePublishService = new IPublisher(new SSEPublisher(eventEmitter));
 /******************************************************************************/
 
+const SSERouter = require("./src/api/sse");
 const StatusRouter = require("./src/api/status");
-const ApplicationRootRouter = require("./src/api/root");
 const PostRouter = require("./src/api/post");
+const UserRouter = require("./src/api/user");
 
 app.use(helmet());
 app.use(cors());
@@ -44,12 +50,13 @@ app.use(morgan("combined"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static("www"))
+app.use(express.static("www"));
 
 /**Routes**/
 app.use("/status", StatusRouter());
-app.use("/api/v1", ApplicationRootRouter());
 app.use("/api/v1/posts", PostRouter(postService));
+app.use("/api/v1/users", UserRouter(postService));
+app.use("/api/v1/subscribe", SSERouter(ssePublishService));
 
 app.use((req, res, next) => {
     console.error(`Error 404 on ${req.url}.`);

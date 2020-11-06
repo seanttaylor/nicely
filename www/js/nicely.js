@@ -1,11 +1,6 @@
 import {Card} from "./components/card.js";
 
-function HypermediaApplication({rootURI}={}) {
-    if (rootURI === undefined) {
-        throw Error("A root URI is required to bootstrap the application");
-    } else {
-        console.info("BOOTSTRAPPED OK");
-    }
+function Application() {
     const app = {};
     app.config = {};
     app.config.dom = {
@@ -18,68 +13,6 @@ function HypermediaApplication({rootURI}={}) {
             "node": document.querySelector("#nicely")
         }
     };
-    app.config.rootURI = rootURI;
-
-    function loadCurrentCURIEs(curiesList) {
-        app.currentCuries = curiesList.reduce((result, currentItem) => {
-            result[currentItem["name"]] = currentItem;
-            return result;
-        }, {});
-    }
-
-    function loadCurrentLinkRelations(links) {
-        const {curies, ...rels} = links;
-        app.currentLinkRelations = rels;
-    }
-
-    /**
-     * Fetches the application Web Services Transition Language spec
-     * @param Object linksDoc - the "_links" object from the API root containing all link relations for the current resource
-     */
-
-    async function loadApplicationWESTLConfiguration(linksDoc) {
-        const {westl} = linksDoc;
-        const result = await fetch(westl.href);
-        const response = await result.json();
-        app.config.westl = response;
-    }
-
-    /**
-     * Expands a Compact URI (CURIE)
-     * @param String curie - a compact URI related to an application resource
-     * @returns String - the full URL of the resource the CURIE references 
-     */
-    function expandCURIE(curie) {
-        const [curieIdentifier] = curie.split(":");
-        const curieRootURI = app.currentCuries[curieIdentifier]["href"];
-        const relURI = app.currentLinkRelations[curie]["href"];
-        const expandedURL = `${curieRootURI}${relURI}`;
-
-        return expandedURL;
-    }
-
-    /**
-     * Move to a new application state
-     * @param String transitionName - name of a valid app transition specified in the westl document
-     * @returns String - the full URL of the resource the transitionName references 
-     */
-    async function transition(transitionName) {
-        const transitionRef = app["config"]["westl"]["transitions"][transitionName];
-        const curie = transitionRef.rel;
-        const URL = expandCURIE(curie);
-        const method = transitionRef.method || "GET";
-        try {
-            //TODO: Include conditional logic to attach facilitate alternative event registration and emission behavior outside browser context
-            const result = await fetch(URL, {method});
-            const response = await result.json();
-            const uiHandle =  app.config.dom.uiHandle.node;
-          
-            uiHandle.dispatchEvent(new CustomEvent(`tx:${curie}`, {detail: response}));
-        } catch(e) {
-            console.error(e);
-        }
-       
-    }
 
     /**
      * Wrapper around native addEventListener method to allow application to listen for state transitions;
@@ -93,27 +26,19 @@ function HypermediaApplication({rootURI}={}) {
 
     async function init() {
         console.info("INITIALIZING");
-        const response = await fetch(app.config.rootURI);
-        const apiRoot = await response.json();
-        loadCurrentCURIEs(apiRoot._links.curies);
-        loadCurrentLinkRelations(apiRoot._links); 
-        await loadApplicationWESTLConfiguration(apiRoot._links);
-        transition("allFeedPosts");
-        const realtimeUpdatesURL = expandCURIE(apiRoot["_links"]["feed:realtime_updates"]["name"]);
-        
-        const source = new EventSource(realtimeUpdatesURL);
-        source.addEventListener("NewPost", console.log);
+        const source = new EventSource("/api/v1/subscribe");
+        source.addEventListener("newPost", console.log);
         
     } 
 
-    return {addEventListener, init, transition, config: app.config};
+    return {addEventListener, init, config: app.config};
 }
 
 
 (async function $() {
     var myApp;
     function onTxFeedPosts({detail}) {
-        const postList = detail._embedded.posts.map((post)=> {            
+        const postList = detail.data.map((post)=> {            
             return m(Card, {
                 handle: post["author"], 
                 body: post["body"], 
@@ -127,8 +52,8 @@ function HypermediaApplication({rootURI}={}) {
     }
 
     try {
-        myApp = HypermediaApplication({rootURI: "http://localhost:5000/api/v1"});
-        myApp.addEventListener("tx:feed:posts", onTxFeedPosts);
+        myApp = Application();
+        myApp.addEventListener("on-tx-feed-posts", onTxFeedPosts);
         await myApp.init();
     } catch(e) {
         console.error(e);

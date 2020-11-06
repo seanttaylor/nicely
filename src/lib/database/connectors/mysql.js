@@ -3,7 +3,7 @@ const { promisify } = require("util");
 
 function MySQLDatabaseAdapter() {
     const pool = mysql.createPool({
-        connectionLimit: 35,
+        connectionLimit: 50,
         host: process.env.DATABASE_HOSTNAME,
         user: process.env.DATABASE_USERNAME,
         password: process.env.DATABASE_PASSWORD,

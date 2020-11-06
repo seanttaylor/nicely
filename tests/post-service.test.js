@@ -202,7 +202,7 @@ test("Should return JSON object representation", async() => {
     });
 
     const postId = await testPost.save();
-    expect(typeof(testPost.toJSON()) === "string").toBe(true);
+    expect(typeof(testPost.toJSON()) === "object").toBe(true);
 });
 
 

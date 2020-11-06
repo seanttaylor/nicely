@@ -1,7 +1,7 @@
 {
-  "name": "nicely-js",
-  "version": "0.0.1",
-  "description": "JavaScript port of the original Nicely app written in Python",
+  "name": "nicely",
+  "version": "1.0.0",
+  "description": "A nice social network for nice people.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

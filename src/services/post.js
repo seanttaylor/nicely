@@ -8,7 +8,7 @@ function Post(repo, doc) {
     this._id = doc.id || null
 
     this.toJSON = function() {
-        return JSON.stringify({
+        return {
             id: this._id,
             createdDate: this._data.createdDate,
             lastModified: this._data.lastModified || null,
@@ -20,23 +20,7 @@ function Post(repo, doc) {
                 lastName: this._data.lastName,
                 commentCount: this._data.commentCount || 0
             }
-        });
-    }
-
-    this.toHAL = function() {
-        return halson(this._data)
-            .addLink("self", {
-                href: `/api/v1/posts/${this._id}`
-            })
-            .addLink("post:comments", {
-                href: `/${this._id}/comments`
-            })
-            .addLink("user:posts", {
-                href: `/${this._data.userId}/posts`
-            })
-            .addLink("user:account", {
-                href: `/${this._data.userId}`
-            });
+        };
     }
 
     /**
@@ -158,7 +142,7 @@ function PostService({ repo, userService, eventEmitter, validator }) {
     this.markAsPublished = async function(post) {
         await this._repo.markAsPublished(post._id);
         post._data.isPublished = true;
-        this._eventEmitter.emit("Posts.NewPostReadyToPublish", post);
+        this._eventEmitter.emit("posts.newPostReadyToPublish", post);
     }
 
 
@@ -182,7 +166,6 @@ function PostValidator(config, UserService) {
     this._UserService = UserService;
 
     this.validate = async function(postData) {
-
         if (postData === undefined || (Object.keys(postData).length === 0)) {
             throw new Error("PostDataEmpty");
         }
