@@ -4,11 +4,29 @@ function User(repo, doc) {
 
     this._repo = repo;
     this._id = doc.id || null;
+    this._lastModified = doc.lastModified || null;
 
     this._data = Object.assign({}, doc);
     this._data.isVerified = doc.isVerified || false;
     this._data.motto = doc.motto || null;
     this._data.followerCount = doc.followerCount || 0;
+
+    this.toJSON = function() {
+        return {
+            id: this._id,
+            createdDate: this._data.createdDate,
+            lastModified: this._lastModified,
+            data: {
+                userId: this._data.userId,
+                handle: this._data.handle,
+                firstName: this._data.firstName,
+                lastName: this._data.lastName,
+                followerCount: this._data.followerCount,
+                emailAddress: this._data.emailAddress,
+                motto: this._data.motto
+            }
+        };
+    }
 
 
     /**
@@ -145,7 +163,7 @@ function UserService(repo, validator = new UserValidator()) {
 
     this.emailAddressExists = async function(emailAddress) {
         const result = await repo.findOneByEmail(emailAddress);
-        return result.length === 1 && result[0]["email_address"] === emailAddress;
+        return result.length === 1 && result[0]["emailAddress"] === emailAddress;
     }
 
     this.handleExists = async function(handle) {

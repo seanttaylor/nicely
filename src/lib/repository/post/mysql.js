@@ -23,7 +23,7 @@ function PostMySQLRepository(databaseConnector) {
     this.findOne = async function(id) {
         const connection = await databaseConnector.getConnection();
         const runQueryWith = promisify(connection.query.bind(connection));
-        const sql = `SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, users.handle, users.first_name, users.last_name FROM posts JOIN users ON posts.user_id = users.id  WHERE posts.id = '${id}'`;
+        const sql = `SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, posts.last_modified, users.handle, users.first_name, users.last_name FROM posts JOIN users ON posts.user_id = users.id  WHERE posts.id = '${id}'`;
 
         const result = await runQueryWith(sql);
         return result.map((p) => onReadPost(p));
@@ -144,6 +144,7 @@ function PostMySQLRepository(databaseConnector) {
             likeCount: record.like_count,
             sequenceNo: record.sequence_no,
             createdDate: record.created_date,
+            lastModified: record.last_modified,
             handle: record.handle,
             firstName: record.first_name,
             lastName: record.last_name

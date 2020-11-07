@@ -1,11 +1,11 @@
 const uuid = require("uuid");
 //const { isUuid } = require("uuidv4");
-const { UserService } = require("../src/services/user");
-const UserRepository = require("../src/lib/repository/user/mysql");
-const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../src/lib/utils");
-const DatabaseConnector = require("../src/lib/database/connectors/mysql");
+const { UserService } = require("../../src/services/user");
+const UserRepository = require("../../src/lib/repository/user/mysql");
+const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../../src/lib/utils");
+const DatabaseConnector = require("../../src/lib/database/connectors/mysql");
 const testSqlDbConnector = new DatabaseConnector();
-const IUserRepository = require("../src/interfaces/user-repository");
+const IUserRepository = require("../../src/interfaces/user-repository");
 const testUserMySqlRepo = new IUserRepository(new UserRepository(testSqlDbConnector));
 const testUserService = new UserService(testUserMySqlRepo);
 

@@ -1,20 +1,20 @@
 const uuid = require("uuid");
 const events = require("events");
 const eventEmitter = new events.EventEmitter();
-const { mockImpl } = require("../src/lib/utils/mocks");
-const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../src/lib/utils");
-const DatabaseConnector = require("../src/lib/database/connectors/mysql");
+const { mockImpl } = require("../../src/lib/utils/mocks");
+const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../../src/lib/utils");
+const DatabaseConnector = require("../../src/lib/database/connectors/mysql");
 const testSqlDbConnector = new DatabaseConnector();
 /*UserService*/
-const { UserService } = require("../src/services/user");
-const UserRepository = require("../src/lib/repository/user/mysql");
-const IUserRepository = require("../src/interfaces/user-repository");
+const { UserService } = require("../../src/services/user");
+const UserRepository = require("../../src/lib/repository/user/mysql");
+const IUserRepository = require("../../src/interfaces/user-repository");
 const testUserMySqlRepo = new IUserRepository(new UserRepository(testSqlDbConnector));
 const testUserService = new UserService(testUserMySqlRepo);
 /*PostService*/
-const { PostService } = require("../src/services/post");
-const PostRepository = require("../src/lib/repository/post/mysql");
-const IPostRepository = require("../src/interfaces/post-repository");
+const { PostService } = require("../../src/services/post");
+const PostRepository = require("../../src/lib/repository/post/mysql");
+const IPostRepository = require("../../src/interfaces/post-repository");
 const testPostMySqlRepo = new IPostRepository(new PostRepository(testSqlDbConnector));
 const testPostService = new PostService({
     repo: testPostMySqlRepo,
@@ -22,9 +22,9 @@ const testPostService = new PostService({
     eventEmitter
 });
 /*CommentService*/
-const { CommentService } = require("../src/services/comment");
-const CommentRepository = require("../src/lib/repository/comment/mysql");
-const ICommentRepository = require("../src/interfaces/comment-repository");
+const { CommentService } = require("../../src/services/comment");
+const CommentRepository = require("../../src/lib/repository/comment/mysql");
+const ICommentRepository = require("../../src/interfaces/comment-repository");
 const testCommentMySqlRepo = new ICommentRepository(new CommentRepository(testSqlDbConnector));
 const testCommentService = new CommentService({
     userService: testUserService,

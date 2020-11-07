@@ -33,6 +33,18 @@ const postService = new PostService({
     eventEmitter
 });
 
+/**CommentService**/
+const { CommentService } = require("./src/services/comment");
+const CommentRepository = require("./src/lib/repository/comment/mysql");
+const ICommentRepository = require("./src/interfaces/comment-repository");
+const commentsRepo = new ICommentRepository(new CommentRepository(asiagoDatabaseConnector));
+const commentService = new CommentService({
+    repo: commentsRepo,
+    userService,
+    postService,
+    eventEmitter
+});
+
 /**PublishService**/
 const IPublisher = require("./src/interfaces/publisher");
 const SSEPublisher = require("./src/lib/publisher/sse");
@@ -43,10 +55,11 @@ const SSERouter = require("./src/api/sse");
 const StatusRouter = require("./src/api/status");
 const PostRouter = require("./src/api/post");
 const UserRouter = require("./src/api/user");
+const FeedRouter = require("./src/api/feed");
 
 app.use(helmet());
 app.use(cors());
-app.use(morgan("combined"));
+app.use(morgan("tiny"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -55,8 +68,9 @@ app.use(express.static("www"));
 /**Routes**/
 app.use("/status", StatusRouter());
 app.use("/api/v1/posts", PostRouter(postService));
-app.use("/api/v1/users", UserRouter(postService));
-app.use("/api/v1/subscribe", SSERouter(ssePublishService));
+app.use("/api/v1/users", UserRouter({postService, userService, commentService}));
+app.use("/api/v1/feed", FeedRouter(postService));
+app.use("/api/v1/feed/realtime-updates", SSERouter(ssePublishService));
 
 app.use((req, res, next) => {
     console.error(`Error 404 on ${req.url}.`);
@@ -70,11 +84,15 @@ app.use((err, req, res, next) => {
     res.status(status).send({ status, error: "There was an error." });
 });
 
-http.createServer(app).listen(serverPort, () => {
-    console.info(globalConfig.launchBanner);
-    console.info(
-        "Application listening on port %d (http://localhost:%d)",
-        serverPort,
-        serverPort
-    );
-});
+if (process.env.NODE_ENV !== "ci/cd/test") {
+    http.createServer(app).listen(serverPort, () => {
+        console.info(globalConfig.launchBanner);
+        console.info(
+            "Application listening on port %d (http://localhost:%d)",
+            serverPort,
+            serverPort
+        );
+    });
+}
+
+module.exports = app;

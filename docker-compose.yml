@@ -26,11 +26,12 @@ services:
       DATABASE_USERNAME: root
       DATABASE_PASSWORD: root
       DATABASE_NAME: asiago
+      NODE_ENV: development
     volumes:
       - ./:/src
     build:
         context: .
-    command: npm start
+    command: npm test
     networks:
       - shared_network
     ports:

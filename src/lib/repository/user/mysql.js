@@ -185,15 +185,15 @@ function UserMySQLRepository(databaseConnector) {
 
     function onReadUser(record) {
         return {
-            "id": record["id"],
-            "handle": record["handle"],
-            "email_address": record["email_address"],
-            "motto": record["motto"],
-            "is_verified": record["is_verified"],
-            "first_name": record["first_name"],
-            "last_name": record["last_name"],
-            "follower_count": record["follower_count"],
-            "created_date": record["created_date"]
+            id: record.id,
+            handle: record.handle,
+            emailAddress: record.email_address,
+            motto: record.motto,
+            isVerified: record.is_verified,
+            firstName: record.first_name,
+            lastName: record.last_name,
+            followerCount: record.follower_count,
+            createdDate: record.created_date
         }
     }
 }

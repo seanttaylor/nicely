@@ -5,19 +5,21 @@ const halson = require("halson");
 function Post(repo, doc) {
     this._data = doc;
     this._repo = repo;
-    this._id = doc.id || null
+    this._id = doc.id || null;
+    this._lastModified = doc.lastModified || null;
 
     this.toJSON = function() {
         return {
             id: this._id,
             createdDate: this._data.createdDate,
-            lastModified: this._data.lastModified || null,
+            lastModified: this._lastModified,
             data: {
                 userId: this._data.userId,
                 body: this._data.body,
                 author: this._data.handle,
                 firstName: this._data.firstName,
                 lastName: this._data.lastName,
+                likeCount: this._data.likeCount,
                 commentCount: this._data.commentCount || 0
             }
         };
@@ -35,7 +37,7 @@ function Post(repo, doc) {
 
         this._id = post.id;
         this._data.createdDate = post.createdDate;
-        this._data.lastModified = null;
+        this._lastModified = null;
 
         return post.id;
     }
@@ -79,7 +81,7 @@ function Post(repo, doc) {
         const id = this._id;
         const { lastModified } = await this._repo.editPost(id, text);
         this._data.body = text;
-        this._data.lastModified = lastModified;
+        this._lastModified = lastModified;
 
         return this;
     }

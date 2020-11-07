@@ -1,20 +1,20 @@
 const uuid = require("uuid");
 const events = require("events");
 const eventEmitter = new events.EventEmitter();
-const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../src/lib/utils");
-const { mocks, mockImpl } = require("../src/lib/utils/mocks");
-const DatabaseConnector = require("../src/lib/database/connectors/mysql");
+const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../../src/lib/utils");
+const { mocks, mockImpl } = require("../../src/lib/utils/mocks");
+const DatabaseConnector = require("../../src/lib/database/connectors/mysql");
 const testSqlDbConnector = new DatabaseConnector();
 /**UserService**/
-const { UserService } = require("../src/services/user");
-const UserRepository = require("../src/lib/repository/user/mysql");
-const IUserRepository = require("../src/interfaces/user-repository");
+const { UserService } = require("../../src/services/user");
+const UserRepository = require("../../src/lib/repository/user/mysql");
+const IUserRepository = require("../../src/interfaces/user-repository");
 const testUserMySqlRepo = new IUserRepository(new UserRepository(testSqlDbConnector));
 const testUserService = new UserService(testUserMySqlRepo);
 /**PostService**/
-const { PostService } = require("../src/services/post");
-const PostRepository = require("../src/lib/repository/post/mysql");
-const IPostRepository = require("../src/interfaces/post-repository");
+const { PostService } = require("../../src/services/post");
+const PostRepository = require("../../src/lib/repository/post/mysql");
+const IPostRepository = require("../../src/interfaces/post-repository");
 const testPostMySqlRepo = new IPostRepository(new PostRepository(testSqlDbConnector));
 const testPostService = new PostService({
     repo: testPostMySqlRepo,
@@ -69,12 +69,12 @@ test("Should find and return specified Post instance matching id", async() => {
 });
 
 
-
 /**def test_should_delete_post():
     #delete_post FUNCTIONALITY NOT IMPLEMENTED YET
     assert True == True;
 
 */
+
 
 test("Should return Post id on save", async() => {
     const testPost = await testPostService.createPost({
@@ -238,9 +238,6 @@ test("Should return list of posts from users a specified user has subscribed to"
     await testUserNo2.followUser(testUserNo1);
     const userNo2FollowsUserNo1 = await testUserNo2.isFollowing(testUserNo1);
     const testUserNo1Followers = await testUserNo1.getFollowers();
-
-    //console.log({ testUserNo1Id, testUserNo2Id, testUserNo1Followers, userNo2FollowsUserNo1 });
-
     const result = await testPostService.getPostsBySubscriber(testUserNo2Id);
 
     expect(Array.isArray(result)).toBe(true);
