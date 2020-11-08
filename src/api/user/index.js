@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 const express = require("express");
 const router = new express.Router();
 
@@ -39,7 +41,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.post("/:id/posts/:post_id/edit", async(req, res, next) => {
+    router.put("/:id/posts/:post_id/edit", async(req, res, next) => {
         const userId = req.params.id;
         const postId = req.params.post_id;
 
@@ -110,7 +112,68 @@ function UserRouter({postService, userService, commentService}) {
             res.set("content-type", "application/json");
             res.status(200);
             res.json({
-                data: [post],
+                data: [comment],
+                entries: 1
+            });
+        }
+        catch (e) {
+            next(e);
+        }
+    });
+
+    router.get("/:id/posts/:post_id/comments/:comment_id", async(req, res, next) => {
+        const userId = req.params.id;
+        const postId = req.params.post_id;
+        const commentId = req.params.comment_id;
+
+        try {
+            const [comment] = await commentService.findCommentById(commentId);
+            res.set("content-type", "application/json");
+            res.status(200);
+            res.json({
+                data: [comment],
+                entries: 1
+            });
+        }
+        catch (e) {
+            next(e);
+        }
+    });
+
+    router.put("/:id/posts/:post_id/comments/:comment_id/edit", async(req, res, next) => {
+        const userId = req.params.id;
+        const postId = req.params.post_id;
+        const commentId = req.params.comment_id;
+
+        try {
+            const [comment] = await commentService.findCommentById(commentId);
+            await comment.edit(req.body.body);
+            res.set("content-type", "application/json");
+            res.status(200);
+            res.json({
+                data: [comment],
+                entries: 1
+            });
+        }
+        catch (e) {
+            next(e);
+        }
+    });
+
+    router.put("/:id/posts/:post_id/comments/:comment_id/likes/:actor_id", async(req, res, next) => {
+        const userId = req.params.id;
+        const postId = req.params.post_id;
+        const commentId = req.params.comment_id;
+        const actorId = req.params.actor_id
+
+        try {
+            const [comment] = await commentService.findCommentById(commentId);
+            //Will become await comment.incrementLikeCount({from: actorId});
+            await comment.incrementLikeCount();
+            res.set("content-type", "application/json");
+            res.status(200);
+            res.json({
+                data: [comment],
                 entries: 1
             });
         }

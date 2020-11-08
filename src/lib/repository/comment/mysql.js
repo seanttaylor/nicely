@@ -64,12 +64,12 @@ function CommentMySQLRepository(databaseConnector) {
 
     function onReadComment(record) {
         return {
-            "id": record["id"],
-            "post_id": record["post_id"],
-            "user_id": record["user_id"],
-            "body": record["body"],
-            "like_count": record["like_count"],
-            "created_date": record["created_date"]
+            id: record.id,
+            postId: record.post_id,
+            userId: record.user_id,
+            body: record.body,
+            likeCount: record.like_count,
+            createdDate: record.created_date
         }
     }
 

@@ -2,6 +2,22 @@ function Comment(repo, doc) {
     this._repo = repo;
     this._id = doc.id || null;
     this._data = Object.assign({}, doc);
+    this._lastModified = doc.lastModified || null
+
+
+    this.toJSON = function() {
+        return {
+            id: this._id,
+            createdDate: this._data.createdDate,
+            lastModified: this._lastModified,
+            data: {
+                userId: this._data.userId,
+                postId: this._data.postId,
+                body: this._data.body,
+                likeCount: this._data.likeCount
+            }
+        };
+    }
 
     /**
     Associates a comment with a specified post
@@ -82,7 +98,7 @@ function CommentService({ repo, postService, userService, validator }) {
 
     this.findCommentById = async function(id) {
         const commentsList = await this._repo.findOneById(id);
-        return commentsList.map((c) => new Comment(this.repo, c));
+        return commentsList.map((c) => new Comment(this._repo, c));
     }
 
 }

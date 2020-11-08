@@ -3,15 +3,15 @@
 const express = require("express");
 const router = new express.Router();
 
-function PostRouter(PostService) {
+function CommentRouter(CommentService) {
     router.get("/", async(req, res, next) => {
         try {
-            const postList = await PostService.findAllPosts();
+            const commentList = await CommentService.findAllComments();
             res.set("content-type", "application/json");
             res.status(200);
             res.json({
-                data: postList.map(post => post.toJSON()),
-                entries: postList.length
+                data: commentList.map(comment => comment.toJSON()),
+                entries: commentList.length
             });
         }
         catch (e) {
@@ -23,4 +23,4 @@ function PostRouter(PostService) {
     return router;
 }
 
-module.exports = PostRouter;
+module.exports = CommentRouter;

@@ -56,6 +56,7 @@ const StatusRouter = require("./src/api/status");
 const PostRouter = require("./src/api/post");
 const UserRouter = require("./src/api/user");
 const FeedRouter = require("./src/api/feed");
+const CommentRouter = require("./src/api/comment");
 
 app.use(helmet());
 app.use(cors());
@@ -71,6 +72,7 @@ app.use("/api/v1/posts", PostRouter(postService));
 app.use("/api/v1/users", UserRouter({postService, userService, commentService}));
 app.use("/api/v1/feed", FeedRouter(postService));
 app.use("/api/v1/feed/realtime-updates", SSERouter(ssePublishService));
+app.use("/api/v1/comments", CommentRouter(commentService));
 
 app.use((req, res, next) => {
     console.error(`Error 404 on ${req.url}.`);
