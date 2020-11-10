@@ -27,7 +27,7 @@ test("Should return new User instance", async() => {
 });
 
 
-test("Should return list of new User instances", async() => {
+test("Should return list of User instances", async() => {
     const result = await testUserService.findAllUsers();
 
     expect(Array.isArray(result)).toBe(true);

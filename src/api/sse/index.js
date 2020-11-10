@@ -7,7 +7,6 @@ const router = new express.Router();
 function SSERouter(publishService) {
     
     router.get("/", (req, res) => {
-
         res.status(200).set({
             "connection": "keep-alive",
             "cache-control": "no-cache",

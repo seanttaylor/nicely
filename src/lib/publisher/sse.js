@@ -15,6 +15,9 @@ function SSEPublisher(eventEmitter) {
     */
 
     this.publish = function(post) {
+        if (onPublish === undefined) {
+            return;
+        }
         const event = sse.of("newPost", post.toJSON());
         return onPublish(event);
     }

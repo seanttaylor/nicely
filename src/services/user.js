@@ -10,7 +10,8 @@ function User(repo, doc) {
     this._data.isVerified = doc.isVerified || false;
     this._data.motto = doc.motto || null;
     this._data.followerCount = doc.followerCount || 0;
-
+    this._data.followerCount = doc.followerCount < 0 ? 0 : doc.followerCount || 0;
+    
     this.toJSON = function() {
         return {
             id: this._id,
@@ -57,7 +58,7 @@ function User(repo, doc) {
 
     /**
     Edit phoneNumber property of an existing user in the data store.
-    @param {String} phone_number - a telephone number
+    @param {String} phoneNumber - a telephone number
     */
     this.editPhoneNumber = async function(phoneNumber) {
         this._data.phoneNumber = phoneNumber;
@@ -91,7 +92,14 @@ function User(repo, doc) {
     @param (User) targetUser - an instance of the User class; the user to be un-followed
     */
     this.unfollowUser = async function(targetUser) {
-        const result = await this._repo.removeSubscription(this._id, targetUser._id)
+        //const resetTargetUserFollowerCount = targetUser._data.followerCount - 1 < 0;
+        //await this._repo.removeSubscription({currentUser: this._id, targetUser: targetUser._id, resetTargetUserFollowerCount});
+        await this._repo.removeSubscription(this._id, targetUser._id);
+        /*if (resetTargetUserFollowerCount) {
+            targetUser._data.followerCount = 0;
+            return;
+        }*/
+
         targetUser._data.followerCount -= 1;
     }
 
