@@ -28,7 +28,7 @@ function JSONValidator(validators={}) {
         const validate = ajv.compile(mySchema);
         const valid = validate(data);
         if (!valid) {
-            throw new Error(`ValidationError:${[schema]}: ${JSON.stringify(validate.errors)}`);
+            throw new Error(`ValidationError: ${[schema]}: ${JSON.stringify(validate.errors)}`);
         }
         return valid;
     }

@@ -46,7 +46,8 @@ function getUserSchema(validateWithRequiredFields) {
                 ],
                 title: "The handle schema",
                 type: "string",
-                pattern: /\@[a-zA-Z0-9_]{1,}/g
+                //TODO: Figure the correct escape sequence for RegExes embedded in strings
+                //pattern: "/@[a-zA-Z0-9_]{1,}/g"
             },
             firstName: {
                 default: "",
