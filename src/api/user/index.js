@@ -3,9 +3,22 @@
 const express = require("express");
 const router = new express.Router();
 
-function UserRouter({postService, userService, commentService}) {
+function UserRouter({postService, userService, commentService, validatorService}) {
 
-    router.post("/:id/posts", async(req, res, next) => {
+    function validateRequestWith(options) {
+        return function(req, res, next) {
+            const validation = validatorService.validate({
+                validateWithRequiredFields: options.requiredFields, 
+                schema: options.schema
+            });
+            if (!validation) {
+
+            }
+            next();
+        }
+    }
+
+    router.post("/:id/posts", validateRequestWith({requiredFields: true, schema: "post"}), async(req, res, next) => {
         const userId = req.params.id;
 
         try {
@@ -41,7 +54,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.put("/:id/posts/:post_id/edit", async(req, res, next) => {
+    router.put("/:id/posts/:post_id/edit", validateRequestWith({requiredFields: false, schema: "post"}) , async(req, res, next) => {
         const userId = req.params.id;
         const postId = req.params.post_id;
 
@@ -101,7 +114,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.post("/:id/posts/:post_id/comments", async(req, res, next) => {
+    router.post("/:id/posts/:post_id/comments", validateRequestWith({requiredFields: true, schema: "comment"}), async(req, res, next) => {
         const userId = req.params.id;
         const postId = req.params.post_id;
 
@@ -140,7 +153,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.put("/:id/posts/:post_id/comments/:comment_id/edit", async(req, res, next) => {
+    router.put("/:id/posts/:post_id/comments/:comment_id/edit", validateRequestWith({requiredFields: false, schema: "comment"}), async(req, res, next) => {
         const userId = req.params.id;
         const postId = req.params.post_id;
         const commentId = req.params.comment_id;
@@ -232,7 +245,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.put("/:id/name", async(req, res, next) => {
+    router.put("/:id/name", validateRequestWith({requiredFields: false, schema: "user"}), async(req, res, next) => {
         const userId = req.params.id;
 
         try {
@@ -250,7 +263,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.put("/:id/motto", async(req, res, next) => {
+    router.put("/:id/motto", validateRequestWith({requiredFields: false, schema: "user"}), async(req, res, next) => {
         const userId = req.params.id;
 
         try {
@@ -268,7 +281,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.put("/:id/phone", async(req, res, next) => {
+    router.put("/:id/phone", validateRequestWith({requiredFields: false, schema: "user"}), async(req, res, next) => {
         const userId = req.params.id;
 
         try {
