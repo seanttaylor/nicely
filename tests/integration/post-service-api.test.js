@@ -131,7 +131,6 @@ test("API should return list of the (35) most recent posts", async()=> {
     expect(res1.body.data.length > 0).toBe(true);
 });
 
-
 test("Should fail to mark a new post as published", async() => {
 
     const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
@@ -148,5 +147,15 @@ test("Should fail to mark a new post as published", async() => {
     .expect(204);
 });
 
+/***Negative Tests***/
 
+/*test("Should return status code 400 when attempting to create invalid post", async() => {
+
+    const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
+    .send({
+        "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
+        "handle": "@tstark"
+    })
+    .expect(400);
+});*/
 

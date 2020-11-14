@@ -1,5 +1,5 @@
 const requiredFields = [
-    "userId",
+    //"userId",
     "body",
     "handle"
 ];

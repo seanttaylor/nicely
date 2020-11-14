@@ -1,7 +1,7 @@
 const requiredFields = [
     "userId",
-    "body",
-    "handle"
+    "postId",
+    "body"
 ];
 
 /**
@@ -17,8 +17,8 @@ function getCommentSchema(validateWithRequiredFields) {
         examples: [
             {
                 "userId": "e98417a8-d912-44e0-8d37-abe712ca840f",
-                "body": "Playboy. Billionaire. Genius.",
-                "handle": "@tstark"
+                "body": "True story. FR.",
+                "postId": "b1b0a890-1d15-4e97-a200-8a82124b3c65"
             }
         ],
         required: validateWithRequiredFields ? requiredFields : [],
@@ -26,7 +26,7 @@ function getCommentSchema(validateWithRequiredFields) {
         properties: {
             userId: {
                 default: "",
-                description: "The unique user id associated with a post.",
+                description: "The unique user id associated with a comment",
                 examples: [
                     "e98417a8-d912-44e0-8d37-abe712ca840f"
                 ],
@@ -34,17 +34,17 @@ function getCommentSchema(validateWithRequiredFields) {
             },
             body: {
                 default: "",
-                description: "The body of the post",
+                description: "The body of the comment",
                 examples: [
-                    "Playboy. Billionaire. Genius."
+                    "True story. FR."
                 ],
                 title: "The body schema"
             },
-            handle: {
+            postId: {
                 default: "",
-                description: "The user handle associated with a post",
+                description: "The unique user id associated with a post",
                 examples: [
-                    "@tstark"
+                    "b1b0a890-1d15-4e97-a200-8a82124b3c65"
                 ],
                 title: "The handle schema"
             }

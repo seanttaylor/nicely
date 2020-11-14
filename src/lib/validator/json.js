@@ -23,14 +23,24 @@ function JSONValidator(validators={}) {
     */
 
     this.validate = function(options, data) {
+        if (!data) {
+            throw new Error("ValidationDataEmpty");
+        }
+
         const {validateWithRequiredFields, schema} = options;
         const mySchema = this._validators[schema](validateWithRequiredFields);
         const validate = ajv.compile(mySchema);
         const valid = validate(data);
         if (!valid) {
-            throw new Error(`ValidationError: ${[schema]}: ${JSON.stringify(validate.errors)}`);
+            return  {
+                result: false,
+                errors: validate.errors
+            }   
         }
-        return valid;
+        return {
+            result: true,
+            errors: null
+        };
     }
 }
 

@@ -2,21 +2,9 @@
 
 const express = require("express");
 const router = new express.Router();
+const {validateRequestWith} = require("../../lib/middleware");
 
-function UserRouter({postService, userService, commentService, validatorService}) {
-
-    function validateRequestWith(options) {
-        return function(req, res, next) {
-            const validation = validatorService.validate({
-                validateWithRequiredFields: options.requiredFields, 
-                schema: options.schema
-            });
-            if (!validation) {
-
-            }
-            next();
-        }
-    }
+function UserRouter({postService, userService, commentService}) {
 
     router.post("/:id/posts", validateRequestWith({requiredFields: true, schema: "post"}), async(req, res, next) => {
         const userId = req.params.id;
@@ -286,7 +274,7 @@ function UserRouter({postService, userService, commentService, validatorService}
 
         try {
             const [user] = await userService.findUserById(userId);
-            await user.editPhoneNumber(req.body.phone);
+            await user.editPhoneNumber(req.body.phoneNumber);
             res.set("content-type", "application/json");
             res.status(200);
             res.json({

@@ -10,11 +10,7 @@ const cors = require("cors");
 const app = express();
 const events = require("events");
 const eventEmitter = new events.EventEmitter();
-const DatabaseConnector = require("./src/lib/database/connectors/mysql");
-const IValidator = require("./src/interfaces/validator");
-const JSONValidator = require("./src/lib/validator/json");
-const schemas = require("./src/schemas/user/api")
-const apiRequestValidator = new IValidator(new JSONValidator(schemas)); 
+const DatabaseConnector = require("./src/lib/database/connectors/mysql"); 
 const asiagoDatabaseConnector = new DatabaseConnector();
 const serverPort = process.env.SERVER_PORT || 3000;
 
@@ -78,8 +74,7 @@ app.use("/api/v1/posts", PostRouter(postService));
 app.use("/api/v1/users", UserRouter({
     postService, 
     userService, 
-    commentService, 
-    validatorService: apiRequestValidator
+    commentService
 }));
 app.use("/api/v1/feed", FeedRouter(postService));
 app.use("/api/v1/feed/realtime-updates", SSERouter(ssePublishService));

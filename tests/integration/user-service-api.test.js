@@ -115,7 +115,7 @@ test("API should update user phone number", async() => {
     
     const res2 = await request.put(`/api/v1/users/${userId}/phone`)
     .send({
-        phone: testPhoneNumberEdit
+        phoneNumber: testPhoneNumberEdit
     })
     .expect(200);
 });
