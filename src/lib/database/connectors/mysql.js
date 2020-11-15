@@ -1,7 +1,12 @@
 const mysql = require("mysql");
 const { promisify } = require("util");
 
-function MySQLDatabaseAdapter() {
+/**
+ * Provides connection to a MySQL database instance
+ * @returns {Object} connectorAPI - object with methods for handling database connections
+ */
+
+function MySQLDatabaseConnector() {
     const pool = mysql.createPool({
         connectionLimit: 1500,
         host: process.env.DATABASE_HOSTNAME,
@@ -18,4 +23,4 @@ function MySQLDatabaseAdapter() {
 
 
 
-module.exports = MySQLDatabaseAdapter;
+module.exports = MySQLDatabaseConnector;

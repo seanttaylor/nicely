@@ -3,6 +3,12 @@
 const express = require("express");
 const router = new express.Router();
 
+/**
+ * 
+ * @param {PostService} PostService - an instance of the PostService
+ * @returns router - an instance of an Express router
+ */
+
 function FeedRouter(PostService) {
     router.get("/latest", async(req, res, next) => {
         try {

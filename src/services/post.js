@@ -2,6 +2,21 @@ const defaultConfig = require("./config.js");
 const uuid = require("uuid");
 const halson = require("halson");
 
+/**
+* @typedef {Object} Post
+* @property {Object} _data - the post data
+* @property {String} _id - the uuid of the post
+* @property {Object} _repo - the repository instance associated with this post
+* @property {String} _lastModified - date and time the post was last modified
+*/
+
+
+/**
+ * 
+ * @param {Object} repo - the repo associated with this post
+ * @param {Object} doc - the data of the post
+ */
+
 function Post(repo, doc) {
     this._data = doc;
     this._repo = repo;
@@ -89,6 +104,19 @@ function Post(repo, doc) {
 
 /*Post*/
 
+/**
+* @typedef {Object} PostService
+* @property {Object} _repo - the repository associated with this service
+* @property {Object} _validator - the validator used to validate new posts
+* @property {Object} _eventEmitter - the eventEmitter used to register/emit service events
+*/
+
+/**
+ * @param {Object} repo - the repository associated with this service
+ * @param {UserService} userService - an instance of the UserService
+ * @param {Object} validator - (optional) the validator used to validate new posts
+ * @param {Object} eventEmitter - the eventEmitter used to register/emit service events
+ */
 
 function PostService({ repo, userService, eventEmitter, validator }) {
 
@@ -96,6 +124,10 @@ function PostService({ repo, userService, eventEmitter, validator }) {
     this._validator = validator || new PostValidator(defaultConfig, userService);
     this._eventEmitter = eventEmitter;
 
+    /**
+    * Creates a new post
+    * @returns {Post} a new post instance
+    */
     this.createPost = async function(doc) {
         await this._validator.validate(doc);
         return new Post(this._repo, doc);
@@ -164,6 +196,11 @@ function PostService({ repo, userService, eventEmitter, validator }) {
 
 }
 
+/**
+ * @param {Object} config - a map of configuration options
+ * @param {Number} config.postCharacterLimit - maximum length of a new post
+ * @param {UserService} userService - an instance of the UserService
+ */
 
 function PostValidator(config, UserService) {
 

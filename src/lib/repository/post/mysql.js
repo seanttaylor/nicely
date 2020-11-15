@@ -4,6 +4,11 @@ See interfaces/post-repository for method documentation*/
 const uuid = require("uuid");
 const { promisify } = require("util");
 
+/**
+ * @implements {IPostRepository}
+ * @param {Object} databaseConnector - object with methods for connecting to a database 
+ */
+
 function PostMySQLRepository(databaseConnector) {
 
     this.create = async function(doc) {

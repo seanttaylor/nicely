@@ -3,6 +3,12 @@
 const express = require("express");
 const router = new express.Router();
 
+/**
+ * 
+ * @param {Publisher} publishService - an instance of the PublishService
+ * @returns router - an instance of an Express router
+ */
+
 
 function SSERouter(publishService) {
     

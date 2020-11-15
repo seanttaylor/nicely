@@ -1,12 +1,18 @@
+/*
+* Implements IPublisher interface for publishing posts
+* See interfaces/publisher for method documentation
+* Publishes posts to connected clients via Server-Sent Events (e.g. a web browser)
+*/
+
 const ServerSentEvent = require("../sse");
 const sse = ServerSentEvent();
 
+/**
+ * @implements {IPublisher}
+ * @param {EventEmitter} eventEmitter - an instance of EventEmitter
+ */
+
 function SSEPublisher(eventEmitter) {
-    /*
-    * Implements IPublisher interface for publishing posts
-    * See interfaces/publisher for method documentation
-    * Publishes posts to connected clients via Server-Sent Events (e.g. a web browser)
-    */
 
     let onPublish = undefined;
     /** 

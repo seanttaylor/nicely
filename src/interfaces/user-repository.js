@@ -1,3 +1,10 @@
+/**
+ * Interface for a repository of users
+ *
+ * @interface
+ * @param {Object} myImpl - object defining concrete implementations for interface methods
+ */
+
 function IUserRepository(myImpl) {
     function required() {
         throw Error("Missing implementation");

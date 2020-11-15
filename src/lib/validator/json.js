@@ -5,9 +5,8 @@
 const Ajv = require("ajv");
 const ajv = new Ajv();
 
-
 /**
- * 
+ * @implements {IValidator}
  * @param {Object} validators - an object whose methods return JSON schema documents
  */
 

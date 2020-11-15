@@ -1,3 +1,17 @@
+/**
+* @typedef {Object} Comment
+* @property {Object} _data - the comment data
+* @property {String} _id - the uuid of the comment
+* @property {Object} _repo - the repository instance associated with this comment
+* @property {String} _lastModified - date and time the comment was last modified
+*/
+
+/**
+ * 
+ * @param {Object} repo - the repo associated with this comment
+ * @param {Object} doc - the data of the comment
+ */
+
 function Comment(repo, doc) {
     this._repo = repo;
     this._id = doc.id || null;
@@ -79,6 +93,20 @@ function Comment(repo, doc) {
 
 /*Comment*/
 
+
+/**
+* @typedef {Object} CommentService
+* @property {Object} _repo - the repository associated with this service
+* @property {Object} _validator - the validator used to validate new posts
+* @property {Object} _eventEmitter - the eventEmitter used to register/emit service events
+*/
+
+/**
+ * @param {Object} repo - the repository associated with this service
+ * @param {UserService} userService - an instance of the UserService
+ * @param {PostService} postService - an instance of the PostService
+ * @param {Object} validator - (optional) the validator used to validate new posts
+ */
 
 function CommentService({ repo, postService, userService, validator }) {
     this._repo = repo;

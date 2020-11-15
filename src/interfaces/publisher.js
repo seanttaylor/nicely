@@ -1,3 +1,11 @@
+/**
+ * Interface for a service to deliver published posts to a specified destination
+ *
+ * @interface
+ * @param {Object} myImpl - object defining concrete implementations for interface methods
+ */
+
+
 function IPublisher(myImpl) {
     function required() {
         throw Error("Missing implementation");

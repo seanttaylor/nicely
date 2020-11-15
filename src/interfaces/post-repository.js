@@ -1,3 +1,10 @@
+/**
+ * Interface for a repository of posts
+ *
+ * @interface
+ * @param {Object} myImpl - object defining concrete implementations for interface methods
+ */
+
 function IPostRepository(myImpl) {
     function required() {
         throw Error("Missing implementation");

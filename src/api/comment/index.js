@@ -3,6 +3,12 @@
 const express = require("express");
 const router = new express.Router();
 
+/**
+ * 
+ * @param {CommentService} CommentService - an instance of the CommentService
+ * @returns router - an instance of an Express router
+ */
+
 function CommentRouter(CommentService) {
     router.get("/", async(req, res, next) => {
         try {

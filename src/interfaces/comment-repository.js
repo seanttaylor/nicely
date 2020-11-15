@@ -1,3 +1,10 @@
+/**
+ * Interface for a repository of comments
+ *
+ * @interface
+ * @param {Object} myImpl - object defining concrete implementations for interface methods
+ */
+
 function ICommentRepository(myImpl) {
     function required() {
         throw Error("Missing implementation");

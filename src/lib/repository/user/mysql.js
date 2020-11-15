@@ -1,5 +1,13 @@
+/*Implements IUserRepository interface for connecting to a MySQL database.
+See interfaces/user-repository for method documentation*/
+
 const uuid = require("uuid");
 const { promisify } = require("util");
+
+/**
+ * @implements {IUserRepostory}
+ * @param {Object} databaseConnector - object with methods for connecting to a database 
+ */
 
 function UserMySQLRepository(databaseConnector) {
 

@@ -1,5 +1,19 @@
 const config = require("../../config");
 
+/**
+* @typedef {Object} User
+* @property {Object} _data - the user data
+* @property {String} _id - the uuid of the user
+* @property {Object} _repo - the repository instance associated with this user
+* @property {String} _lastModified - date and time the user was last modified
+*/
+
+/**
+ * 
+ * @param {Object} repo - the repo associated with this user
+ * @param {Object} doc - the data of the user
+ */
+
 function User(repo, doc) {
 
     this._repo = repo;
@@ -137,6 +151,20 @@ function User(repo, doc) {
     }
 
 }
+
+
+/**
+* @typedef {Object} UserService
+* @property {Object} _repo - the repository associated with this service
+* @property {Object} _validator - the validator used to validate new posts
+* @property {Object} _eventEmitter - the eventEmitter used to register/emit service events
+*/
+
+/**
+ * 
+ * @param {Object} repo - the repo associated with this service
+ * @param {Object} validator - the validator used to validate a new user
+ */
 
 function UserService(repo, validator = new UserValidator()) {
 

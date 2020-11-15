@@ -1,3 +1,10 @@
+/**
+ * Interface for a validator service
+ *
+ * @interface
+ * @param {Object} myImpl - object defining concrete implementations for interface methods
+ */
+
 function IValidator(myImpl) {
     function required() {
         throw Error("Missing implementation");

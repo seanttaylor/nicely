@@ -4,6 +4,14 @@ const express = require("express");
 const router = new express.Router();
 const {validateRequestWith} = require("../../lib/middleware");
 
+/**
+ * 
+ * @param {PostService} postService - an instance of the PostService
+ * @param {UserService} userService - an instance of the UserService
+ * @param {CommentService} commentService - an instance of the CommentService
+ * @returns router - an instance of an Express router
+ */
+
 function UserRouter({postService, userService, commentService}) {
 
     async function verifyUserExists(req, res, next) {
@@ -198,7 +206,7 @@ function UserRouter({postService, userService, commentService}) {
         const userId = req.params.id;
         const postId = req.params.post_id;
         const commentId = req.params.comment_id;
-        const actorId = req.params.actor_id
+        const actorId = req.params.actor_id;
 
         try {
             const [comment] = await commentService.findCommentById(commentId);
