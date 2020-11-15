@@ -81,7 +81,7 @@ app.use("/api/v1/feed/realtime-updates", SSERouter(ssePublishService));
 app.use("/api/v1/comments", CommentRouter(commentService));
 
 app.use((req, res, next) => {
-    console.error(`Error 404 on ${req.url}.`);
+    //console.error(`Error 404 on ${req.url}.`);
     res.status(404).send({ status: 404, error: "NOT FOUND" });
 });
 

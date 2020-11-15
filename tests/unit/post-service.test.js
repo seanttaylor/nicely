@@ -355,3 +355,12 @@ test("Should throw exception on posts with non-existent user ids", async() => {
         expect(e.message).toMatch("UserDoesNotExist");
     }
 });
+
+test("Should throw exception on attempts to find posts with missing user ids", async() => {
+    try {
+        const testPost = await testPostService.findPostById();
+    } catch(e) {
+        expect(e.message).toMatch("MissingPostId");
+    }
+    
+});

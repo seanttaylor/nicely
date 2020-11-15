@@ -103,6 +103,9 @@ function PostService({ repo, userService, eventEmitter, validator }) {
 
 
     this.findPostById = async function(id) {
+        if (!id) {
+            throw new Error("MissingPostId");
+        }
         const result = await this._repo.findOne(id);
         return result.map((p) => new Post(this._repo, p));
     }
