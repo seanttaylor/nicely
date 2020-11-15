@@ -6,7 +6,40 @@ const {validateRequestWith} = require("../../lib/middleware");
 
 function UserRouter({postService, userService, commentService}) {
 
-    router.post("/:id/posts", validateRequestWith({requiredFields: true, schema: "post"}), async(req, res, next) => {
+    async function verifyUserExists(req, res, next) {
+        const userExists = await userService.userExists(req.params.id);
+
+        if (!userExists) {
+            res.status(404);
+            res.json({
+                data: [],
+                errors: [],
+                entries: 0
+            });
+            return; 
+        }
+
+        next();
+    }
+
+    async function verifyPostExists(req, res, next) {
+        const postExists = await postService.postExists(req.params.post_id);
+
+        if (!postExists) {
+            res.status(404);
+            res.json({
+                data: [],
+                errors: [],
+                entries: 0
+            });
+            return; 
+        }
+
+        next();
+    }
+
+
+    router.post("/:id/posts", verifyUserExists, validateRequestWith({requiredFields: true, schema: "post"}), async(req, res, next) => {
         const userId = req.params.id;
 
         try {
@@ -24,10 +57,10 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.get("/:id/posts/:post_id", async(req, res, next) => {
+    router.get("/:id/posts/:post_id", verifyUserExists, async(req, res, next) => {
         const userId = req.params.id;
         const postId = req.params.post_id;
-
+        
         try {
             const postList = await postService.findPostById(postId);
             res.set("content-type", "application/json");
@@ -83,7 +116,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.get("/:id/subscriptions", async(req, res, next) => {
+    router.get("/:id/subscriptions", verifyUserExists, async(req, res, next) => {
         const userId = req.params.id;
        
         try {
@@ -122,7 +155,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.get("/:id/posts/:post_id/comments/:comment_id", async(req, res, next) => {
+    router.get("/:id/posts/:post_id/comments/:comment_id", verifyUserExists, async(req, res, next) => {
         const userId = req.params.id;
         const postId = req.params.post_id;
         const commentId = req.params.comment_id;
@@ -216,7 +249,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.get("/:id", async(req, res, next) => {
+    router.get("/:id", verifyUserExists, async(req, res, next) => {
         const userId = req.params.id;
 
         try {
@@ -287,7 +320,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.put("/:id/followers/:follower_id", async(req, res, next) => {
+    router.put("/:id/followers/:follower_id", verifyUserExists, async(req, res, next) => {
         const userId = req.params.id;
         const followerId = req.params.follower_id;
 
@@ -323,7 +356,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.get("/:id/followers", async(req, res, next) => {
+    router.get("/:id/followers", verifyUserExists, async(req, res, next) => {
         const userId = req.params.id;
 
         try {

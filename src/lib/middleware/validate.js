@@ -12,12 +12,12 @@ const validatorService = new IValidator(new JSONValidator(schemas));
 function validateRequestWith(options) {
     return function(req, res, next) {
         const validation = validatorService.validate({
-                validateWithRequiredFields: options.requiredFields, 
-                schema: options.schema
-            }, req.body);
+            validateWithRequiredFields: options.requiredFields, 
+            schema: options.schema
+        }, req.body);
         
         if (!validation.result) {
-            console.error(validation.errors)
+            //console.error(validation.errors)
             res.status(400);
             res.json({
                 data: [],

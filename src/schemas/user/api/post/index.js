@@ -38,7 +38,8 @@ function getPostSchema(validateWithRequiredFields) {
                 examples: [
                     "Playboy. Billionaire. Genius."
                 ],
-                title: "The body schema"
+                title: "The body schema",
+                maxLength: 150
             },
             handle: {
                 default: "",

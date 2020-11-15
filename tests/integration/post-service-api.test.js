@@ -149,13 +149,42 @@ test("Should fail to mark a new post as published", async() => {
 
 /***Negative Tests***/
 
-/*test("Should return status code 400 when attempting to create invalid post", async() => {
+test("Should return status code 400 when attempting to create invalid post", async() => {
 
     const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
     .send({
-        "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
-        "handle": "@tstark"
+        body: "Is it better to be feared or respected? I say, is it too much to ask for both?"
     })
     .expect(400);
-});*/
+});
 
+
+test("Should return status code 400 when attempting to create post exceeding configured length limit", async() => {
+
+    const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
+    .send({
+        body: "I'm baby hammock disrupt pop-up, ugh bushwick taxidermy before they sold out gentrify coloring book. Cardigan deep v taiyaki occupy. Hashtag cray dreamcatcher try-hard blog.",
+        handle: "@tstark"
+    })
+    .expect(400);
+});
+
+test("Should return status code 404 when attempting to create post for a user that does not exist", async() => {
+
+    const res1 = await request.post(`/api/v1/users/@tstark/posts`)
+    .send({
+        body: "Is it better to be feared or respected? I say, is it too much to ask for both?",
+        handle: "@tstark"
+    })
+    .expect(404);
+});
+
+test("Should return status code 404 when attempting to get post for a user that does not exist", async() => {
+
+    const res1 = await request.post(`/api/v1/users/@tstark`)
+    .send({
+        body: "Is it better to be feared or respected? I say, is it too much to ask for both?",
+        handle: "@tstark"
+    })
+    .expect(404);
+});

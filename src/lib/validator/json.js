@@ -11,7 +11,7 @@ const ajv = new Ajv();
  * @param {Object} validators - an object whose methods return JSON schema documents
  */
 
-function JSONValidator(validators={}) {
+function JSONValidator(validators) {
     this._validators = validators;
 
     /** 
