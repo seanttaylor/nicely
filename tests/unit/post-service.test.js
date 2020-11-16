@@ -23,6 +23,9 @@ const testPostService = new PostService({
 });
 
 /**Tests**/
+afterAll(()=> {
+    testSqlDbConnector.end();
+});
 
 test("Should return new Post instance", async() => {
     const testBody = "Everybody wants a happy ending, right? But it doesn’t always roll that way.";

@@ -10,6 +10,9 @@ const testUserMySqlRepo = new IUserRepository(new UserRepository(testSqlDbConnec
 const testUserService = new UserService(testUserMySqlRepo);
 
 /**Tests**/
+afterAll(()=> {
+    testSqlDbConnector.end();
+});
 
 test("Should return new User instance", async() => {
     const testUserData = {

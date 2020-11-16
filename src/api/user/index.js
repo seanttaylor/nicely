@@ -2,7 +2,7 @@
 
 const express = require("express");
 const router = new express.Router();
-const {validateRequestWith} = require("../../lib/middleware");
+const {validateRequestWith, validateJWT} = require("../../lib/middleware");
 
 /**
  * 
@@ -47,7 +47,7 @@ function UserRouter({postService, userService, commentService}) {
     }
 
 
-    router.post("/:id/posts", verifyUserExists, validateRequestWith({requiredFields: true, schema: "post"}), async(req, res, next) => {
+    router.post("/:id/posts", verifyUserExists, validateJWT, validateRequestWith({requiredFields: true, schema: "post"}), async(req, res, next) => {
         const userId = req.params.id;
 
         try {
@@ -83,7 +83,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.put("/:id/posts/:post_id/edit", validateRequestWith({requiredFields: false, schema: "post"}) , async(req, res, next) => {
+    router.put("/:id/posts/:post_id/edit", validateJWT, validateRequestWith({requiredFields: false, schema: "post"}) , async(req, res, next) => {
         const userId = req.params.id;
         const postId = req.params.post_id;
 
@@ -143,7 +143,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.post("/:id/posts/:post_id/comments", validateRequestWith({requiredFields: true, schema: "comment"}), async(req, res, next) => {
+    router.post("/:id/posts/:post_id/comments", validateJWT, validateRequestWith({requiredFields: true, schema: "comment"}), async(req, res, next) => {
         const userId = req.params.id;
         const postId = req.params.post_id;
 
@@ -182,7 +182,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.put("/:id/posts/:post_id/comments/:comment_id/edit", validateRequestWith({requiredFields: false, schema: "comment"}), async(req, res, next) => {
+    router.put("/:id/posts/:post_id/comments/:comment_id/edit", validateJWT, validateRequestWith({requiredFields: false, schema: "comment"}), async(req, res, next) => {
         const userId = req.params.id;
         const postId = req.params.post_id;
         const commentId = req.params.comment_id;
@@ -274,7 +274,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.put("/:id/name", validateRequestWith({requiredFields: false, schema: "user"}), async(req, res, next) => {
+    router.put("/:id/name", validateJWT, validateRequestWith({requiredFields: false, schema: "user"}), async(req, res, next) => {
         const userId = req.params.id;
 
         try {
@@ -292,7 +292,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.put("/:id/motto", validateRequestWith({requiredFields: false, schema: "user"}), async(req, res, next) => {
+    router.put("/:id/motto", validateJWT, validateRequestWith({requiredFields: false, schema: "user"}), async(req, res, next) => {
         const userId = req.params.id;
 
         try {
@@ -310,7 +310,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.put("/:id/phone", validateRequestWith({requiredFields: false, schema: "user"}), async(req, res, next) => {
+    router.put("/:id/phone", validateJWT, validateRequestWith({requiredFields: false, schema: "user"}), async(req, res, next) => {
         const userId = req.params.id;
 
         try {
@@ -382,7 +382,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.post("/:id/posts/:post_id/publish", async(req, res, next) => {
+    router.post("/:id/posts/:post_id/publish", validateJWT, async(req, res, next) => {
         const postId = req.params.post_id;
 
         try {

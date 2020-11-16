@@ -11,6 +11,7 @@ const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../
 
 const globalUserId = "e98417a8-d912-44e0-8d37-abe712ca840f";
 const globalUserIdNo2 = "b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09";
+const fakeToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.S_bjg_r4RH-OEeBl8MDB321ZARb0OaKzpQajdIAHQ-Q";
 
 test("NODE_ENV should be `ci/cd/test`", () => {
     expect(process.env.NODE_ENV === "ci/cd/test").toBe(true);
@@ -59,6 +60,7 @@ test("API should update user name", async() => {
     const userId = res1["body"]["data"][0]["id"];
     
     const res2 = await request.put(`/api/v1/users/${userId}/name`)
+    .set("Authorization", `Bearer ${fakeToken}`)
     .send({
         firstName: "Bruce",
         lastName: "Banner, M.D."
@@ -67,6 +69,7 @@ test("API should update user name", async() => {
     expect(res2["body"]["data"][0]["data"]["lastName"] === "Banner, M.D.").toBe(true);
 
     const res3 = await request.put(`/api/v1/users/${userId}/name`)
+    .set("Authorization", `Bearer ${fakeToken}`)
     .send({
         firstName: "Hulk",
         lastName: "Smash!"
@@ -90,6 +93,7 @@ test("API should update user motto", async() => {
     const userId = res1["body"]["data"][0]["id"];
     
     const res2 = await request.put(`/api/v1/users/${userId}/motto`)
+    .set("Authorization", `Bearer ${fakeToken}`)
     .send({
         motto: "Always be smashing!"
     })
@@ -114,6 +118,7 @@ test("API should update user phone number", async() => {
     const userId = res1["body"]["data"][0]["id"];
     
     const res2 = await request.put(`/api/v1/users/${userId}/phone`)
+    .set("Authorization", `Bearer ${fakeToken}`)
     .send({
         phoneNumber: testPhoneNumberEdit
     })

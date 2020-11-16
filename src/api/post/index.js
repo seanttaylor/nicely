@@ -2,15 +2,17 @@
 
 const express = require("express");
 const router = new express.Router();
+const { validateJWT } = require("../../lib/middleware");
+
 
 /**
  * 
  * @param {PostService} postService - an instance of the PostService
- * @returns router - an instance of an Express router
+ * @returns {Object} router - an instance of an Express router
  */
 
 function PostRouter(postService) {
-    router.get("/", async(req, res, next) => {
+    router.get("/", validateJWT, async(req, res, next) => {
         try {
             const postList = await postService.findAllPosts();
             res.set("content-type", "application/json");

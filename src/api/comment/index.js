@@ -2,6 +2,7 @@
 
 const express = require("express");
 const router = new express.Router();
+const { validateJWT } = require("../../lib/middleware");
 
 /**
  * 
@@ -10,7 +11,7 @@ const router = new express.Router();
  */
 
 function CommentRouter(CommentService) {
-    router.get("/", async(req, res, next) => {
+    router.get("/", validateJWT, async(req, res, next) => {
         try {
             const commentList = await CommentService.findAllComments();
             res.set("content-type", "application/json");

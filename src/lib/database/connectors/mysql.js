@@ -17,7 +17,8 @@ function MySQLDatabaseConnector() {
 
 
     return {
-        getConnection: promisify(pool.getConnection.bind(pool))
+        getConnection: promisify(pool.getConnection.bind(pool)),
+        end: pool.end.bind(pool)
     }
 }
 

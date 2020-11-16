@@ -34,6 +34,10 @@ const testCommentService = new CommentService({
 
 /**Tests**/
 
+afterAll(()=> {
+    testSqlDbConnector.end();
+});
+
 test("Should return new Comment instance", async() => {
     const testPost = await testPostService.createPost({
         body: "Everybody wants a happy ending, right? But it doesn’t always roll that way.",

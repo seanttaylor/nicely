@@ -1,3 +1,4 @@
 module.exports = {
-    validateRequestWith: require("./validate")
+    validateRequestWith: require("./validate"),
+    validateJWT: require("./jwt")
 }
