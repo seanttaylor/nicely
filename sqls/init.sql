@@ -67,6 +67,13 @@ CONSTRAINT `FK_181` FOREIGN KEY `fkIdx_181` (`user_id`) REFERENCES `users` (`id`
 UNIQUE INDEX(`user_id`, `follower_id`)
 );
 
+CREATE TABLE IF NOT EXISTS `user_credentials`
+(
+ `user_email_address` varchar(128) NOT NULL UNIQUE,
+ `password`           mediumtext NOT NULL 
+);
+
+
 
 INSERT INTO users (id, handle, email_address, phone_number, first_name, last_name, created_date) VALUES("e98417a8-d912-44e0-8d37-abe712ca840f", "@tstark", "tstark@avengers.io", "12125552424", "Tony", "Stark", "2020-09-26T23:08:27.645Z");
 
