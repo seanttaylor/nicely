@@ -4,7 +4,8 @@ const requiredFields = [
     "firstName",
     "lastName",
     "phoneNumber",
-    "emailAddress"
+    "emailAddress",
+    "password"
 ];
 
 /**
@@ -24,7 +25,8 @@ function getUserSchema(validateWithRequiredFields) {
                 "firstName": "Nick",
                 "lastName": "Fury",
                 "phoneNumber": "2125552424",
-                "emailAddress": "nfury@shield.gov"
+                "emailAddress": "nfury@shield.gov",
+                "password": "superSecretPassword"
             }
         ],
         required: validateWithRequiredFields ? requiredFields : [],
@@ -83,6 +85,15 @@ function getUserSchema(validateWithRequiredFields) {
                 title: "The emailAddress schema",
                 type: "string",
                 format: "email"
+            },
+            password: {
+                default: "",
+                description: "User's account password",
+                examples: [
+                    "superSecretPassword"
+                ],
+                title: "The password schema",
+                type: "string"
             }
         },
         additionalProperties: false

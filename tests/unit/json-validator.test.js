@@ -2,6 +2,7 @@ const IValidator = require("../../src/interfaces/validator");
 const JSONValidator = require("../../src/lib/validator/json");
 const schemas = require("../../src/schemas/user/api")
 const validator = new IValidator(new JSONValidator(schemas));
+const fakePassword = "superSecretPassword";
 
 /**Tests**/
 
@@ -78,14 +79,15 @@ test("Should return false on invalid posts", async() => {
 });
 
 /***Users***/
-test("Should return true for user withon a valid user", async() => {
+test("Should return true for a valid user", async() => {
     const data = {
         handle: "@somethingrandom",
         motto: "Always be prepared",
         emailAddress: "totally@somethingrandom.io",
         firstName: "George",
         lastName: "Spelvin",
-        phoneNumber: "2125552424"
+        phoneNumber: "2125552424",
+        password: fakePassword
     };
     expect(validator.validate({validateWithRequiredFields: true, schema: "user"}, data).result).toBe(true);
 });

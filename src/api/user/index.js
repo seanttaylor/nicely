@@ -224,7 +224,7 @@ function UserRouter({postService, userService, commentService}) {
         }
     });
 
-    router.post("/", async(req, res, next) => {
+    router.post("/", validateRequestWith({requiredFields: true, schema: "user"}), async(req, res, next) => {
 
         try {
             const user = await userService.createUser(req.body);

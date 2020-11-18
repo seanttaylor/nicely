@@ -12,6 +12,7 @@ const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../
 const globalUserId = "e98417a8-d912-44e0-8d37-abe712ca840f";
 const globalUserIdNo2 = "b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09";
 const fakeToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.S_bjg_r4RH-OEeBl8MDB321ZARb0OaKzpQajdIAHQ-Q";
+const fakePassword = "superSecretPassword";
 
 test("NODE_ENV should be `ci/cd/test`", () => {
     expect(process.env.NODE_ENV === "ci/cd/test").toBe(true);
@@ -25,7 +26,8 @@ test("Should return new user", async()=> {
         emailAddress: randomEmailAddress(),
         firstName: "Bruce",
         lastName: "Banner",
-        phoneNumber: randomPhoneNumber()
+        phoneNumber: randomPhoneNumber(),
+        password: fakePassword
     })
     .expect(200);
 });
@@ -54,7 +56,8 @@ test("API should update user name", async() => {
         emailAddress: randomEmailAddress(),
         firstName: "Bruce",
         lastName: "Banner",
-        phoneNumber: randomPhoneNumber()
+        phoneNumber: randomPhoneNumber(),
+        password: fakePassword
     })
     .expect(200);
     const userId = res1["body"]["data"][0]["id"];
@@ -87,7 +90,8 @@ test("API should update user motto", async() => {
         emailAddress: randomEmailAddress(),
         firstName: "Bruce",
         lastName: "Banner",
-        phoneNumber: randomPhoneNumber()
+        phoneNumber: randomPhoneNumber(),
+        password: fakePassword
     })
     .expect(200);
     const userId = res1["body"]["data"][0]["id"];
@@ -112,7 +116,8 @@ test("API should update user phone number", async() => {
         emailAddress: randomEmailAddress(),
         firstName: "Bruce",
         lastName: "Banner",
-        phoneNumber: randomPhoneNumber()
+        phoneNumber: randomPhoneNumber(),
+        password: fakePassword
     })
     .expect(200);
     const userId = res1["body"]["data"][0]["id"];
@@ -133,7 +138,8 @@ test("API should add a follower to an existing user", async() => {
         emailAddress: randomEmailAddress(),
         firstName: "Bruce",
         lastName: "Banner",
-        phoneNumber: randomPhoneNumber()
+        phoneNumber: randomPhoneNumber(),
+        password: fakePassword
     })
     .expect(200);
    
@@ -144,7 +150,8 @@ test("API should add a follower to an existing user", async() => {
         emailAddress: randomEmailAddress(),
         firstName: "Nick",
         lastName: "Fury",
-        phoneNumber: randomPhoneNumber()
+        phoneNumber: randomPhoneNumber(),
+        password: fakePassword
     })
     .expect(200);
 
@@ -169,7 +176,8 @@ test("API should remove a follower from an existing user", async() => {
         emailAddress: randomEmailAddress(),
         firstName: "Bruce",
         lastName: "Banner",
-        phoneNumber: randomPhoneNumber()
+        phoneNumber: randomPhoneNumber(),
+        password: fakePassword
     })
     .expect(200);
    
@@ -180,7 +188,8 @@ test("API should remove a follower from an existing user", async() => {
         emailAddress: randomEmailAddress(),
         firstName: "Nick",
         lastName: "Fury",
-        phoneNumber: randomPhoneNumber()
+        phoneNumber: randomPhoneNumber(),
+        password: fakePassword
     })
     .expect(200);
 
@@ -205,7 +214,8 @@ test("API should return a list of followers of a specified user", async() => {
         emailAddress: randomEmailAddress(),
         firstName: "Bruce",
         lastName: "Banner",
-        phoneNumber: randomPhoneNumber()
+        phoneNumber: randomPhoneNumber(),
+        password: fakePassword
     })
     .expect(200);
    
@@ -216,7 +226,8 @@ test("API should return a list of followers of a specified user", async() => {
         emailAddress: randomEmailAddress(),
         firstName: "Nick",
         lastName: "Fury",
-        phoneNumber: randomPhoneNumber()
+        phoneNumber: randomPhoneNumber(),
+        password: fakePassword
     })
     .expect(200);
 

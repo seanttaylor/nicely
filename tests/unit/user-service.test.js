@@ -299,6 +299,23 @@ test("Should unfollow the current user from a specified user", async() => {
 });
 
 
+test("Should assign a user credential", async() => {
+    const testUserNo1 = await testUserService.createUser({
+        handle: randomUserHandle(),
+        motto: "Hulk smash!",
+        emailAddress: randomEmailAddress(),
+        firstName: "Bruce",
+        lastName: "Banner",
+        phoneNumber: randomPhoneNumber()
+    });
+    await testUserNo1.save();
+
+    testUserNo1.assignCredential("xxxyyyzzz");
+
+    expect(testUserNo1._authToken === "xxxyyyzzz").toBe(true);
+});
+
+
 /*Negative Tests*/
 
 test("Should throw exception when attempting to create an invalid user", async() => {
@@ -370,19 +387,6 @@ test("Should throw exception when handle is missing", async() => {
     }
 });
 
-
-/*def test_should_throw_exception_when_handle_is_invalid():
-    with pytest.raises(UserServiceException) as exception_info:
-    test_date = datetime.now();
-test_user = test_user_service.create_user(
-    email_address = randomEmailAddress(),
-    handle = "testhandle987@mail.com",
-    first_name = "Bruce",
-    last_name = "Banner",
-    phone_number = randomPhoneNumber
-);
-
-assert "MissingOrInvalidHandle.Format" in str(exception_info.value);*/
 
 test("Should throw exception when handle is invalid", async() => {
     try {
