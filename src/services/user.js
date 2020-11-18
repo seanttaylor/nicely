@@ -103,7 +103,7 @@ function User(repo, doc) {
 
     /**
     Unsubscribe the current user from the feed of another user on the platform
-    @param (User) targetUser - an instance of the User class; the user to be un-followed
+    @param {User} targetUser - an instance of the User class; the user to be un-followed
     */
     this.unfollowUser = async function(targetUser) {
         //const resetTargetUserFollowerCount = targetUser._data.followerCount - 1 < 0;
@@ -142,12 +142,19 @@ function User(repo, doc) {
 
     /**
     Returns a list of users the current user is following
-    @param (object) self
     @returns {Array}
     */
     this.follows = async function() {
         const subscriptionsList = await this._repo.getUserSubscriptions(this._id);
         return subscriptionsList.map((u) => new User(this._repo, u));
+    }
+
+    /**
+    * Attaches a credential to the current user
+    * @param {String} token - an authorization token
+    */
+    this.assignCredential = async function(token) {
+        this._authToken = token;
     }
 
 }

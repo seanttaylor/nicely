@@ -1,8 +1,10 @@
 module.exports = {
     mocks: {
-        Comment: require("./comment.js")
+        Comment: require("./comment")
     },
     mockImpl: {
-        repo: require("./repo.js")
+        repo: require("./repo"),
+        user: require("./user"),
+        cache: require("./cache")
     }
 }
