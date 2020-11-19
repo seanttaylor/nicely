@@ -1,4 +1,9 @@
 const config = require("../../config");
+const bcrypt = require("bcryptjs");
+const {promisify} = require("util");
+const SALT_ROUNDS = 10;
+const hash = promisify(bcrypt.hash);
+const passwordAndHashMatch = promisify(bcrypt.compare);
 
 /**
 * @typedef {Object} User
@@ -213,6 +218,18 @@ function UserService(repo, validator = new UserValidator()) {
         const result = await repo.findOneByHandle(handle);
         return result.length === 1 && result[0]["handle"] === handle;
     }
+
+
+    this.createPassword = async function(passwordText) {
+        const password = await hash(passwordText, SALT_ROUNDS);
+        return password;
+    }
+    
+    
+    this.isCorrectPassword = async function(passwordText, passwordHash) {
+        const result = await passwordAndHashMatch(passwordText, passwordHash);
+        return result;
+    }  
 }
 
 

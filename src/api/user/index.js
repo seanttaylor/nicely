@@ -9,10 +9,11 @@ const {validateRequestWith, validateJWT} = require("../../lib/middleware");
  * @param {PostService} postService - an instance of the PostService
  * @param {UserService} userService - an instance of the UserService
  * @param {CommentService} commentService - an instance of the CommentService
+ * @param {AuthService} authService - an instance of the AuthService
  * @returns router - an instance of an Express router
  */
 
-function UserRouter({postService, userService, commentService}) {
+function UserRouter({postService, userService, commentService, authService}) {
 
     async function verifyUserExists(req, res, next) {
         const userExists = await userService.userExists(req.params.id);
@@ -225,10 +226,14 @@ function UserRouter({postService, userService, commentService}) {
     });
 
     router.post("/", validateRequestWith({requiredFields: true, schema: "user"}), async(req, res, next) => {
+        const {password, ...requestBody} = req.body;
 
         try {
-            const user = await userService.createUser(req.body);
+            const user = await userService.createUser(requestBody);
             await user.save();
+            await userService.createPassword(password);
+            await authService.issueAuthCredential(user);
+
             res.set("content-type", "application/json");
             res.status(200);
             res.json({

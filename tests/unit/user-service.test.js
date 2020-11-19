@@ -315,8 +315,30 @@ test("Should assign a user credential", async() => {
     expect(testUserNo1._authToken === "xxxyyyzzz").toBe(true);
 });
 
+test("Should create a new password", async() => {
+    const testPassword = await testUserService.createPassword("xxxyyyzzz");
+  
+    expect(typeof(testPassword)).toBe("string");
+});
+
+test("Should return true when plain-text password and equivalent hash match", async() => {
+    const testPasswordHash = await testUserService.createPassword("xxxyyyzzz");
+    const passwordMatches = await testUserService.isCorrectPassword("xxxyyyzzz", testPasswordHash);
+  
+    expect(passwordMatches).toBe(true);
+});
+
+
 
 /*Negative Tests*/
+
+test("Should return FALSE when plain-text password and hash do NOT match", async() => {
+    const testPasswordHash = await testUserService.createPassword("xxxyyyzzz");
+    const passwordMatches = await testUserService.isCorrectPassword("foobarbaz", testPasswordHash);
+  
+    expect(passwordMatches).toBe(false);
+});
+
 
 test("Should throw exception when attempting to create an invalid user", async() => {
     try {

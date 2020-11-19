@@ -49,6 +49,15 @@ const commentService = new CommentService({
 const IPublisher = require("./src/interfaces/publisher");
 const SSEPublisher = require("./src/lib/publisher/sse");
 const ssePublishService = new IPublisher(new SSEPublisher(eventEmitter));
+
+/**CacheService**/
+const ICache = require("./src/interfaces/cache");
+const CacheService = require("./src/lib/cache");
+const cacheService = new ICache(new CacheService());
+
+/**AuthService**/
+const AuthService = require("./src/services/auth");
+const authService = new AuthService({cacheService});
 /******************************************************************************/
 
 const SSERouter = require("./src/api/sse");
@@ -74,7 +83,8 @@ app.use("/api/v1/posts", PostRouter(postService));
 app.use("/api/v1/users", UserRouter({
     postService, 
     userService, 
-    commentService
+    commentService,
+    authService
 }));
 app.use("/api/v1/feed", FeedRouter(postService));
 app.use("/api/v1/feed/realtime-updates", SSERouter(ssePublishService));

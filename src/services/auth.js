@@ -1,15 +1,14 @@
 var jwt = require("jsonwebtoken");
 /**
  * Manages creation and lifecycle of auth credentials
- * @param {UserService} userService - an instance of the UserService class
- * @param {CacheService} cacheService - an instance of the CacheService class
+ * @param {CacheService} cacheService - an instance of the CacheService
  */
 
-function AuthService({userService, cacheService}) {
+function AuthService({cacheService}) {
 
     /**
      * Issues a new authorization credential for a specified user
-     * @param {User} user - an instance of the User classe
+     * @param {User} user - an instance of the User class
      * @returns a JSON Web Token
     */
 
