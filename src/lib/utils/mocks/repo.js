@@ -10,9 +10,13 @@ const mockRepositoryImplementation = {
         incrementLikeCount() {
             this.calledMethods.incrementLikeCountCalled = true;
         },
+        createUserPassword() {
+            this.calledMethods.createUserPasswordCalled = true;
+        },
         calledMethods: {
             incrementCommentCountCalled: false,
-            incrementLikeCountCalled: false
+            incrementLikeCountCalled: false,
+            createUserPasswordCalled: false
         }
     },
     _data: {

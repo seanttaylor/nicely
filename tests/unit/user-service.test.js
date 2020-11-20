@@ -1,5 +1,5 @@
 const uuid = require("uuid");
-//const { isUuid } = require("uuidv4");
+const mocks = require("../../src/lib/utils/mocks/repo");
 const { UserService } = require("../../src/services/user");
 const UserRepository = require("../../src/lib/repository/user/mysql");
 const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../../src/lib/utils");
@@ -315,15 +315,35 @@ test("Should assign a user credential", async() => {
     expect(testUserNo1._authToken === "xxxyyyzzz").toBe(true);
 });
 
-test("Should create a new password", async() => {
-    const testPassword = await testUserService.createPassword("xxxyyyzzz");
+test("Should create a new user password", async() => {
+    const testUserData = {
+        handle: randomUserHandle(),
+        motto: "Hulk smash!",
+        emailAddress: randomEmailAddress(),
+        firstName: "Bruce",
+        lastName: "Banner",
+        phoneNumber: randomPhoneNumber()
+    };
+    const testUser = await testUserService.createUser(testUserData);
+    const testUserId = await testUser.save();
+    const testPassword = await testUserService.createUserPassword.call(mocks, {password: "xxxyyyzzz", user: testUser});
   
-    expect(typeof(testPassword)).toBe("string");
+    expect(mocks._repo.calledMethods.createUserPasswordCalled).toBe(true);
 });
 
 test("Should return true when plain-text password and equivalent hash match", async() => {
-    const testPasswordHash = await testUserService.createPassword("xxxyyyzzz");
-    const passwordMatches = await testUserService.isCorrectPassword("xxxyyyzzz", testPasswordHash);
+    const testUserData = {
+        handle: randomUserHandle(),
+        motto: "Hulk smash!",
+        emailAddress: randomEmailAddress(),
+        firstName: "Bruce",
+        lastName: "Banner",
+        phoneNumber: randomPhoneNumber()
+    };
+    const testUser = await testUserService.createUser(testUserData);
+    const testUserId = await testUser.save();
+    const testPasswordHash = await testUserService.createUserPassword({password: "xxxyyyzzz", user: testUser});
+    const passwordMatches = await testUserService.isUserPasswordCorrect({password: "xxxyyyzzz", user: testUser});
   
     expect(passwordMatches).toBe(true);
 });
@@ -333,8 +353,19 @@ test("Should return true when plain-text password and equivalent hash match", as
 /*Negative Tests*/
 
 test("Should return FALSE when plain-text password and hash do NOT match", async() => {
-    const testPasswordHash = await testUserService.createPassword("xxxyyyzzz");
-    const passwordMatches = await testUserService.isCorrectPassword("foobarbaz", testPasswordHash);
+    const testUserData = {
+        handle: randomUserHandle(),
+        motto: "Hulk smash!",
+        emailAddress: randomEmailAddress(),
+        firstName: "Bruce",
+        lastName: "Banner",
+        phoneNumber: randomPhoneNumber()
+    };
+    const testUser = await testUserService.createUser(testUserData);
+    const testUserId = await testUser.save();
+
+    const testPasswordHash = await testUserService.createUserPassword({password: "xxxyyyzzz", user: testUser});
+    const passwordMatches = await testUserService.isUserPasswordCorrect({password: "foobarbaz", user: testUser});
   
     expect(passwordMatches).toBe(false);
 });

@@ -26,6 +26,29 @@ function UserMySQLRepository(databaseConnector) {
     }
 
 
+    this.createUserPassword = async function(userEmailAddress, password) {
+        const connection = await databaseConnector.getConnection();
+        const runQuery = promisify(connection.query.bind(connection));
+
+        const sql = `INSERT INTO user_credentials (user_email_address, user_password) VALUES ("${userEmailAddress}", "${password}");`;
+
+        await runQuery(sql);
+        connection.release();
+    }
+
+
+    this.getUserPassword = async function(userEmailAddress) {
+        const connection = await databaseConnector.getConnection();
+        const runQuery = promisify(connection.query.bind(connection));
+        const sql = `SELECT user_password FROM user_credentials WHERE user_email_address = "${userEmailAddress}";`;
+
+        const [result] = await runQuery(sql);
+        connection.release();
+
+        return result.user_password;
+    }
+
+
     this.findOneById = async function(id) {
         const connection = await databaseConnector.getConnection();
         const runQuery = promisify(connection.query.bind(connection));

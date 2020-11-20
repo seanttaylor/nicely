@@ -70,7 +70,7 @@ UNIQUE INDEX(`user_id`, `follower_id`)
 CREATE TABLE IF NOT EXISTS `user_credentials`
 (
  `user_email_address` varchar(128) NOT NULL UNIQUE,
- `password`           mediumtext NOT NULL 
+ `user_password`           mediumtext NOT NULL 
 );
 
 

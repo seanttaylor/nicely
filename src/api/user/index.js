@@ -231,7 +231,7 @@ function UserRouter({postService, userService, commentService, authService}) {
         try {
             const user = await userService.createUser(requestBody);
             await user.save();
-            await userService.createPassword(password);
+            await userService.createUserPassword({user, password});
             await authService.issueAuthCredential(user);
 
             res.set("content-type", "application/json");
