@@ -12,14 +12,15 @@ function AuthService({cacheService}) {
      * @returns a JSON Web Token
     */
 
-    this.issueAuthCredential = function(user) {
+    this.issueAuthCredential = function({user, expiresIn}) {
         const token = jwt.sign({ 
             iss: "api@nicely", 
-            exp: Math.floor(Date.now() / 1000) + (60 * 60),
+            exp: expiresIn,
             sub: user._id 
         }, process.env.JWT_SECRET);
-        user.assignCredential(token);
-        cacheService.set(token);
+        //user.assignCredential(token);
+        cacheService.set(user._id, token, expiresIn);
+        return token;
     }
 
     /**

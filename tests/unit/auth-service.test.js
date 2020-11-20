@@ -8,9 +8,9 @@ const testAuthService = new AuthService({cacheService: mockCacheService});
 /**Tests**/
 
 test("Should assign a new authorization credential to a user", async() => {
-    testAuthService.issueAuthCredential(mockUser);
-    expect(mockUser.calledMethods.assignCredential).toBe(true);
-    expect(mockCacheService.calledMethods.set).toBe(true);
+    const credential = testAuthService.issueAuthCredential({user: mockUser, expiresIn: 100});
+    //expect(mockUser.calledMethods.assignCredential).toBe(true);
+    expect(typeof(credential) === "string").toBe(true);
 });
 
 test("Should expire an existing authorization credential", async() => {

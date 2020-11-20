@@ -232,12 +232,16 @@ function UserRouter({postService, userService, commentService, authService}) {
             const user = await userService.createUser(requestBody);
             await user.save();
             await userService.createUserPassword({user, password});
-            await authService.issueAuthCredential(user);
+            const token = await authService.issueAuthCredential({
+                user, 
+                //1 hour expiration
+                expiresIn: Math.floor(Date.now() / 1000) + (60 * 60) 
+            });
 
             res.set("content-type", "application/json");
             res.status(200);
             res.json({
-                data: [user],
+                data: [Object.assign(user, {token})],
                 entries: 1
             });
         }
