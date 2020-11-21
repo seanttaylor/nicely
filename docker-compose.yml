@@ -32,7 +32,7 @@ services:
       - ./:/src
     build:
         context: .
-    command: npm start
+    command: npm test
     networks:
       - shared_network
     ports:

@@ -2,7 +2,7 @@
 
 const express = require("express");
 const router = new express.Router();
-const {validateRequestBodyWith, validateJWT} = require("../../lib/middleware");
+const {validateRequestBodyWith, authorizeRequest ,validateJWT} = require("../../lib/middleware");
 
 /**
  * 
@@ -49,7 +49,7 @@ function UserRouter({postService, userService, commentService, authService}) {
 
     /****** GET *******/
 
-    router.get("/:id/posts", validateJWT, verifyUserExists, async(req, res, next) => {
+    router.get("/:id/posts", validateJWT, authorizeRequest("readOwn:posts"),verifyUserExists, async(req, res, next) => {
         const userId = req.params.id;
         
         try {

@@ -257,6 +257,38 @@ test("API should return an access token", async() => {
     expect(typeof(accessToken)).toBe("string");
 });
 
+test("API should return a 401 status code on attempt(s) to access unauthorized resources", async() => {
+    const res1 = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "thor@avengers.io",
+        password: "thor@superSecretPassword"
+    })
+    .expect(200);
+
+    const accessToken = res1.body._meta.accessToken;
+
+    const re2 = await request.get(`/api/v1/users/${globalUserId}/posts`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send()
+    .expect(401);
+});
+
+test("API should return 200 status code on attempt(s) to access authorized resources", async() => {
+    const res1 = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "tstark@avengers.io",
+        password: "superSecretPassword"
+    })
+    .expect(200);
+
+    const accessToken = res1.body._meta.accessToken;
+
+    const re2 = await request.get(`/api/v1/users/${globalUserId}/posts`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send()
+    .expect(200);
+});
+
 
 
 
