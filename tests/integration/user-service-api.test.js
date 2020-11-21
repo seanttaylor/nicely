@@ -245,5 +245,18 @@ test("API should return a list of followers of a specified user", async() => {
     expect(res3["body"]["data"].length === 1).toBe(true);
 });
 
+test("API should return an access token", async() => {
+    const res1 = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "tstark@avengers.io",
+        password: "superSecretPassword"
+    })
+    .expect(200);
+
+    const accessToken = res1.body._meta.accessToken;
+    expect(typeof(accessToken)).toBe("string");
+});
+
+
 
 

@@ -1,15 +1,15 @@
 const mocks = require("../../src/lib/utils/mocks");
-const mockUser = mocks.mockImpl.user;
+const mockUserService = mocks.mockImpl.userService;
 const mockCacheService = mocks.mockImpl.cache;
 /*AuthService*/
 const AuthService = require("../../src/services/auth");
-const testAuthService = new AuthService({cacheService: mockCacheService});
+const testAuthService = new AuthService({cacheService: mockCacheService, userService: mockUserService});
 
 /**Tests**/
 
 test("Should assign a new authorization credential to a user", async() => {
-    const credential = testAuthService.issueAuthCredential({user: mockUser, expiresIn: 100});
-    //expect(mockUser.calledMethods.assignCredential).toBe(true);
+    const credential = await testAuthService.issueAuthCredential({});
+    //expect(mockUserService.calledMethods.getUserRole).toBe(true);
     expect(typeof(credential) === "string").toBe(true);
 });
 

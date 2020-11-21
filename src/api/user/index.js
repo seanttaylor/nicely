@@ -2,7 +2,7 @@
 
 const express = require("express");
 const router = new express.Router();
-const {validateRequestWith, validateJWT} = require("../../lib/middleware");
+const {validateRequestBodyWith, validateJWT} = require("../../lib/middleware");
 
 /**
  * 
@@ -47,18 +47,18 @@ function UserRouter({postService, userService, commentService, authService}) {
         next();
     }
 
+    /****** GET *******/
 
-    router.post("/:id/posts", verifyUserExists, validateJWT, validateRequestWith({requiredFields: true, schema: "post"}), async(req, res, next) => {
+    router.get("/:id/posts", validateJWT, verifyUserExists, async(req, res, next) => {
         const userId = req.params.id;
-
+        
         try {
-            const post = await postService.createPost({userId, ...req.body});
-            await post.save();
+            const postList = await postService.findPostsByUserId(userId);
             res.set("content-type", "application/json");
             res.status(200);
             res.json({
-                data: [post],
-                entries: 1
+                data: postList,
+                entries: postList.length
             });
         }
         catch (e) {
@@ -76,47 +76,6 @@ function UserRouter({postService, userService, commentService, authService}) {
             res.status(200);
             res.json({
                 data: postList,
-                entries: 1
-            });
-        }
-        catch (e) {
-            next(e);
-        }
-    });
-
-    router.put("/:id/posts/:post_id/edit", validateJWT, validateRequestWith({requiredFields: false, schema: "post"}) , async(req, res, next) => {
-        const userId = req.params.id;
-        const postId = req.params.post_id;
-
-        try {
-            const [post] = await postService.findPostById(postId);
-            await post.edit(req.body.body);
-            res.set("content-type", "application/json");
-            res.status(200);
-            res.json({
-                data: [post],
-                entries: 1
-            });
-        }
-        catch (e) {
-            next(e);
-        }
-    });
-
-
-    router.put("/:id/posts/:post_id/likes/:actor_id", async(req, res, next) => {
-        const userId = req.params.id;
-        const postId = req.params.post_id;
-        const actorId = req.params.actor_id;
-
-        try {
-            const [post] = await postService.findPostById(postId);
-            //Will become await post.incrementLikeCount({from: actorId});
-            await post.incrementLikeCount();
-            res.set("content-type", "application/json");
-            res.status(200);
-            res.json({
-                data: [post],
                 entries: 1
             });
         }
@@ -144,26 +103,6 @@ function UserRouter({postService, userService, commentService, authService}) {
         }
     });
 
-    router.post("/:id/posts/:post_id/comments", validateJWT, validateRequestWith({requiredFields: true, schema: "comment"}), async(req, res, next) => {
-        const userId = req.params.id;
-        const postId = req.params.post_id;
-
-        try {
-            const [post] = await postService.findPostById(postId);
-            const comment = await commentService.createComment(req.body);
-            await post.addComment(comment);
-            res.set("content-type", "application/json");
-            res.status(200);
-            res.json({
-                data: [comment],
-                entries: 1
-            });
-        }
-        catch (e) {
-            next(e);
-        }
-    });
-
     router.get("/:id/posts/:post_id/comments/:comment_id", verifyUserExists, async(req, res, next) => {
         const userId = req.params.id;
         const postId = req.params.post_id;
@@ -175,73 +114,6 @@ function UserRouter({postService, userService, commentService, authService}) {
             res.status(200);
             res.json({
                 data: [comment],
-                entries: 1
-            });
-        }
-        catch (e) {
-            next(e);
-        }
-    });
-
-    router.put("/:id/posts/:post_id/comments/:comment_id/edit", validateJWT, validateRequestWith({requiredFields: false, schema: "comment"}), async(req, res, next) => {
-        const userId = req.params.id;
-        const postId = req.params.post_id;
-        const commentId = req.params.comment_id;
-
-        try {
-            const [comment] = await commentService.findCommentById(commentId);
-            await comment.edit(req.body.body);
-            res.set("content-type", "application/json");
-            res.status(200);
-            res.json({
-                data: [comment],
-                entries: 1
-            });
-        }
-        catch (e) {
-            next(e);
-        }
-    });
-
-    router.put("/:id/posts/:post_id/comments/:comment_id/likes/:actor_id", async(req, res, next) => {
-        const userId = req.params.id;
-        const postId = req.params.post_id;
-        const commentId = req.params.comment_id;
-        const actorId = req.params.actor_id;
-
-        try {
-            const [comment] = await commentService.findCommentById(commentId);
-            //Will become await comment.incrementLikeCount({from: actorId});
-            await comment.incrementLikeCount();
-            res.set("content-type", "application/json");
-            res.status(200);
-            res.json({
-                data: [comment],
-                entries: 1
-            });
-        }
-        catch (e) {
-            next(e);
-        }
-    });
-
-    router.post("/", validateRequestWith({requiredFields: true, schema: "user"}), async(req, res, next) => {
-        const {password, ...requestBody} = req.body;
-
-        try {
-            const user = await userService.createUser(requestBody);
-            await user.save();
-            await userService.createUserPassword({user, password});
-            const token = await authService.issueAuthCredential({
-                user, 
-                //1 hour expiration
-                expiresIn: Math.floor(Date.now() / 1000) + (60 * 60) 
-            });
-
-            res.set("content-type", "application/json");
-            res.status(200);
-            res.json({
-                data: [Object.assign(user, {token})],
                 entries: 1
             });
         }
@@ -283,7 +155,216 @@ function UserRouter({postService, userService, commentService, authService}) {
         }
     });
 
-    router.put("/:id/name", validateJWT, validateRequestWith({requiredFields: false, schema: "user"}), async(req, res, next) => {
+    router.get("/:id/followers", verifyUserExists, async(req, res, next) => {
+        const userId = req.params.id;
+
+        try {
+            const [user] = await userService.findUserById(userId);
+            const followerList = await user.getFollowers(); 
+            res.set("content-type", "application/json");
+            res.status(200);
+            res.json({
+                data: followerList.map(f => f.toJSON()),
+                entries: followerList.length
+            });
+        }
+        catch (e) {
+            next(e);
+        }
+    });
+
+    /*** POST ****/
+
+    router.post("/token", async(req, res, next) => {
+        const password = req.body.password;
+        const userEmailAddress = req.body.emailAddress;
+        const [user] = await userService.findUserByEmail(userEmailAddress);
+        const result = await userService.isUserPasswordCorrect({user, password});
+
+        if (!result) {
+            res.status(401);
+            res.json({
+                data: [],
+                errors: ["Email address and/or password do not match"],
+                entries: 0
+            });
+        }
+        const accessToken = await authService.issueAuthCredential(user);
+        res.status(200);
+        res.json({
+            _meta: {
+                accessToken
+            },
+            data: [],
+            errors: [],
+            entries: 0
+        });
+    });
+
+    router.post("/:id/posts", validateJWT, verifyUserExists, validateRequestBodyWith({requiredFields: true, schema: "post"}), async(req, res, next) => {
+        const userId = req.params.id;
+
+        try {
+            const post = await postService.createPost({userId, ...req.body});
+            await post.save();
+            res.set("content-type", "application/json");
+            res.status(200);
+            res.json({
+                data: [post],
+                entries: 1
+            });
+        }
+        catch (e) {
+            next(e);
+        }
+    });
+
+    router.post("/:id/posts/:post_id/comments", validateJWT, validateRequestBodyWith({requiredFields: true, schema: "comment"}), async(req, res, next) => {
+        const userId = req.params.id;
+        const postId = req.params.post_id;
+
+        try {
+            const [post] = await postService.findPostById(postId);
+            const comment = await commentService.createComment(req.body);
+            await post.addComment(comment);
+            res.set("content-type", "application/json");
+            res.status(200);
+            res.json({
+                data: [comment],
+                entries: 1
+            });
+        }
+        catch (e) {
+            next(e);
+        }
+    });
+
+    router.post("/", validateRequestBodyWith({requiredFields: true, schema: "user"}), async(req, res, next) => {
+        const {password, ...requestBody} = req.body;
+
+        try {
+            const user = await userService.createUser(requestBody);
+            await user.save();
+            await userService.createUserPassword({user, password});
+            const token = await authService.issueAuthCredential({
+                user, 
+                //1 hour expiration
+                expiresIn: Math.floor(Date.now() / 1000) + (60 * 60) 
+            });
+
+            res.set("content-type", "application/json");
+            res.status(200);
+            res.json({
+                _meta: {accessToken: token},
+                data: [user],
+                entries: 1
+            });
+        }
+        catch (e) {
+            next(e);
+        }
+    });
+
+    router.post("/:id/posts/:post_id/publish", validateJWT, async(req, res, next) => {
+        const postId = req.params.post_id;
+
+        try {
+            const [post] = await postService.findPostById(postId);
+            await postService.markAsPublished(post);
+            res.set("content-type", "application/json");
+            res.status(204);
+            res.end();
+        }
+        catch (e) {
+            next(e);
+        }
+    });
+
+    /*** PUT ***/
+
+    router.put("/:id/posts/:post_id", validateJWT, validateRequestBodyWith({requiredFields: false, schema: "post"}) , async(req, res, next) => {
+        const userId = req.params.id;
+        const postId = req.params.post_id;
+
+        try {
+            const [post] = await postService.findPostById(postId);
+            await post.edit(req.body.body);
+            res.set("content-type", "application/json");
+            res.status(200);
+            res.json({
+                data: [post],
+                entries: 1
+            });
+        }
+        catch (e) {
+            next(e);
+        }
+    });
+
+    router.put("/:id/posts/:post_id/likes/:actor_id", async(req, res, next) => {
+        const userId = req.params.id;
+        const postId = req.params.post_id;
+        const actorId = req.params.actor_id;
+
+        try {
+            const [post] = await postService.findPostById(postId);
+            //Will become await post.incrementLikeCount({from: actorId});
+            await post.incrementLikeCount();
+            res.set("content-type", "application/json");
+            res.status(200);
+            res.json({
+                data: [post],
+                entries: 1
+            });
+        }
+        catch (e) {
+            next(e);
+        }
+    });
+
+    router.put("/:id/posts/:post_id/comments/:comment_id", validateJWT, validateRequestBodyWith({requiredFields: false, schema: "comment"}), async(req, res, next) => {
+        const userId = req.params.id;
+        const postId = req.params.post_id;
+        const commentId = req.params.comment_id;
+
+        try {
+            const [comment] = await commentService.findCommentById(commentId);
+            await comment.edit(req.body.body);
+            res.set("content-type", "application/json");
+            res.status(200);
+            res.json({
+                data: [comment],
+                entries: 1
+            });
+        }
+        catch (e) {
+            next(e);
+        }
+    });
+
+    router.put("/:id/posts/:post_id/comments/:comment_id/likes/:actor_id", async(req, res, next) => {
+        const userId = req.params.id;
+        const postId = req.params.post_id;
+        const commentId = req.params.comment_id;
+        const actorId = req.params.actor_id;
+
+        try {
+            const [comment] = await commentService.findCommentById(commentId);
+            //Will become await comment.incrementLikeCount({from: actorId});
+            await comment.incrementLikeCount();
+            res.set("content-type", "application/json");
+            res.status(200);
+            res.json({
+                data: [comment],
+                entries: 1
+            });
+        }
+        catch (e) {
+            next(e);
+        }
+    });
+
+    router.put("/:id/name", validateJWT, validateRequestBodyWith({requiredFields: false, schema: "user"}), async(req, res, next) => {
         const userId = req.params.id;
 
         try {
@@ -301,7 +382,7 @@ function UserRouter({postService, userService, commentService, authService}) {
         }
     });
 
-    router.put("/:id/motto", validateJWT, validateRequestWith({requiredFields: false, schema: "user"}), async(req, res, next) => {
+    router.put("/:id/motto", validateJWT, validateRequestBodyWith({requiredFields: false, schema: "user"}), async(req, res, next) => {
         const userId = req.params.id;
 
         try {
@@ -319,7 +400,7 @@ function UserRouter({postService, userService, commentService, authService}) {
         }
     });
 
-    router.put("/:id/phone", validateJWT, validateRequestWith({requiredFields: false, schema: "user"}), async(req, res, next) => {
+    router.put("/:id/phone", validateJWT, validateRequestBodyWith({requiredFields: false, schema: "user"}), async(req, res, next) => {
         const userId = req.params.id;
 
         try {
@@ -373,38 +454,6 @@ function UserRouter({postService, userService, commentService, authService}) {
         }
     });
 
-    router.get("/:id/followers", verifyUserExists, async(req, res, next) => {
-        const userId = req.params.id;
-
-        try {
-            const [user] = await userService.findUserById(userId);
-            const followerList = await user.getFollowers(); 
-            res.set("content-type", "application/json");
-            res.status(200);
-            res.json({
-                data: followerList.map(f => f.toJSON()),
-                entries: followerList.length
-            });
-        }
-        catch (e) {
-            next(e);
-        }
-    });
-
-    router.post("/:id/posts/:post_id/publish", validateJWT, async(req, res, next) => {
-        const postId = req.params.post_id;
-
-        try {
-            const [post] = await postService.findPostById(postId);
-            await postService.markAsPublished(post);
-            res.set("content-type", "application/json");
-            res.status(204);
-            res.end();
-        }
-        catch (e) {
-            next(e);
-        }
-    });
 
     return router;
 }

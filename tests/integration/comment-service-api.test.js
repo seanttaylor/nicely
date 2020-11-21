@@ -74,7 +74,7 @@ test("API shoud return updated comment matching test text", async() => {
     const commentId = res2["body"]["data"][0]["id"];
     const testEdit = "True Story. Srsly.";
 
-    const res3 = await request.put(`/api/v1/users/${globalUserId}/posts/${postId}/comments/${commentId}/edit`)
+    const res3 = await request.put(`/api/v1/users/${globalUserId}/posts/${postId}/comments/${commentId}`)
     .set("Authorization", `Bearer ${fakeToken}`)
     .send({
         body: testEdit

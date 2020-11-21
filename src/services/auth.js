@@ -2,24 +2,27 @@ var jwt = require("jsonwebtoken");
 /**
  * Manages creation and lifecycle of auth credentials
  * @param {CacheService} cacheService - an instance of the CacheService
+ * @param {UserService} userService - an instance of the UserService
  */
 
-function AuthService({cacheService}) {
-
+function UserAuthService({cacheService, userService}) {
     /**
      * Issues a new authorization credential for a specified user
      * @param {User} user - an instance of the User class
      * @returns a JSON Web Token
     */
 
-    this.issueAuthCredential = function({user, expiresIn}) {
+    this.issueAuthCredential = async function(user) {
+        const expiresInOneHour = Math.floor(Date.now() / 1000) + (60 * 60);
+        //TODO: Figure out why getUserRole returns no role for an existing user
+        //const userRole = await userService.getUserRole(user);
         const token = jwt.sign({ 
             iss: "api@nicely", 
-            exp: expiresIn,
-            sub: user._id 
+            exp: expiresInOneHour,
+            sub: user._id,
+            role: ["user"]
         }, process.env.JWT_SECRET);
-        //user.assignCredential(token);
-        cacheService.set(user._id, token, expiresIn);
+        cacheService.set({key: user._id, value: token, ttl: expiresInOneHour});
         return token;
     }
 
@@ -43,4 +46,4 @@ function AuthService({cacheService}) {
     }
 }
 
-module.exports = AuthService;
+module.exports = UserAuthService;

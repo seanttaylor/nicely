@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 const globalConfig = require("./config");
 const http = require("http");
 const path = require("path");
@@ -57,7 +59,7 @@ const cacheService = new ICache(new CacheService());
 
 /**AuthService**/
 const AuthService = require("./src/services/auth");
-const authService = new AuthService({cacheService});
+const authService = new AuthService({cacheService, userService});
 /******************************************************************************/
 
 const SSERouter = require("./src/api/sse");

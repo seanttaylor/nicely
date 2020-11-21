@@ -154,14 +154,6 @@ function User(repo, doc) {
         return subscriptionsList.map((u) => new User(this._repo, u));
     }
 
-    /**
-    * Attaches a credential to the current user
-    * @param {String} token - an authorization token
-    */
-    this.assignCredential = async function(token) {
-        this._authToken = token;
-    }
-
 }
 
 
@@ -190,6 +182,12 @@ function UserService(repo, validator = new UserValidator()) {
     this.findUserById = async function(id) {
         const [user] = await this._repo.findOneById(id);
         return [new User(repo, user)];
+    }
+
+
+    this.findUserByEmail = async function(emailAddress) {
+        const userList = await this._repo.findOneByEmail(emailAddress);
+        return userList.map((u) => new User(this._repo, u));
     }
 
 
@@ -231,7 +229,13 @@ function UserService(repo, validator = new UserValidator()) {
         const storedUserPasswordHash = await this._repo.getUserPassword(user._data.emailAddress);
         const result = await passwordAndHashMatch(password, storedUserPasswordHash);        
         return result;
-    }  
+    } 
+    
+    
+    this.getUserRole = async function(user) {
+        const result = await this._repo.getUserRole(user._id);
+        return result.role; 
+    }
 }
 
 

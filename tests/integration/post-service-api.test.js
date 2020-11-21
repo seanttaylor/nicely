@@ -65,7 +65,7 @@ test("Should return updated post body matching text", async() => {
     .expect(200);
     const postId = res1["body"]["data"][0]["id"];
 
-    const res2 = await request.put(`/api/v1/users/${globalUserId}/posts/${postId}/edit`)
+    const res2 = await request.put(`/api/v1/users/${globalUserId}/posts/${postId}`)
     .set("Authorization", `Bearer ${fakeToken}`)
     .send({
         body: "Okay, I take it back"

@@ -73,6 +73,14 @@ CREATE TABLE IF NOT EXISTS `user_credentials`
  `user_password`           mediumtext NOT NULL 
 );
 
+CREATE TABLE IF NOT EXISTS `user_roles`
+(
+ `user_id` varchar(64) NOT NULL UNIQUE,
+ `role`    mediumtext NOT NULL ,
+
+KEY `fkIdx_197` (`user_id`),
+CONSTRAINT `FK_197` FOREIGN KEY `fkIdx_197` (`user_id`) REFERENCES `users` (`id`)
+);
 
 
 INSERT INTO users (id, handle, email_address, phone_number, first_name, last_name, created_date) VALUES("e98417a8-d912-44e0-8d37-abe712ca840f", "@tstark", "tstark@avengers.io", "12125552424", "Tony", "Stark", "2020-09-26T23:08:27.645Z");
@@ -87,6 +95,9 @@ INSERT INTO user_followers (user_id, follower_id) VALUES("e98417a8-d912-44e0-8d3
 
 UPDATE users SET follower_count = follower_count + 1 WHERE id = "e98417a8-d912-44e0-8d37-abe712ca840f";
 
+INSERT INTO user_roles (user_id, role) VALUES("e98417a8-d912-44e0-8d37-abe712ca840f", "admin");
+
+INSERT INTO user_credentials (user_email_address, user_password) VALUES("tstark@avengers.io", "$2y$10$Zgd2BY7KhfZ0p2fpzB/fGeJIPRIOd4UKmZuQC.0f4kjIXjFi1VsSu");
 
 
 

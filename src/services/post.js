@@ -149,6 +149,12 @@ function PostService({ repo, userService, eventEmitter, validator }) {
     }
 
 
+    this.findPostsByUserId = async function(userId) {
+        const postList = await this._repo.findPostsByUserId(userId);
+        return postList.map((p) => new Post(this._repo, p));
+    }
+
+    
     this.deletePost = async function(id) {
 
     }

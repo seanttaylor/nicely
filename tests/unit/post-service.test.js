@@ -268,6 +268,12 @@ test("Should increment post comment count when commentCount property already exi
 
 });
 
+test("Should return list of posts created by a user with specified id", async() => {
+    const postList = await testPostService.findPostsByUserId("e98417a8-d912-44e0-8d37-abe712ca840f");
+    expect(Array.isArray(postList)).toBe(true);
+    expect(postList[0]["id"] === "e98417a8-d912-44e0-8d37-abe712ca840f");
+});
+
 
 /**Negative Tests**/
 test("Should throw exception when attempting to create invalid post", async() => {

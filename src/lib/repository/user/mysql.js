@@ -17,12 +17,24 @@ function UserMySQLRepository(databaseConnector) {
         const runQuery = promisify(connection.query.bind(connection));
         const id = uuid.v4();
 
-        const sql = `INSERT INTO users (id, handle, email_address, motto, phone_number, first_name, last_name, created_date) VALUES ("${id}", "${doc.handle}", "${doc.emailAddress}", "${doc.motto}", "${doc.phoneNumber}", "${doc.firstName}", "${doc.lastName}", "${createdDate}");`;
+        const createUserSql = `INSERT INTO users (id, handle, email_address, motto, phone_number, first_name, last_name, created_date) VALUES ("${id}", "${doc.handle}", "${doc.emailAddress}", "${doc.motto}", "${doc.phoneNumber}", "${doc.firstName}", "${doc.lastName}", "${createdDate}");`;
 
-        const result = await runQuery(sql);
+        const addUserRoleSql = `INSERT INTO user_roles (user_id, role) VALUES ("${id}", "user");`;
+
+        connection.beginTransaction(async(err) => {
+            try {
+                await runQuery(createUserSql);
+                await runQuery(addUserRoleSql);
+                connection.commit();
+            }
+            catch (e) {
+                console.error(e);
+                connection.rollback();
+            }
+        });
+
         connection.release();
-
-        return { "id": id, "createdDate": createdDate };
+        return { id, createdDate };
     }
 
 
@@ -208,6 +220,17 @@ function UserMySQLRepository(databaseConnector) {
         const result = await runQuery(sql);
         return result.map((u) => onReadUser(u));
     }
+
+
+    this.getUserRole = async function(currentUserId) {
+        const connection = await databaseConnector.getConnection();
+        const runQuery = promisify(connection.query.bind(connection));
+        const sql = `SELECT * FROM user_roles WHERE user_id = "${currentUserId}";`;
+
+        const [result] = await runQuery(sql);
+        return result;
+    }
+
 
     this.deleteUser = function(id) {
         return

@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 /**
  * Interface for a service to deliver published posts to a specified destination
  *

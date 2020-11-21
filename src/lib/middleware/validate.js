@@ -4,12 +4,12 @@ const schemas = require("../../schemas/user/api");
 const validatorService = new IValidator(new JSONValidator(schemas));
 
 /**
- * 
+ * Validates a http request body against a specified JSON Schema document
  * @param {Object} options 
  * @param {Boolean} options.requiredFields - indicates whether validation is performed against all required fields
  * @param {String} options.schema - name of the schema to perform validation against
  */
-function validateRequestWith(options) {
+function validateRequestBodyWith(options) {
     return function(req, res, next) {
         const validation = validatorService.validate({
             validateWithRequiredFields: options.requiredFields, 
@@ -30,4 +30,4 @@ function validateRequestWith(options) {
     }
 }
  
- module.exports = validateRequestWith;
+ module.exports = validateRequestBodyWith;

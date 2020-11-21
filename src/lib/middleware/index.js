@@ -1,4 +1,5 @@
 module.exports = {
-    validateRequestWith: require("./validate"),
+    validateRequestBodyWith: require("./validate"),
+    authorizeRequest: require("./authorize"),
     validateJWT: require("./jwt")
 }

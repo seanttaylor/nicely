@@ -299,21 +299,13 @@ test("Should unfollow the current user from a specified user", async() => {
 });
 
 
-test("Should assign a user credential", async() => {
-    const testUserNo1 = await testUserService.createUser({
-        handle: randomUserHandle(),
-        motto: "Hulk smash!",
-        emailAddress: randomEmailAddress(),
-        firstName: "Bruce",
-        lastName: "Banner",
-        phoneNumber: randomPhoneNumber()
-    });
-    await testUserNo1.save();
+test("Should return a user role", async() => {
+    const [user] = await testUserService.findUserById("e98417a8-d912-44e0-8d37-abe712ca840f");
+    const userRole = await testUserService.getUserRole(user);
 
-    testUserNo1.assignCredential("xxxyyyzzz");
-
-    expect(testUserNo1._authToken === "xxxyyyzzz").toBe(true);
+    expect(userRole === "admin").toBe(true);
 });
+
 
 test("Should create a new user password", async() => {
     const testUserData = {

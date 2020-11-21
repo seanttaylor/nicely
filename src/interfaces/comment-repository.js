@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 /**
  * Interface for a repository of comments
  *

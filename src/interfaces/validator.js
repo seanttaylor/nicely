@@ -1,6 +1,7 @@
+/* istanbul ignore file */
+
 /**
  * Interface for a validator service
- *
  * @interface
  * @param {Object} myImpl - object defining concrete implementations for interface methods
  */

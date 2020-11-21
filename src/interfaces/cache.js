@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 /**
 * An object having the ICache API; a set of methods for managing cache entries.
 * @typedef {Object} ICacheAPI
