@@ -1,18 +1,21 @@
 {
-    "admin": {
-        "posts": {
-            "create:own": ["*"],
-            "read:any": ["*"],
-            "update:own": ["*"],
-            "delete:own": ["*"]
-        }
-    },
-    "user": {
-        "posts": {
-            "create:own": ["*"],
-            "read:any": ["*"],
-            "update:own": ["*"],
-            "delete:own": ["*"]
+    "__comments": "Authorization configuration for use with npm package 'accesscontrol.' See https://www.npmjs.com/package/accesscontrol",
+    "grants": {
+        "admin": {
+            "posts": {
+                "create:own": ["*"],
+                "read:any": ["*"],
+                "update:own": ["*"],
+                "delete:own": ["*"]
+            }
+        },
+        "user": {
+            "posts": {
+                "create:own": ["*"],
+                "read:any": ["*"],
+                "update:own": ["*"],
+                "delete:own": ["*"]
+            }
         }
     }
 }

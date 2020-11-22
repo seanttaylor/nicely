@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
  * @param {Object} req - Express Request object.
  * @param {Object} res - Express Response object.
  * @param {Function} next - Express 'next' function.
- * @returns
  * 
 */
 

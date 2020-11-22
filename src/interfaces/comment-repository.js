@@ -1,10 +1,20 @@
 /* istanbul ignore file */
 
+
+/**
+* An object having the ICommentRepository API; a set of methods for managing user comments
+* @typedef {Object} ICommentRepositoryAPI
+* @property {Function} create - creates a new comment in the data store
+* @property {Function} findOneById - finds a comment in the data store by its uuid
+* @property {Function} findAllComments - finds all comments in the data store
+* @property {Function} incrementLikeCount - increments like_count property of a comment in the data store
+* @property {Function} editComment - update a comment in the data store by its uuid
+*/
+
+
 /**
  * Interface for a repository of comments
- *
- * @interface
- * @param {Object} myImpl - object defining concrete implementations for interface methods
+ * @param {ICommentRepositoryAPI} myImpl - object defining concrete implementations for interface methods
  */
 
 function ICommentRepository(myImpl) {
@@ -13,15 +23,13 @@ function ICommentRepository(myImpl) {
     }
 
     /**
-    Creates a new comment in the data store
     @param {Object} doc - dictionary representing a valid entry
-    @returns {String} - a uuid for the new post
+    @returns {String} a uuid for the new post
     */
     this.create = myImpl.create || required;
 
 
     /**
-    Finds a comment in the data store by its uuid.
     @param {String} id - uuid of the post
     @returns {Object} - the requested post
     */
@@ -29,22 +37,20 @@ function ICommentRepository(myImpl) {
 
 
     /**
-    Finds all comments in the data store
     @returns {Array} - a list of all records in the data store
     */
     this.findAllComments = myImpl.findAllComments || required;
 
+
     /**
-    Increments like_count property of a comment in the data store
-    @param {String} commentId - uuid of comment['like_count'] to increment
+    @param {String} commentId - uuid of comment like_count property to increment
     */
     this.incrementLikeCount = myImpl.incrementLikeCount || required;
 
+
     /**
-    Update a comment in the data store by its uuid.
     @param {String} id - uuid of the post
     @param {Object} doc - the update document
-
     */
     this.editComment = myImpl.editComment || required;
 
@@ -60,6 +66,5 @@ function ICommentRepository(myImpl) {
     Object.assign(this, optionalMethods);
 
 }
-
 
 module.exports = ICommentRepository;

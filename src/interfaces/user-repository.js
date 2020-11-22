@@ -1,10 +1,19 @@
 /* istanbul ignore file */
 
 /**
+* An object having the IUserRepository API; a set of methods for managing users
+* @typedef {Object} IUserRepositoryAPI
+* @property {Function} create - creates a new user in the data store
+* @property {Function} findOneById - finds a user in the data store by uuid
+* @property {Function} findAll - finds all users in the data store
+* @property {Function} editName - update user.firstName and/or user.lastName properties
+* @property {Function} editMotto - update user.motto property
+* @property {Function} delete - deletes a user in the data store by its uuid
+*/
+
+/**
  * Interface for a repository of users
- *
- * @interface
- * @param {Object} myImpl - object defining concrete implementations for interface methods
+ * @param {IUserRepositoryAPI} myImpl - object defining concrete implementations for interface methods
  */
 
 function IUserRepository(myImpl) {
@@ -13,41 +22,35 @@ function IUserRepository(myImpl) {
     }
 
     /**
-    Creates a new user in the data store.
     @param {Object} doc - dictionary representing a valid entry
     @returns {String} - a uuid for the new user
     */
     this.create = myImpl.create || required;
 
     /**
-    Finds a user in the data store by uuid.
     @param {String} id - uuid of the user
     @returns {Object} - the requested user
     */
     this.findOneById = myImpl.findOneById || required;
 
     /**
-    Finds all users in the data store
     @returns {Array} - a list of all records in the data store
     */
     this.findAll = myImpl.findAll || required;
 
     /**
-    Update user.firstName and/or user.lastName properties
     @param {String} id - uuid of the usr
     @param {Object} doc - object containing user first name and last name
     */
     this.editName = myImpl.editName || required;
 
     /**
-    Update user.motto property
     @param {String} id - uuid of the usr
     @param {Object} doc - object containing user motto
     */
     this.editMotto = myImpl.editMotto || required;
 
     /**
-    Deletes a user in the data store by its uuid.
     @param {String} id - uuid of the user
     */
     this.delete = myImpl.delete || required;

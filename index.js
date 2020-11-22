@@ -72,7 +72,7 @@ const CommentRouter = require("./src/api/comment");
 app.use(helmet());
 app.use(cors());
 app.use(morgan("tiny", {
-    skip: function (req, res) { return res.statusCode < 400 }
+    skip: function (req, res) { return res.statusCode < 500 }
   }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

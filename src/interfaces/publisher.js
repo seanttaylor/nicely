@@ -1,12 +1,16 @@
 /* istanbul ignore file */
 
 /**
- * Interface for a service to deliver published posts to a specified destination
- *
- * @interface
- * @param {Object} myImpl - object defining concrete implementations for interface methods
- */
+* An object having the IPublhser API; a set of methods for publishing user posts
+* @typedef {Object} IPublisherAPI
+* @property {Function} publish - publishes posts to a consumer
+* @property {Function} setup - adds additional configuration necessary to execute the publish method after class is instantiated
+*/
 
+/**
+ * Interface for a service to deliver published posts to a specified consumer
+ * @param {IPublisherAPI} myImpl - object defining concrete implementations for interface methods
+ */
 
 function IPublisher(myImpl) {
     function required() {
@@ -14,14 +18,12 @@ function IPublisher(myImpl) {
     }
 
     /**
-    Publishes posts
     @param {Post} post - an instance of the Post class
     */
     this.publish = myImpl.publish || required;
 
 
     /** 
-    Adds additional configuration necessary to execute the publish method after class is instantiated
     @param {Response} response - an instance of an Express response object
     */
     this.setup = myImpl.setup || required;

@@ -1,9 +1,14 @@
 /* istanbul ignore file */
 
 /**
+* An object having the IValidatorAPI; a set of methods for validating data
+* @typedef {Object} IValidatorAPI
+* @property {Function} validate - Validates input data against specified criteria (e.g a JSON schema document)
+*/
+
+/**
  * Interface for a validator service
- * @interface
- * @param {Object} myImpl - object defining concrete implementations for interface methods
+ * @param {IValidatorAPI} myImpl - object defining concrete implementations for interface methods
  */
 
 function IValidator(myImpl) {
@@ -12,9 +17,8 @@ function IValidator(myImpl) {
     }
 
     /**
-    Validates input data against specified criteria (e.g a JSON schema document)
     @param {Object} doc - dictionary representing a valid entry
-    @returns {Boolean} - indicating whether the input data is valid 
+    @returns {Boolean} indicating whether the input data is valid 
     */
     this.validate = myImpl.validate || required;
 

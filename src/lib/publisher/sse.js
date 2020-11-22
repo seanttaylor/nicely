@@ -8,7 +8,7 @@ const ServerSentEvent = require("../sse");
 const sse = ServerSentEvent();
 
 /**
- * @implements {IPublisher}
+ * @implements {IPublisherAPI}
  * @param {EventEmitter} eventEmitter - an instance of EventEmitter
  */
 

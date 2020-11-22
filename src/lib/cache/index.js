@@ -14,8 +14,8 @@ const DEFAULT_TTL = 300000;
 */
 
 /**
- * @implements {ICache}
- * @returns {Object} - the ICache interface
+ * @implements {ICacheAPI}
+ * @returns {Object} an implementation of the ICache interface
  */
 
 function Cache() {

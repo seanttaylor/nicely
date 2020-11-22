@@ -11,9 +11,7 @@
 */
 
 /** Interface for managing cache entries
- * @interface
- * @param {ICacheAPI} myImpl - Object containing methods implementing the ICache API
- * @returns 
+ * @param {ICacheAPI} myImpl
 */
 
 function ICache(myImpl) {
@@ -30,8 +28,6 @@ function ICache(myImpl) {
     this.delete = myImpl.delete || required;
 
     this.has = myImpl.has || required;
-
-    return;
 }
 
 
