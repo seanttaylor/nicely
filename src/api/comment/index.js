@@ -11,7 +11,7 @@ const { validateJWT } = require("../../lib/middleware");
  */
 
 function CommentRouter(CommentService) {
-    router.get("/", validateJWT, async(req, res, next) => {
+    router.get("/", async(req, res, next) => {
         try {
             const commentList = await CommentService.findAllComments();
             res.set("content-type", "application/json");

@@ -7,10 +7,22 @@
                 "read:any": ["*"],
                 "update:own": ["*"],
                 "delete:own": ["*"]
+            },
+            "comments": {
+                "create:own": ["*"],
+                "read:any": ["*"],
+                "update:own": ["*"],
+                "delete:own": ["*"]
             }
         },
         "user": {
             "posts": {
+                "create:own": ["*"],
+                "read:any": ["*"],
+                "update:own": ["*"],
+                "delete:own": ["*"]
+            },
+            "comments": {
                 "create:own": ["*"],
                 "read:any": ["*"],
                 "update:own": ["*"],

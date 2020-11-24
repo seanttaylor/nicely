@@ -33,7 +33,7 @@ module.exports = function(actionId) {
                 return;
             }
             //The requester is not authorized to access the specified resource
-            if (req.params.id && req.params.id !== decodedToken.sub) {
+            if (req.params.id !== decodedToken.sub) {
                 res.status(401).send({
                     data: [],
                     error: ["Unauthorized: missing access grant(s)"],

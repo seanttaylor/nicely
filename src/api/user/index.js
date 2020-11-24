@@ -192,7 +192,7 @@ function UserRouter({postService, userService, commentService, authService}) {
         const accessToken = await authService.issueAuthCredential(user);
         res.status(200);
         res.json({
-            _meta: {
+            meta: {
                 accessToken
             },
             data: [],
@@ -255,7 +255,7 @@ function UserRouter({postService, userService, commentService, authService}) {
             res.set("content-type", "application/json");
             res.status(200);
             res.json({
-                _meta: {accessToken: token},
+                meta: {accessToken: token},
                 data: [user],
                 entries: 1
             });
@@ -282,7 +282,7 @@ function UserRouter({postService, userService, commentService, authService}) {
 
     /*** PUT ***/
 
-    router.put("/:id/posts/:post_id", validateJWT, validateRequestBodyWith({requiredFields: false, schema: "post"}) , async(req, res, next) => {
+    router.put("/:id/posts/:post_id", validateJWT, authorizeRequest("updateOwn:posts"), validateRequestBodyWith({requiredFields: false, schema: "post"}) , async(req, res, next) => {
         const userId = req.params.id;
         const postId = req.params.post_id;
 
@@ -322,7 +322,7 @@ function UserRouter({postService, userService, commentService, authService}) {
         }
     });
 
-    router.put("/:id/posts/:post_id/comments/:comment_id", validateJWT, validateRequestBodyWith({requiredFields: false, schema: "comment"}), async(req, res, next) => {
+    router.put("/:id/posts/:post_id/comments/:comment_id", validateJWT, authorizeRequest("updateOwn:comments"), validateRequestBodyWith({requiredFields: false, schema: "comment"}), async(req, res, next) => {
         const userId = req.params.id;
         const postId = req.params.post_id;
         const commentId = req.params.comment_id;

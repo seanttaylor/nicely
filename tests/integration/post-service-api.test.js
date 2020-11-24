@@ -9,7 +9,7 @@ const request = supertest(app);
 
 const globalUserId = "e98417a8-d912-44e0-8d37-abe712ca840f";
 const globalUserIdNo2 = "b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09";
-const fakeToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.S_bjg_r4RH-OEeBl8MDB321ZARb0OaKzpQajdIAHQ-Q";
+const fakeToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJyb2xlIjpbInVzZXIiXX0.gq1_kjBm7mhhGIBR-3zO-NdOd-Bc-_WMPebWjGNXSms";
 
 
 test("NODE_ENV should be `ci/cd/test`", () => {
@@ -17,8 +17,16 @@ test("NODE_ENV should be `ci/cd/test`", () => {
 });
 
 test("API should return a new post", async() => {
+    const res1 = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "tstark@avengers.io",
+        password: "superSecretPassword"
+    })
+    .expect(200);
+
+    const accessToken = res1.body.meta.accessToken;
     const res = await request.post(`/api/v1/users/${globalUserId}/posts`)
-    .set("Authorization", `Bearer ${fakeToken}`)
+    .set("Authorization", `Bearer ${accessToken}`)
     .send({
         "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
         "handle": "@tstark"
@@ -27,8 +35,17 @@ test("API should return a new post", async() => {
 });
 
 test("API should return a list of posts", async() => {
+    const res1 = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "tstark@avengers.io",
+        password: "superSecretPassword"
+    })
+    .expect(200);
+
+    const accessToken = res1.body.meta.accessToken;
+
     const res = await request.get("/api/v1/posts")
-    .set("Authorization", `Bearer ${fakeToken}`)
+    .set("Authorization", `Bearer ${accessToken}`)
     .expect(200);
     const responsePayload = JSON.parse(res.text);
     
@@ -37,8 +54,16 @@ test("API should return a list of posts", async() => {
 });
 
 test("API should return specified Post instance matching id", async() => {
+    const tokenRequest = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "tstark@avengers.io",
+        password: "superSecretPassword"
+    })
+    .expect(200);
+
+    const accessToken = tokenRequest.body.meta.accessToken;
     const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
-    .set("Authorization", `Bearer ${fakeToken}`)
+    .set("Authorization", `Bearer ${accessToken}`)
     .send({
         "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
         "handle": "@tstark"
@@ -55,9 +80,17 @@ test("API should return specified Post instance matching id", async() => {
 
 
 test("Should return updated post body matching text", async() => {
+    const tokenRequest = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "tstark@avengers.io",
+        password: "superSecretPassword"
+    })
+    .expect(200);
+
+    const accessToken = tokenRequest.body.meta.accessToken;
     const testEdit = "Okay, I take it back";
     const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
-    .set("Authorization", `Bearer ${fakeToken}`)
+    .set("Authorization", `Bearer ${accessToken}`)
     .send({
         "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
         "handle": "@tstark"
@@ -66,13 +99,14 @@ test("Should return updated post body matching text", async() => {
     const postId = res1["body"]["data"][0]["id"];
 
     const res2 = await request.put(`/api/v1/users/${globalUserId}/posts/${postId}`)
-    .set("Authorization", `Bearer ${fakeToken}`)
+    .set("Authorization", `Bearer ${accessToken}`)
     .send({
         body: "Okay, I take it back"
     })
     .expect(200);
 
     const res3 = await request.get(`/api/v1/users/${globalUserId}/posts/${postId}`)
+    .set("Authorization", `Bearer ${accessToken}`)
     .expect(200);
 
     expect(res3["body"]["data"][0]["data"]["body"] === testEdit).toBe(true);
@@ -80,8 +114,17 @@ test("Should return updated post body matching text", async() => {
 });
 
 test("API should add a comment to a post", async() => {
+    const tokenRequest = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "tstark@avengers.io",
+        password: "superSecretPassword"
+    })
+    .expect(200);
+
+    const accessToken = tokenRequest.body.meta.accessToken;
+
     const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
-    .set("Authorization", `Bearer ${fakeToken}`)
+    .set("Authorization", `Bearer ${accessToken}`)
     .send({
         "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
         "handle": "@tstark"
@@ -90,7 +133,7 @@ test("API should add a comment to a post", async() => {
     const postId = res1["body"]["data"][0]["id"];
 
     const res2 = await request.post(`/api/v1/users/${globalUserId}/posts/${postId}/comments`)
-    .set("Authorization", `Bearer ${fakeToken}`)
+    .set("Authorization", `Bearer ${accessToken}`)
     .send({
         postId,
         userId: globalUserId,
@@ -99,14 +142,24 @@ test("API should add a comment to a post", async() => {
     .expect(200);
 
     const res3 = await request.get(`/api/v1/users/${globalUserId}/posts/${postId}`)
+    .set("Authorization", `Bearer ${accessToken}`)
     .expect(200);
 
     expect(res3["body"]["data"][0]["data"]["commentCount"] === 1).toBe(true);
 });
 
 test("API should increment post like count", async()=> {
+    const tokenRequest = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "tstark@avengers.io",
+        password: "superSecretPassword"
+    })
+    .expect(200);
+
+    const accessToken = tokenRequest.body.meta.accessToken;
+
     const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
-    .set("Authorization", `Bearer ${fakeToken}`)
+    .set("Authorization", `Bearer ${accessToken}`)
     .send({
         "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
         "handle": "@tstark"
@@ -115,13 +168,15 @@ test("API should increment post like count", async()=> {
     const postId = res1["body"]["data"][0]["id"];
 
     const res2 = await request.put(`/api/v1/users/${globalUserId}/posts/${postId}/likes/${globalUserIdNo2}`)
+    .set("Authorization", `Bearer ${accessToken}`)
     .send()
     .expect(200);
 
     const res3 = await request.get(`/api/v1/users/${globalUserId}/posts/${postId}`)
+    .set("Authorization", `Bearer ${accessToken}`)
     .expect(200);
+
     expect(res3["body"]["data"][0]["data"]["likeCount"] === 1).toBe(true);
-    
 });
 
 test("API should return list of users a specified user has subscribed to", async()=> {
@@ -143,9 +198,17 @@ test("API should return list of the (35) most recent posts", async()=> {
 });
 
 test("Should fail to mark a new post as published", async() => {
+    const tokenRequest = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "tstark@avengers.io",
+        password: "superSecretPassword"
+    })
+    .expect(200);
+
+    const accessToken = tokenRequest.body.meta.accessToken;
 
     const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
-    .set("Authorization", `Bearer ${fakeToken}`)
+    .set("Authorization", `Bearer ${accessToken}`)
     .send({
         "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
         "handle": "@tstark"
@@ -156,16 +219,24 @@ test("Should fail to mark a new post as published", async() => {
     
     
     const res2 = await request.post(`/api/v1/users/${globalUserId}/posts/${post.id}/publish`)
-    .set("Authorization", `Bearer ${fakeToken}`)
+    .set("Authorization", `Bearer ${accessToken}`)
     .expect(204);
 });
 
 /***Negative Tests***/
 
 test("Should return status code 400 when attempting to create invalid post", async() => {
+    const tokenRequest = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "tstark@avengers.io",
+        password: "superSecretPassword"
+    })
+    .expect(200);
+
+    const accessToken = tokenRequest.body.meta.accessToken;
 
     const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
-    .set("Authorization", `Bearer ${fakeToken}`)
+    .set("Authorization", `Bearer ${accessToken}`)
     .send({
         body: "Is it better to be feared or respected? I say, is it too much to ask for both?"
     })
@@ -174,9 +245,17 @@ test("Should return status code 400 when attempting to create invalid post", asy
 
 
 test("Should return status code 400 when attempting to create post exceeding configured length limit", async() => {
+    const tokenRequest = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "tstark@avengers.io",
+        password: "superSecretPassword"
+    })
+    .expect(200);
+
+    const accessToken = tokenRequest.body.meta.accessToken;
 
     const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
-    .set("Authorization", `Bearer ${fakeToken}`)
+    .set("Authorization", `Bearer ${accessToken}`)
     .send({
         body: "I'm baby hammock disrupt pop-up, ugh bushwick taxidermy before they sold out gentrify coloring book. Cardigan deep v taiyaki occupy. Hashtag cray dreamcatcher try-hard blog.",
         handle: "@tstark"
@@ -185,9 +264,17 @@ test("Should return status code 400 when attempting to create post exceeding con
 });
 
 test("Should return status code 404 when attempting to create post for a user that does not exist", async() => {
+    const tokenRequest = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "tstark@avengers.io",
+        password: "superSecretPassword"
+    })
+    .expect(200);
+
+    const accessToken = tokenRequest.body.meta.accessToken;
 
     const res1 = await request.post(`/api/v1/users/@tstark/posts`)
-    .set("Authorization", `Bearer ${fakeToken}`)
+    .set("Authorization", `Bearer ${accessToken}`)
     .send({
         body: "Is it better to be feared or respected? I say, is it too much to ask for both?",
         handle: "@tstark"
@@ -195,13 +282,21 @@ test("Should return status code 404 when attempting to create post for a user th
     .expect(404);
 });
 
-test("Should return status code 404 when attempting to get post for a user that does not exist", async() => {
+test("Should return status code 401 when attempting to get posts for a user that does not exist", async() => {
+    const tokenRequest = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "tstark@avengers.io",
+        password: "superSecretPassword"
+    })
+    .expect(200);
 
-    const res1 = await request.post(`/api/v1/users/@tstark`)
-    .set("Authorization", `Bearer ${fakeToken}`)
+    const accessToken = tokenRequest.body.meta.accessToken;
+
+    const res1 = await request.get(`/api/v1/users/@tstark/posts`)
+    .set("Authorization", `Bearer ${accessToken}`)
     .send({
         body: "Is it better to be feared or respected? I say, is it too much to ask for both?",
         handle: "@tstark"
     })
-    .expect(404);
+    .expect(401);
 });
