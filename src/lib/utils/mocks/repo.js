@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 /**
  * Mock implementation for various Repository methods
  * See /src/interfaces and /src/lib/repository for documentation and actual implementation

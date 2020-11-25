@@ -6,9 +6,11 @@ process.env.NODE_ENV = "ci/cd/test";
 const app = require("../../index");
 const supertest = require("supertest");
 const request = supertest(app);
+const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../../src/lib/utils");
 
 const globalUserId = "e98417a8-d912-44e0-8d37-abe712ca840f";
 const globalUserIdNo2 = "b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09";
+const fakePassword = "superSecretPassword";
 const fakeToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJyb2xlIjpbInVzZXIiXX0.gq1_kjBm7mhhGIBR-3zO-NdOd-Bc-_WMPebWjGNXSms";
 
 
@@ -197,7 +199,7 @@ test("API should return list of the (35) most recent posts", async()=> {
     expect(res1.body.data.length > 0).toBe(true);
 });
 
-test("Should fail to mark a new post as published", async() => {
+test("API should return 204 status when a post is marked as published", async() => {
     const tokenRequest = await request.post(`/api/v1/users/token`)
     .send({
         emailAddress: "tstark@avengers.io",
@@ -223,7 +225,110 @@ test("Should fail to mark a new post as published", async() => {
     .expect(204);
 });
 
+test("API should return ALL posts when the requester is the author of the posts", async() => {
+    const testUserHandle = randomUserHandle();
+    const res1 = await request.post(`/api/v1/users`)
+    .send({
+        handle: testUserHandle,
+        motto: "Hulk smash!",
+        emailAddress: randomEmailAddress(),
+        firstName: "Bruce",
+        lastName: "Banner",
+        phoneNumber: randomPhoneNumber(),
+        password: fakePassword
+    })
+    .expect(200);
+
+    const accessToken = res1.body.meta.accessToken;
+    const userId = res1["body"]["data"][0]["id"];
+
+    const res2 = await request.post(`/api/v1/users/${userId}/posts`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({
+        "body": "You better watch out for the green guy",
+        "handle": testUserHandle
+    })
+    .expect(200);
+
+    const postIdNo1 = res2["body"]["data"][0]["id"];
+
+    await request.post(`/api/v1/users/${userId}/posts`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({
+        "body": "You better watch out for Thanos too. He ain''t playin''",
+        "handle": testUserHandle
+    })
+    .expect(200);
+
+    await request.post(`/api/v1/users/${userId}/posts/${postIdNo1}/publish`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .expect(204);
+        
+    const res3 = await request.get(`/api/v1/users/${userId}/posts`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .expect(200);
+
+    expect(res3["body"]["data"]["length"] === 2).toBe(true);
+});
+
+
+test("API should return ONLY published posts when the requester is NOT author of the posts", async() => {
+    const testUserHandle = randomUserHandle();
+    const res1 = await request.post(`/api/v1/users`)
+    .send({
+        handle: testUserHandle,
+        motto: "Hulk smash!",
+        emailAddress: randomEmailAddress(),
+        firstName: "Bruce",
+        lastName: "Banner",
+        phoneNumber: randomPhoneNumber(),
+        password: fakePassword
+    })
+    .expect(200);
+
+    const hulkAccessToken = res1.body.meta.accessToken;
+    const userId = res1["body"]["data"][0]["id"];
+
+    const res2 = await request.post(`/api/v1/users/${userId}/posts`)
+    .set("Authorization", `Bearer ${hulkAccessToken}`)
+    .send({
+        "body": "You better watch out for the green guy",
+        "handle": testUserHandle
+    })
+    .expect(200);
+
+    const postIdNo1 = res2["body"]["data"][0]["id"];
+
+    await request.post(`/api/v1/users/${userId}/posts`)
+    .set("Authorization", `Bearer ${hulkAccessToken}`)
+    .send({
+        "body": "You better watch out for Thanos too. He ain''t playin''",
+        "handle": testUserHandle
+    })
+    .expect(200);
+
+    await request.post(`/api/v1/users/${userId}/posts/${postIdNo1}/publish`)
+    .set("Authorization", `Bearer ${hulkAccessToken}`)
+    .expect(204);
+
+    const tokenRequest = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "thor@avengers.io",
+        password: "thor@superSecretPassword"
+    })
+    .expect(200);
+
+    const thorAccessToken = tokenRequest.body.meta.accessToken;
+        
+    const res = await request.get(`/api/v1/users/${userId}/posts`)
+    .set("Authorization", `Bearer ${thorAccessToken}`)
+    .expect(200);
+
+    expect(res["body"]["data"]["length"] === 1).toBe(true);
+});
+
 /***Negative Tests***/
+
 
 test("Should return status code 400 when attempting to create invalid post", async() => {
     const tokenRequest = await request.post(`/api/v1/users/token`)
@@ -282,7 +387,7 @@ test("Should return status code 404 when attempting to create post for a user th
     .expect(404);
 });
 
-test("Should return status code 401 when attempting to get posts for a user that does not exist", async() => {
+test("Should return status code 404 when attempting to get posts for a user that does not exist", async() => {
     const tokenRequest = await request.post(`/api/v1/users/token`)
     .send({
         emailAddress: "tstark@avengers.io",
@@ -298,5 +403,5 @@ test("Should return status code 401 when attempting to get posts for a user that
         body: "Is it better to be feared or respected? I say, is it too much to ask for both?",
         handle: "@tstark"
     })
-    .expect(401);
+    .expect(404);
 });

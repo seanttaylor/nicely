@@ -2,7 +2,12 @@
 
 const express = require("express");
 const router = new express.Router();
-const {validateRequestBodyWith, authorizeRequest ,validateJWT} = require("../../lib/middleware");
+const {
+    validateRequestBodyWith, 
+    authorizeRequest, 
+    validateJWT,
+    validateUserCanViewUnpublished
+} = require("../../lib/middleware");
 
 /**
  * 
@@ -49,11 +54,12 @@ function UserRouter({postService, userService, commentService, authService}) {
 
     /****** GET *******/
 
-    router.get("/:id/posts", validateJWT, authorizeRequest("readOwn:posts"),verifyUserExists, async(req, res, next) => {
+    router.get("/:id/posts", verifyUserExists, validateJWT, authorizeRequest({actionId: "readAny:posts", allowResourceOwnerOnly: false}), validateUserCanViewUnpublished, async(req, res, next) => {
         const userId = req.params.id;
+        const showUnpublished = res.locals.permissions.userCan.viewUnpublishedPosts;
         
         try {
-            const postList = await postService.findPostsByUserId(userId);
+            const postList = await postService.findPostsByUserId({userId, showUnpublished});
             res.set("content-type", "application/json");
             res.status(200);
             res.json({
@@ -246,11 +252,7 @@ function UserRouter({postService, userService, commentService, authService}) {
             const user = await userService.createUser(requestBody);
             await user.save();
             await userService.createUserPassword({user, password});
-            const token = await authService.issueAuthCredential({
-                user, 
-                //1 hour expiration
-                expiresIn: Math.floor(Date.now() / 1000) + (60 * 60) 
-            });
+            const token = await authService.issueAuthCredential(user);
 
             res.set("content-type", "application/json");
             res.status(200);
@@ -282,7 +284,7 @@ function UserRouter({postService, userService, commentService, authService}) {
 
     /*** PUT ***/
 
-    router.put("/:id/posts/:post_id", validateJWT, authorizeRequest("updateOwn:posts"), validateRequestBodyWith({requiredFields: false, schema: "post"}) , async(req, res, next) => {
+    router.put("/:id/posts/:post_id", validateJWT, authorizeRequest({actionId: "updateOwn:posts"}), validateRequestBodyWith({requiredFields: false, schema: "post"}) , async(req, res, next) => {
         const userId = req.params.id;
         const postId = req.params.post_id;
 
@@ -322,7 +324,7 @@ function UserRouter({postService, userService, commentService, authService}) {
         }
     });
 
-    router.put("/:id/posts/:post_id/comments/:comment_id", validateJWT, authorizeRequest("updateOwn:comments"), validateRequestBodyWith({requiredFields: false, schema: "comment"}), async(req, res, next) => {
+    router.put("/:id/posts/:post_id/comments/:comment_id", validateJWT, authorizeRequest({actionId: "updateOwn:comments"}), validateRequestBodyWith({requiredFields: false, schema: "comment"}), async(req, res, next) => {
         const userId = req.params.id;
         const postId = req.params.post_id;
         const commentId = req.params.comment_id;

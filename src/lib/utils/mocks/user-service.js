@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 /**
  * Mock implementation for various UserService methods
  * See /src/services/user for documentation

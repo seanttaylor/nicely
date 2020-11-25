@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 /**
  * Mock implementation for various Cache methods
  * See /src/interfaces/cache for documentation

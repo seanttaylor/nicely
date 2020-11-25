@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 function randomPhoneNumber() {
     return Math.floor(100000000 + Math.random() * 900000000);
 }
@@ -25,7 +27,7 @@ function randomUserHandle() {
         'Lie', 'Honest', 'Destined', 'Bloxxer', 'Hawk', 'Eagle', 'Hawker', 'Walker',
         'Zombie', 'Sarge', 'Capt', 'Captain', 'Punch', 'One', 'Two', 'Uno', 'Slice',
         'Slash', 'Melt', 'Melted', 'Melting', 'Fell', 'Wolf', 'Hound',
-        'Legacy', 'Sharp', 'Dead', 'Mew', 'Chuckle', 'Bubba', 'Bubble', 'Sandwich', 'Smasher', 'Extreme', 'Multi', 'Universe', 'Ultimate', 'Death', 'Ready', 'Monkey', 'Elevator', 'Wrench', 'Grease', 'Head', 'Theme', 'Grand', 'Cool', 'Kid', 'Boy', 'Girl', 'Vortex', 'Paradox'
+        'Legacy', 'Sharp', 'Dead', 'Mew', 'Chuckle', 'Bubba', 'Bubble', 'Sandwich', 'Smasher', 'Extreme', 'Multi', 'Universe', 'Ultimate', 'Death', 'Ready', 'Monkey', 'Elevator', 'Wrench', 'Grease', 'Head', 'Theme', 'Grand', 'Cool', 'Kid', 'Boy', 'Girl', 'Vortex', 'Paradox', 'Astronaut', 'Podiatrist', 'Guitarist', 'Ballerina', 'Angry'
     ];
 
     let finalName = "";

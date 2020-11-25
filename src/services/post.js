@@ -1,6 +1,5 @@
 const defaultConfig = require("./config.js");
 const uuid = require("uuid");
-const halson = require("halson");
 
 /**
 * @typedef {Object} Post
@@ -149,8 +148,8 @@ function PostService({ repo, userService, eventEmitter, validator }) {
     }
 
 
-    this.findPostsByUserId = async function(userId) {
-        const postList = await this._repo.findPostsByUserId(userId);
+    this.findPostsByUserId = async function(options) {
+        const postList = await this._repo.findPostsByUserId(options);
         return postList.map((p) => new Post(this._repo, p));
     }
 

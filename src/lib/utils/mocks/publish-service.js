@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 /**
  * Mock implementation for various publishService methods
  * See /src/interfaces/publisher for documentation

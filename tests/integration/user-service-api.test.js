@@ -263,6 +263,8 @@ test("API should return an access token", async() => {
     expect(typeof(accessToken)).toBe("string");
 });
 
+/*
+TEST MAY BE DEPRECATED
 test("API should return a 401 status code on attempt(s) to access unauthorized resources", async() => {
     const res1 = await request.post(`/api/v1/users/token`)
     .send({
@@ -278,6 +280,8 @@ test("API should return a 401 status code on attempt(s) to access unauthorized r
     .send()
     .expect(401);
 });
+TEST MAY BE DEPRECATED
+*/
 
 test("API should return 200 status code on attempt(s) to access authorized resources", async() => {
     const res1 = await request.post(`/api/v1/users/token`)

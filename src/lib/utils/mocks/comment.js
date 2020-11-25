@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 function MockComment() {
     this.methodCalls = {
         onPost: false,

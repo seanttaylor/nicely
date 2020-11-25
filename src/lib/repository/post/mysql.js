@@ -139,10 +139,14 @@ function PostMySQLRepository(databaseConnector) {
         return result.map((p) => onReadPost(p));
     }
 
-    this.findPostsByUserId = async function(currentUserId) {
+    this.findPostsByUserId = async function({userId, showUnpublished=false}) {
         const connection = await databaseConnector.getConnection();
         const runQueryWith = promisify(connection.query.bind(connection));
-        const sql = `SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, users.handle, users.first_name, users.last_name FROM posts JOIN users ON posts.user_id = users.id WHERE users.id = '${currentUserId}'`;
+        let sql = `SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, users.handle, users.first_name, users.last_name FROM posts JOIN users ON posts.user_id = users.id WHERE users.id = '${userId}'`;
+
+        if (!showUnpublished) {
+            sql+= " AND is_published = 1";
+        }
 
         const result = await runQueryWith(sql);
         connection.release();
