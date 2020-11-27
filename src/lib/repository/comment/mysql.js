@@ -65,6 +65,15 @@ function CommentMySQLRepository(databaseConnector) {
         const incrementLikeCountSql = `INSERT INTO comment_likes (comment_id, user_id) VALUES ("${commentId}", "${userId}")`;
         const getLikeCountSql = `SELECT COUNT(*) AS like_count FROM comment_likes WHERE comment_id = "${commentId}"`;
         const updateCommentLikeCountSql = `UPDATE posts SET like_count = {like_count} WHERE id = "${commentId}"`;
+        const checkUserHasAlreadyLikedCommentSql = `SELECT COUNT(*) AS likes FROM comment_likes WHERE EXISTS
+        (SELECT user_id FROM post_likes WHERE user_id = "${userId}" AND comment_id = "${commentId}")`;
+        
+        const [fromCurrentUser] = await runQueryWith(checkUserHasAlreadyLikedCommentSql);
+        const userHasAlreadyLikedComment = fromCurrentUser.likes !== 0;
+
+        if (userHasAlreadyLikedComment) {
+            return;
+        }
 
         connection.beginTransaction(async(err) => {
             try {

@@ -6,6 +6,7 @@ const {
     validateRequestBodyWith, 
     authorizeRequest, 
     validateJWT,
+    validateUserCanLike,
     validateUserCanViewUnpublished
 } = require("../../lib/middleware");
 
@@ -303,7 +304,7 @@ function UserRouter({postService, userService, commentService, authService}) {
         }
     });
 
-    router.put("/:id/posts/:post_id/likes/:actor_id", async(req, res, next) => {
+    router.put("/:id/posts/:post_id/likes/:actor_id", validateUserCanLike, async(req, res, next) => {
         const userId = req.params.id;
         const postId = req.params.post_id;
         const actorId = req.params.actor_id;
@@ -344,7 +345,7 @@ function UserRouter({postService, userService, commentService, authService}) {
         }
     });
 
-    router.put("/:id/posts/:post_id/comments/:comment_id/likes/:actor_id", async(req, res, next) => {
+    router.put("/:id/posts/:post_id/comments/:comment_id/likes/:actor_id", validateUserCanLike, async(req, res, next) => {
         const userId = req.params.id;
         const postId = req.params.post_id;
         const commentId = req.params.comment_id;

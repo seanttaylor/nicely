@@ -8,8 +8,8 @@ const supertest = require("supertest");
 const request = supertest(app);
 const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../../src/lib/utils");
 
-const globalUserId = "e98417a8-d912-44e0-8d37-abe712ca840f";
-const globalUserIdNo2 = "b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09";
+const starkUserId = "e98417a8-d912-44e0-8d37-abe712ca840f";
+const thorUserId = "b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09";
 const fakePassword = "superSecretPassword";
 const fakeToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJyb2xlIjpbInVzZXIiXX0.gq1_kjBm7mhhGIBR-3zO-NdOd-Bc-_WMPebWjGNXSms";
 
@@ -27,7 +27,7 @@ test("API should return a new post", async() => {
     .expect(200);
 
     const accessToken = res1.body.meta.accessToken;
-    const res = await request.post(`/api/v1/users/${globalUserId}/posts`)
+    const res = await request.post(`/api/v1/users/${starkUserId}/posts`)
     .set("Authorization", `Bearer ${accessToken}`)
     .send({
         "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
@@ -64,7 +64,7 @@ test("API should return specified Post instance matching id", async() => {
     .expect(200);
 
     const accessToken = tokenRequest.body.meta.accessToken;
-    const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
+    const res1 = await request.post(`/api/v1/users/${starkUserId}/posts`)
     .set("Authorization", `Bearer ${accessToken}`)
     .send({
         "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
@@ -73,7 +73,7 @@ test("API should return specified Post instance matching id", async() => {
     .expect(200);
     const responsePayload = JSON.parse(res1.text);
     const [post] = responsePayload.data;
-    const res2 = await request.get(`/api/v1/users/${globalUserId}/posts/${post.id}`)
+    const res2 = await request.get(`/api/v1/users/${starkUserId}/posts/${post.id}`)
     .expect(200);
 
     expect(post.id === res2.body.data[0].id).toBe(true);
@@ -91,7 +91,7 @@ test("Should return updated post body matching text", async() => {
 
     const accessToken = tokenRequest.body.meta.accessToken;
     const testEdit = "Okay, I take it back";
-    const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
+    const res1 = await request.post(`/api/v1/users/${starkUserId}/posts`)
     .set("Authorization", `Bearer ${accessToken}`)
     .send({
         "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
@@ -100,14 +100,14 @@ test("Should return updated post body matching text", async() => {
     .expect(200);
     const postId = res1["body"]["data"][0]["id"];
 
-    const res2 = await request.put(`/api/v1/users/${globalUserId}/posts/${postId}`)
+    const res2 = await request.put(`/api/v1/users/${starkUserId}/posts/${postId}`)
     .set("Authorization", `Bearer ${accessToken}`)
     .send({
         body: "Okay, I take it back"
     })
     .expect(200);
 
-    const res3 = await request.get(`/api/v1/users/${globalUserId}/posts/${postId}`)
+    const res3 = await request.get(`/api/v1/users/${starkUserId}/posts/${postId}`)
     .set("Authorization", `Bearer ${accessToken}`)
     .expect(200);
 
@@ -125,7 +125,7 @@ test("API should add a comment to a post", async() => {
 
     const accessToken = tokenRequest.body.meta.accessToken;
 
-    const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
+    const res1 = await request.post(`/api/v1/users/${starkUserId}/posts`)
     .set("Authorization", `Bearer ${accessToken}`)
     .send({
         "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
@@ -134,16 +134,16 @@ test("API should add a comment to a post", async() => {
     .expect(200);
     const postId = res1["body"]["data"][0]["id"];
 
-    const res2 = await request.post(`/api/v1/users/${globalUserId}/posts/${postId}/comments`)
+    const res2 = await request.post(`/api/v1/users/${starkUserId}/posts/${postId}/comments`)
     .set("Authorization", `Bearer ${accessToken}`)
     .send({
         postId,
-        userId: globalUserId,
+        userId: starkUserId,
         body: "True Story. FR."
     })
     .expect(200);
 
-    const res3 = await request.get(`/api/v1/users/${globalUserId}/posts/${postId}`)
+    const res3 = await request.get(`/api/v1/users/${starkUserId}/posts/${postId}`)
     .set("Authorization", `Bearer ${accessToken}`)
     .expect(200);
 
@@ -169,7 +169,7 @@ test("API should increment post like count", async()=> {
 
     const thorAccessToken = tokenRequestNo2.body.meta.accessToken;
 
-    const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
+    const res1 = await request.post(`/api/v1/users/${starkUserId}/posts`)
     .set("Authorization", `Bearer ${starkAccessToken}`)
     .send({
         "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
@@ -178,12 +178,12 @@ test("API should increment post like count", async()=> {
     .expect(200);
     const postId = res1["body"]["data"][0]["id"];
 
-    const res2 = await request.put(`/api/v1/users/${globalUserId}/posts/${postId}/likes/${globalUserIdNo2}`)
+    const res2 = await request.put(`/api/v1/users/${starkUserId}/posts/${postId}/likes/${thorUserId}`)
     .set("Authorization", `Bearer ${thorAccessToken}`)
     .send()
     .expect(200);
 
-    const res3 = await request.get(`/api/v1/users/${globalUserId}/posts/${postId}`)
+    const res3 = await request.get(`/api/v1/users/${starkUserId}/posts/${postId}`)
     .set("Authorization", `Bearer ${starkAccessToken}`)
     .expect(200);
 
@@ -209,7 +209,7 @@ test("API should return 200 status when attempting to like the same post twice",
 
     const thorAccessToken = tokenRequestNo2.body.meta.accessToken;
 
-    const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
+    const res1 = await request.post(`/api/v1/users/${starkUserId}/posts`)
     .set("Authorization", `Bearer ${starkAccessToken}`)
     .send({
         "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
@@ -218,12 +218,12 @@ test("API should return 200 status when attempting to like the same post twice",
     .expect(200);
     const postId = res1["body"]["data"][0]["id"];
 
-    const res2 = await request.put(`/api/v1/users/${globalUserId}/posts/${postId}/likes/${globalUserIdNo2}`)
+    const res2 = await request.put(`/api/v1/users/${starkUserId}/posts/${postId}/likes/${thorUserId}`)
     .set("Authorization", `Bearer ${thorAccessToken}`)
     .send()
     .expect(200);
 
-    const res3 = await request.put(`/api/v1/users/${globalUserId}/posts/${postId}/likes/${globalUserIdNo2}`)
+    const res3 = await request.put(`/api/v1/users/${starkUserId}/posts/${postId}/likes/${thorUserId}`)
     .set("Authorization", `Bearer ${thorAccessToken}`)
     .send()
     .expect(200);
@@ -231,7 +231,7 @@ test("API should return 200 status when attempting to like the same post twice",
 
 
 test("API should return list of users a specified user has subscribed to", async()=> {
-    const res1 = await request.get(`/api/v1/users/${globalUserIdNo2}/subscriptions`)
+    const res1 = await request.get(`/api/v1/users/${thorUserId}/subscriptions`)
     .expect(200);
 
     expect(Array.isArray(res1.body.data)).toBe(true);
@@ -258,7 +258,7 @@ test("API should return 204 status when a post is marked as published", async() 
 
     const accessToken = tokenRequest.body.meta.accessToken;
 
-    const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
+    const res1 = await request.post(`/api/v1/users/${starkUserId}/posts`)
     .set("Authorization", `Bearer ${accessToken}`)
     .send({
         "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
@@ -269,7 +269,7 @@ test("API should return 204 status when a post is marked as published", async() 
     const [post] = responsePayload.data;
     
     
-    const res2 = await request.post(`/api/v1/users/${globalUserId}/posts/${post.id}/publish`)
+    const res2 = await request.post(`/api/v1/users/${starkUserId}/posts/${post.id}/publish`)
     .set("Authorization", `Bearer ${accessToken}`)
     .expect(204);
 });
@@ -389,7 +389,7 @@ test("Should return status code 400 when attempting to create invalid post", asy
 
     const accessToken = tokenRequest.body.meta.accessToken;
 
-    const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
+    const res1 = await request.post(`/api/v1/users/${starkUserId}/posts`)
     .set("Authorization", `Bearer ${accessToken}`)
     .send({
         body: "Is it better to be feared or respected? I say, is it too much to ask for both?"
@@ -408,7 +408,7 @@ test("Should return status code 400 when attempting to create post exceeding con
 
     const accessToken = tokenRequest.body.meta.accessToken;
 
-    const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
+    const res1 = await request.post(`/api/v1/users/${starkUserId}/posts`)
     .set("Authorization", `Bearer ${accessToken}`)
     .send({
         body: "I'm baby hammock disrupt pop-up, ugh bushwick taxidermy before they sold out gentrify coloring book. Cardigan deep v taiyaki occupy. Hashtag cray dreamcatcher try-hard blog.",

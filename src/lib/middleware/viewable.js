@@ -13,18 +13,27 @@ const jwt = require("jsonwebtoken");
 */
 
 module.exports = function viewable(req, res, next) {
+    try {
+        const authToken = req.headers.authorization.split(" ")[1];
+        jwt.verify(authToken, process.env.JWT_SECRET);
+        const decodedToken = jwt.decode(authToken);
+        
+        res.locals.permissions = {
+            userCan: {
+                viewUnpublishedPosts: validatorService.validate({
+                    resourceOwnerId: req.params.id, 
+                    authToken: decodedToken
+                })
+            }
+        };
+        next();
+    } catch(e) {
+        console.error(e);
+        res.status(401).send({
+            data: [],
+            errors: ["Missing or bad authorization"],
+            entries: 0
+        });
+    }
     
-    const authToken = req.headers.authorization.split(" ")[1];
-    jwt.verify(authToken, process.env.JWT_SECRET);
-    const decodedToken = jwt.decode(authToken);
-    
-    res.locals.permissions = {
-        userCan: {
-            viewUnpublishedPosts: validatorService.validate({
-                resourceOwnerId: req.params.id, 
-                authToken: decodedToken
-            })
-        }
-    };
-    next();
 }

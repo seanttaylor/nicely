@@ -2,41 +2,25 @@
 * See interfaces/validator for method documentation
 */
 
-
 /**
+ * Purpose-specific validator for determining whether a requester can like an entity (e.g. post or comment)
  * @implements {IValidator}
- */
+ * @param {String} resourceOwnerId - uuid of owner of the resource (i.e. post or comment)
+ * @param {String} authToken - authorization token of the requester of the resource
+ * @returns {Boolean} indicating whether requester can like
+*/
 
-function likeValidator() {
 
-    /** 
-    @param {Object} options - an options object containing configuration data for the validation
-    @param {Object} data - the data to be validated 
-    @param {Boolean} options.validateWithRequiredFields - indicates whether the required fields will be enforced during validation 
-    @param {String} options.schema - the schema to use for validation
-    @returns {Boolean}
-    */
+function validate({resourceOwnerId, authToken}) {
+    const requesterIsResourceOwner = resourceOwnerId === authToken.sub;
 
-    this.validate = function(options, data) {
-        if (!data) {
-            throw new Error("ValidationDataEmpty");
-        }
-
-        const {validateWithRequiredFields, schema} = options;
-        const mySchema = this._validators[schema](validateWithRequiredFields);
-        const validate = ajv.compile(mySchema);
-        const valid = validate(data);
-        if (!valid) {
-            return  {
-                result: false,
-                errors: validate.errors
-            }   
-        }
-        return {
-            result: true,
-            errors: null
-        };
+    if (!requesterIsResourceOwner) {
+        //User CAN like a post or comment
+        return true;
     }
+
+    //User CANNOT like a post or comment
+    return false;
 }
 
-module.exports = JSONValidator;
+module.exports = {validate};
