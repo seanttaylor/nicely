@@ -64,9 +64,9 @@ function Comment(repo, doc) {
     /**
     Increments the comment.likeCount property
     */
-    this.incrementLikeCount = async function() {
+    this.incrementLikeCount = async function({fromUser}) {
 
-        await this._repo.incrementLikeCount(this._id);
+        await this._repo.incrementLikeCount({commentId: this._id, userId: fromUser});
 
         if (Object.keys(this._data).includes("likeCount")) {
             this._data.likeCount += 1;

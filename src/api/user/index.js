@@ -310,8 +310,7 @@ function UserRouter({postService, userService, commentService, authService}) {
 
         try {
             const [post] = await postService.findPostById(postId);
-            //Will become await post.incrementLikeCount({from: actorId});
-            await post.incrementLikeCount();
+            await post.incrementLikeCount({fromUser: actorId});
             res.set("content-type", "application/json");
             res.status(200);
             res.json({
@@ -320,6 +319,7 @@ function UserRouter({postService, userService, commentService, authService}) {
             });
         }
         catch (e) {
+            console.error("Caught it again", e)
             next(e);
         }
     });
@@ -352,8 +352,7 @@ function UserRouter({postService, userService, commentService, authService}) {
 
         try {
             const [comment] = await commentService.findCommentById(commentId);
-            //Will become await comment.incrementLikeCount({from: actorId});
-            await comment.incrementLikeCount();
+            await comment.incrementLikeCount({fromUser: actorId});
             res.set("content-type", "application/json");
             res.status(200);
             res.json({

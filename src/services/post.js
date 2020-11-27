@@ -34,7 +34,7 @@ function Post(repo, doc) {
                 firstName: this._data.firstName,
                 lastName: this._data.lastName,
                 likeCount: this._data.likeCount,
-                commentCount: this._data.commentCount || 0
+                commentCount: this._data.commentCount
             }
         };
     }
@@ -76,8 +76,8 @@ function Post(repo, doc) {
     /**
     Increments the like count on the current post; updates post.likeCount property.
     */
-    this.incrementLikeCount = async function() {
-        await this._repo.incrementLikeCount(this._id);
+    this.incrementLikeCount = async function({fromUser}) {
+        await this._repo.incrementLikeCount({postId: this._id, userId: fromUser});
 
         if (Object.keys(this._data).includes("likeCount")) {
             this._data.likeCount += 1;

@@ -158,10 +158,19 @@ test("API should increment post like count", async()=> {
     })
     .expect(200);
 
-    const accessToken = tokenRequest.body.meta.accessToken;
+    const starkAccessToken = tokenRequest.body.meta.accessToken;
+
+    const tokenRequestNo2 = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "thor@avengers.io",
+        password: "thor@superSecretPassword"
+    })
+    .expect(200);
+
+    const thorAccessToken = tokenRequestNo2.body.meta.accessToken;
 
     const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
-    .set("Authorization", `Bearer ${accessToken}`)
+    .set("Authorization", `Bearer ${starkAccessToken}`)
     .send({
         "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
         "handle": "@tstark"
@@ -170,16 +179,56 @@ test("API should increment post like count", async()=> {
     const postId = res1["body"]["data"][0]["id"];
 
     const res2 = await request.put(`/api/v1/users/${globalUserId}/posts/${postId}/likes/${globalUserIdNo2}`)
-    .set("Authorization", `Bearer ${accessToken}`)
+    .set("Authorization", `Bearer ${thorAccessToken}`)
     .send()
     .expect(200);
 
     const res3 = await request.get(`/api/v1/users/${globalUserId}/posts/${postId}`)
-    .set("Authorization", `Bearer ${accessToken}`)
+    .set("Authorization", `Bearer ${starkAccessToken}`)
     .expect(200);
 
     expect(res3["body"]["data"][0]["data"]["likeCount"] === 1).toBe(true);
 });
+
+test("API should return 200 status when attempting to like the same post twice", async() => {
+    const tokenRequest = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "tstark@avengers.io",
+        password: "superSecretPassword"
+    })
+    .expect(200);
+
+    const starkAccessToken = tokenRequest.body.meta.accessToken;
+
+    const tokenRequestNo2 = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "thor@avengers.io",
+        password: "thor@superSecretPassword"
+    })
+    .expect(200);
+
+    const thorAccessToken = tokenRequestNo2.body.meta.accessToken;
+
+    const res1 = await request.post(`/api/v1/users/${globalUserId}/posts`)
+    .set("Authorization", `Bearer ${starkAccessToken}`)
+    .send({
+        "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
+        "handle": "@tstark"
+    })
+    .expect(200);
+    const postId = res1["body"]["data"][0]["id"];
+
+    const res2 = await request.put(`/api/v1/users/${globalUserId}/posts/${postId}/likes/${globalUserIdNo2}`)
+    .set("Authorization", `Bearer ${thorAccessToken}`)
+    .send()
+    .expect(200);
+
+    const res3 = await request.put(`/api/v1/users/${globalUserId}/posts/${postId}/likes/${globalUserIdNo2}`)
+    .set("Authorization", `Bearer ${thorAccessToken}`)
+    .send()
+    .expect(200);
+});
+
 
 test("API should return list of users a specified user has subscribed to", async()=> {
     const res1 = await request.get(`/api/v1/users/${globalUserIdNo2}/subscriptions`)

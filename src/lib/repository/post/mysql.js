@@ -73,13 +73,35 @@ function PostMySQLRepository(databaseConnector) {
     }
 
 
-    this.incrementLikeCount = async function(id) {
+    this.incrementLikeCount = async function({postId, userId}) {
         const connection = await databaseConnector.getConnection();
         const runQueryWith = promisify(connection.query.bind(connection));
-        const sql = `UPDATE posts SET like_count = like_count + 1 WHERE id = '${id}'`;
+        const incrementLikeCountSql = `INSERT INTO post_likes (post_id, user_id) VALUES ("${postId}", "${userId}")`;
+        const getLikeCountSql = `SELECT COUNT(*) AS like_count FROM post_likes WHERE post_id = "${postId}"`;
+        const updatePostLikeCountSql = `UPDATE posts SET like_count = {like_count} WHERE id = "${postId}"`;
+        const checkUserHasAlreadyLikedPostSql = `SELECT COUNT(*) AS likes FROM post_likes WHERE EXISTS
+        (SELECT user_id FROM post_likes WHERE user_id = "${userId}" AND post_id = "${postId}")`;
+        
+        const [fromCurrentUser] = await runQueryWith(checkUserHasAlreadyLikedPostSql);
+        const userHasAlreadyLikedPost = fromCurrentUser.likes !== 0;
 
-        await runQueryWith(sql);
-        connection.release();
+        if (userHasAlreadyLikedPost) {
+            return;
+        }
+        
+        connection.beginTransaction(async(err) => {
+            try {
+                await runQueryWith(incrementLikeCountSql);
+                const [result] = await runQueryWith(getLikeCountSql);
+                const {like_count} = result; 
+                await runQueryWith(updatePostLikeCountSql.replace("{like_count}", like_count));
+                connection.commit();
+            }
+            catch (e) {
+                console.error(e);
+                connection.rollback();
+            }
+        });
     }
 
 

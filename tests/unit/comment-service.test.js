@@ -38,6 +38,8 @@ afterAll(()=> {
     testSqlDbConnector.end();
 });
 
+const thorUserId = "b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09";
+
 test("Should return new Comment instance", async() => {
     const testPost = await testPostService.createPost({
         body: "Everybody wants a happy ending, right? But it doesn’t always roll that way.",
@@ -154,11 +156,12 @@ test("Should return increment Comment like count", async() => {
         postId: testPostId
     });
     await testComment.save();
-    await testComment.incrementLikeCount();
+    await testComment.incrementLikeCount({fromUser: thorUserId});
 
     expect(testComment._data.likeCount === 1).toBe(true);
 });
 
+/* TEST MAY BE DEPRECATED
 test("Should return increment Comment like count when likeCount property already exists", async() => {
     const testPost = await testPostService.createPost({
         body: "Everybody wants a happy ending, right? But it doesn’t always roll that way.",
@@ -178,6 +181,8 @@ test("Should return increment Comment like count when likeCount property already
     await testComment.incrementLikeCount.call(mockImpl.repo);
     expect(mockImpl.repo._repo.calledMethods.incrementLikeCountCalled).toBe(true);
 });
+TEST MAY BE DEPRECATED
+*/
 
 
 

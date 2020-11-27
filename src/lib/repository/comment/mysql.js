@@ -58,15 +58,28 @@ function CommentMySQLRepository(databaseConnector) {
         return { id, lastModified };
     }
 
-    this.incrementLikeCount = async function(id) {
+    this.incrementLikeCount = async function({commentId, userId}) {
         const connection = await databaseConnector.getConnection();
         const runQueryWith = promisify(connection.query.bind(connection));
-        const sql = `UPDATE comments SET like_count = like_count + 1 WHERE id = '${id}'`;
+        //const sql = `UPDATE comments SET like_count = like_count + 1 WHERE id = '${id}'`;
+        const incrementLikeCountSql = `INSERT INTO comment_likes (comment_id, user_id) VALUES ("${commentId}", "${userId}")`;
+        const getLikeCountSql = `SELECT COUNT(*) AS like_count FROM comment_likes WHERE comment_id = "${commentId}"`;
+        const updateCommentLikeCountSql = `UPDATE posts SET like_count = {like_count} WHERE id = "${commentId}"`;
 
-        const result = await runQueryWith(sql);
-        connection.release();
+        connection.beginTransaction(async(err) => {
+            try {
+                await runQueryWith(incrementLikeCountSql);
+                const [result] = await runQueryWith(getLikeCountSql);
+                const {like_count} = result; 
+                await runQueryWith(updateCommentLikeCountSql.replace("{like_count}", like_count));
+                connection.commit();
+            }
+            catch (e) {
+                console.error(e);
+                connection.rollback();
+            }
+        });
 
-        return { id };
     }
 
 

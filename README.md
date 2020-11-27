@@ -21,3 +21,5 @@ Key software modules and services used regularly for designing, building and mai
 * [accesscontrol](https://www.npmjs.com/package/accesscontrol) ~ an NPM module offering basic role-based access control
 
 #### References
+
+* [Nicely Object Graph](https://sketchboard.me/tCioi39DllPg#/) ~ see major application modules, services and interfaces in a graphical format
