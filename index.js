@@ -72,7 +72,8 @@ const CommentRouter = require("./src/api/comment");
 app.use(helmet());
 app.use(cors());
 app.use(morgan("tiny", {
-    skip: function (req, res) { return res.statusCode < 400 }
+    //Requests with status codes below 400 are not logged
+    skip: function (req, res) { return process.env.NODE_ENV == "ci/cd/test" }
   }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

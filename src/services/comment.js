@@ -77,6 +77,15 @@ function Comment(repo, doc) {
     }
 
     /**
+    Decrements the comment.likeCount property
+    */
+    this.decrementLikeCount = async function({fromUser}) {
+        await this._repo.decrementLikeCount({commentId: this._id, userId: fromUser});
+        this._data.likeCount -= 1;
+    }
+
+
+    /**
     Updates the comment.body property
     @param {String} text - text of the updated comment
     @returns {Object} self

@@ -325,6 +325,27 @@ function UserRouter({postService, userService, commentService, authService}) {
         }
     });
 
+    router.delete("/:id/posts/:post_id/likes/:actor_id", validateUserCanLike, async(req, res, next) => {
+        const userId = req.params.id;
+        const postId = req.params.post_id;
+        const actorId = req.params.actor_id;
+
+        try {
+            const [post] = await postService.findPostById(postId);
+            await post.decrementLikeCount({fromUser: actorId});
+            res.set("content-type", "application/json");
+            res.status(200);
+            res.json({
+                data: [post],
+                entries: 1
+            });
+        }
+        catch (e) {
+            console.error("Caught it again", e)
+            next(e);
+        }
+    });
+
     router.put("/:id/posts/:post_id/comments/:comment_id", validateJWT, authorizeRequest({actionId: "updateOwn:comments"}), validateRequestBodyWith({requiredFields: false, schema: "comment"}), async(req, res, next) => {
         const userId = req.params.id;
         const postId = req.params.post_id;
@@ -354,6 +375,27 @@ function UserRouter({postService, userService, commentService, authService}) {
         try {
             const [comment] = await commentService.findCommentById(commentId);
             await comment.incrementLikeCount({fromUser: actorId});
+            res.set("content-type", "application/json");
+            res.status(200);
+            res.json({
+                data: [comment],
+                entries: 1
+            });
+        }
+        catch (e) {
+            next(e);
+        }
+    });
+
+    router.delete("/:id/posts/:post_id/comments/:comment_id/likes/:actor_id", validateUserCanLike, async(req, res, next) => {
+        const userId = req.params.id;
+        const postId = req.params.post_id;
+        const commentId = req.params.comment_id;
+        const actorId = req.params.actor_id;
+
+        try {
+            const [comment] = await commentService.findCommentById(commentId);
+            await comment.decrementLikeCount({fromUser: actorId});
             res.set("content-type", "application/json");
             res.status(200);
             res.json({

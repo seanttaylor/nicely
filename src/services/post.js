@@ -88,6 +88,14 @@ function Post(repo, doc) {
     }
 
     /**
+    Decrements the like count on the current post; updates post.likeCount property.
+    */
+    this.decrementLikeCount = async function({fromUser}) {
+        await this._repo.decrementLikeCount({postId: this._id, userId: fromUser});
+        this._data.likeCount -= 1;
+    }
+
+    /**
     Updates the post.body property; saves the update to the data store
     @param {String} text - the updated text
     */

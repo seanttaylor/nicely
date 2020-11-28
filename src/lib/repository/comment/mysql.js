@@ -61,7 +61,6 @@ function CommentMySQLRepository(databaseConnector) {
     this.incrementLikeCount = async function({commentId, userId}) {
         const connection = await databaseConnector.getConnection();
         const runQueryWith = promisify(connection.query.bind(connection));
-        //const sql = `UPDATE comments SET like_count = like_count + 1 WHERE id = '${id}'`;
         const incrementLikeCountSql = `INSERT INTO comment_likes (comment_id, user_id) VALUES ("${commentId}", "${userId}")`;
         const getLikeCountSql = `SELECT COUNT(*) AS like_count FROM comment_likes WHERE comment_id = "${commentId}"`;
         const updateCommentLikeCountSql = `UPDATE posts SET like_count = {like_count} WHERE id = "${commentId}"`;
@@ -82,10 +81,48 @@ function CommentMySQLRepository(databaseConnector) {
                 const {like_count} = result; 
                 await runQueryWith(updateCommentLikeCountSql.replace("{like_count}", like_count));
                 connection.commit();
+                connection.release();
+
             }
             catch (e) {
                 console.error(e);
                 connection.rollback();
+                connection.release();
+
+            }
+        });
+
+    }
+
+    this.decrementLikeCount = async function({commentId, userId}) {
+        const connection = await databaseConnector.getConnection();
+        const runQueryWith = promisify(connection.query.bind(connection));
+        const decrementLikeCountSql = `DELETE FROM comment_likes WHERE comment_id = "${commentId}" AND user_id = "${userId}"`;
+        const getLikeCountSql = `SELECT COUNT(*) AS like_count FROM comment_likes WHERE comment_id = "${commentId}"`;
+        const updateCommentLikeCountSql = `UPDATE posts SET like_count = {like_count} WHERE id = "${commentId}"`;
+        const checkUserHasAlreadyUnLikedCommentSql = `SELECT COUNT(*) AS likes FROM comment_likes WHERE EXISTS
+        (SELECT user_id FROM post_likes WHERE user_id = "${userId}" AND comment_id = "${commentId}")`;
+        
+        const [fromCurrentUser] = await runQueryWith(checkUserHasAlreadyUnLikedCommentSql);
+        const userHasAlreadyUnLikedComment = fromCurrentUser.likes === 0;
+
+        if (userHasAlreadyUnLikedComment) {
+            return;
+        }
+
+        connection.beginTransaction(async(err) => {
+            try {
+                await runQueryWith(decrementLikeCountSql);
+                const [result] = await runQueryWith(getLikeCountSql);
+                const {like_count} = result; 
+                await runQueryWith(updateCommentLikeCountSql.replace("{like_count}", like_count));
+                connection.commit();
+                connection.release();
+            }
+            catch (e) {
+                console.error(e);
+                connection.rollback();
+                connection.release();
             }
         });
 

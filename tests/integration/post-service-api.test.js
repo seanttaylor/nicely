@@ -115,6 +115,7 @@ test("Should return updated post body matching text", async() => {
     expect(res3["body"]["data"][0]["lastModified"] !== null).toBe(true);
 });
 
+
 test("API should add a comment to a post", async() => {
     const tokenRequest = await request.post(`/api/v1/users/token`)
     .send({
@@ -189,6 +190,59 @@ test("API should increment post like count", async()=> {
 
     expect(res3["body"]["data"][0]["data"]["likeCount"] === 1).toBe(true);
 });
+
+
+test("API should decrement post like count", async()=> {
+    const tokenRequest = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "tstark@avengers.io",
+        password: "superSecretPassword"
+    })
+    .expect(200);
+
+    const starkAccessToken = tokenRequest.body.meta.accessToken;
+
+    const tokenRequestNo2 = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "thor@avengers.io",
+        password: "thor@superSecretPassword"
+    })
+    .expect(200);
+
+    const thorAccessToken = tokenRequestNo2.body.meta.accessToken;
+
+    const res1 = await request.post(`/api/v1/users/${starkUserId}/posts`)
+    .set("Authorization", `Bearer ${starkAccessToken}`)
+    .send({
+        "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
+        "handle": "@tstark"
+    })
+    .expect(200);
+    const postId = res1["body"]["data"][0]["id"];
+
+    const res2 = await request.put(`/api/v1/users/${starkUserId}/posts/${postId}/likes/${thorUserId}`)
+    .set("Authorization", `Bearer ${thorAccessToken}`)
+    .send()
+    .expect(200);
+
+    const res3 = await request.get(`/api/v1/users/${starkUserId}/posts/${postId}`)
+    .set("Authorization", `Bearer ${starkAccessToken}`)
+    .expect(200);
+
+    expect(res3["body"]["data"][0]["data"]["likeCount"] === 1).toBe(true);
+
+    await request.delete(`/api/v1/users/${starkUserId}/posts/${postId}/likes/${thorUserId}`)
+    .set("Authorization", `Bearer ${thorAccessToken}`)
+    .send()
+    .expect(200);
+
+    const res4 = await request.get(`/api/v1/users/${starkUserId}/posts/${postId}`)
+    .set("Authorization", `Bearer ${starkAccessToken}`)
+    .expect(200);
+
+    expect(res4["body"]["data"][0]["data"]["likeCount"] === 0).toBe(true);
+});
+
 
 test("API should return 200 status when attempting to like the same post twice", async() => {
     const tokenRequest = await request.post(`/api/v1/users/token`)

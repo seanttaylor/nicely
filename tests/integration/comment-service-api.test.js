@@ -147,6 +147,62 @@ test("API should return comment with incremented like count", async()=> {
     expect(res3["body"]["data"][0]["data"]["likeCount"] === 1).toBe(true);
 });
 
+test("API should return comment with decremented like count", async()=> {
+    const tokenRequest = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "tstark@avengers.io",
+        password: "superSecretPassword"
+    })
+    .expect(200);
+
+    const tokenRequestNo2 = await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: "thor@avengers.io",
+        password: "thor@superSecretPassword"
+    })
+    .expect(200);
+
+    const starkAccessToken = tokenRequest.body.meta.accessToken;
+    const thorAccessToken = tokenRequestNo2.body.meta.accessToken;
+
+    const res1 = await request.post(`/api/v1/users/${starkUserId}/posts`)
+    .set("Authorization", `Bearer ${starkAccessToken}`)
+    .send({
+        "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
+        "handle": "@tstark"
+    })
+    .expect(200);
+    const postId = res1["body"]["data"][0]["id"];
+
+    const res2 = await request.post(`/api/v1/users/${starkUserId}/posts/${postId}/comments`)
+    .set("Authorization", `Bearer ${starkAccessToken}`)
+    .send({
+        postId,
+        userId: starkUserId,
+        body: "True Story. FR."
+    })
+    .expect(200);
+    const commentId = res2["body"]["data"][0]["id"];
+
+    const res3 = await request.put(`/api/v1/users/${starkUserId}/posts/${postId}/comments/${commentId}/likes/${thorUserId}`)
+    .set("Authorization", `Bearer ${thorAccessToken}`)
+    .send()
+    .expect(200);
+    
+    expect(res3["body"]["data"][0]["data"]["likeCount"] === 1).toBe(true);
+
+    await request.delete(`/api/v1/users/${starkUserId}/posts/${postId}/comments/${commentId}/likes/${thorUserId}`)
+    .set("Authorization", `Bearer ${thorAccessToken}`)
+    .send()
+    .expect(200);
+
+    const res4 = await request.get(`/api/v1/users/${starkUserId}/posts/${postId}`)
+    .set("Authorization", `Bearer ${starkAccessToken}`)
+    .expect(200);
+    
+    expect(res4["body"]["data"][0]["data"]["likeCount"] === 0).toBe(true);
+});
+
 test("API should return 403 status when attempting to like the same comment twice", async() => {
     const tokenRequest = await request.post(`/api/v1/users/token`)
     .send({

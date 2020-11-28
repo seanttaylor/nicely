@@ -161,6 +161,30 @@ test("Should return increment Comment like count", async() => {
     expect(testComment._data.likeCount === 1).toBe(true);
 });
 
+test("Should return increment Comment like count", async() => {
+    const testPost = await testPostService.createPost({
+        body: "Everybody wants a happy ending, right? But it doesn’t always roll that way.",
+        userId: "e98417a8-d912-44e0-8d37-abe712ca840f",
+        handle: randomUserHandle()
+    });
+    const testPostId = await testPost.save();
+
+    const testComment = await testCommentService.createComment({
+        body: "True story. FR.",
+        userId: "e98417a8-d912-44e0-8d37-abe712ca840f",
+        postId: testPostId
+    });
+    await testComment.save();
+    await testComment.incrementLikeCount({fromUser: thorUserId});
+
+    expect(testComment._data.likeCount === 1).toBe(true);
+
+    await testComment.decrementLikeCount({fromUser: thorUserId});
+
+    expect(testComment._data.likeCount === 0).toBe(true);
+});
+
+
 /* TEST MAY BE DEPRECATED
 test("Should return increment Comment like count when likeCount property already exists", async() => {
     const testPost = await testPostService.createPost({

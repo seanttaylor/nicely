@@ -152,6 +152,23 @@ test("Should increment Post like count", async() => {
     expect(testPost._data.likeCount === 1).toBe(true);
 });
 
+test("Should decrement Post like count", async() => {
+    const testPost = await testPostService.createPost({
+        body: "Everybody wants a happy ending, right? But it doesn’t always roll that way.",
+        userId: "e98417a8-d912-44e0-8d37-abe712ca840f",
+        handle: "@tstark"
+    });
+
+    await testPost.save();
+    await testPost.incrementLikeCount({fromUser: thorUserId });
+
+    expect(testPost._data.likeCount === 1).toBe(true);
+
+    await testPost.decrementLikeCount({fromUser: thorUserId });
+
+    expect(testPost._data.likeCount === 0).toBe(true);
+});
+
 
 /* TEST MAY BE DEPRECATED
 test("Should increment Post like count when likeCount property already exists", async() => {
@@ -272,6 +289,13 @@ test("Should increment post comment count when commentCount property already exi
 });
 
 test("Should return list of posts created by a user with specified id", async() => {
+    const postList = await testPostService.findPostsByUserId({userId: "e98417a8-d912-44e0-8d37-abe712ca840f"});
+    expect(Array.isArray(postList)).toBe(true);
+    expect(postList[0]["id"] === "e98417a8-d912-44e0-8d37-abe712ca840f");
+});
+
+
+test("Should decrement the like count of a post", async() => {
     const postList = await testPostService.findPostsByUserId({userId: "e98417a8-d912-44e0-8d37-abe712ca840f"});
     expect(Array.isArray(postList)).toBe(true);
     expect(postList[0]["id"] === "e98417a8-d912-44e0-8d37-abe712ca840f");
