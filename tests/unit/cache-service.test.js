@@ -1,4 +1,3 @@
-/*CacheService*/
 const ICache = require("../../src/interfaces/cache");
 const CacheService = require("../../src/lib/cache");
 const testCacheService = new ICache(new CacheService());
