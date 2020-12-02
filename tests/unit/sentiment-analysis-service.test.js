@@ -1,5 +1,6 @@
-const SentimentAnalysisService = require("../../src/services/sentiment-analysis");
-const testSentimentAnalysisService = new SentimentAnalysisService();
+const SentimentAnalysisService = require("../../src/lib/sentiment-analysis");
+const ISentimentAnalysisService = require("../../src/interfaces/sentiment-analysis");
+const testSentimentAnalysisService = new ISentimentAnalysisService(new SentimentAnalysisService());
 
 /**Tests**/
 

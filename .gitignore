@@ -88,3 +88,9 @@ docker-compose.dev.yml
 
 # VSCode
 .vscode
+
+# Google Cloud Service Account Key
+google-service-account-key.json
+
+# DS_Store
+.DS_Store

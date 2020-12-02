@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 /**
-* An object having the IPublhser API; a set of methods for publishing user posts
+* An object having the IPublisher API; a set of methods for publishing user posts
 * @typedef {Object} IPublisherAPI
 * @property {Function} publish - publishes posts to a consumer
 * @property {Function} setup - adds additional configuration necessary to execute the publish method after class is instantiated
