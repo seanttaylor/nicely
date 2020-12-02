@@ -28,6 +28,7 @@ services:
       DATABASE_NAME: asiago
       NODE_ENV: development
       JWT_SECRET: superSecret
+    env_file: .env
     volumes:
       - ./:/src
     build:

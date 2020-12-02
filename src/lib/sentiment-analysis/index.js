@@ -6,15 +6,15 @@
 function SentimentAnalysisService() {
    
     this.getReport = async function() {
-     return {};
+        return {};
     }
 
 
     this.analyzeSentiment = async function(text) {
-       return {
-           sentimentScore: null,
-           magnitude: null
-       };
+        return {
+            sentimentScore: 0,
+            magnitude: 0
+        };
     }
 
 }
