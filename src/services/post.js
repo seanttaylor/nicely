@@ -52,7 +52,7 @@ function Post(repo, doc) {
         this._id = post.id;
         this._data.createdDate = post.createdDate;
         this._lastModified = null;
-
+        //this._eventEmitter.emit("PostService.newPost", {id: post.id, body: this._data.body});
         return post.id;
     }
 

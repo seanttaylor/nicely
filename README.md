@@ -19,7 +19,7 @@ Key software modules, services and tools used regularly for designing, building 
 * [DB Fiddle](https://www.db-fiddle.com) ~ a browser-based playground for debugging SQL in a number of common dialects
 * [Stoplight](https://stoplight.io) ~ a visual editor for creating OpenAPI schema documents
 * [accesscontrol](https://www.npmjs.com/package/accesscontrol) ~ an NPM module offering basic role-based access control
-* [Google Natural Language API] ~ a set of APIs to apply sentiment analyis to plain text or html
+* [Google Cloud Natural Language API](https://cloud.google.com/natural-language/docs) ~ a set of APIs to apply sentiment analyis to plain text or html
 
 #### References
 
