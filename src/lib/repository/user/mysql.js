@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 /*Implements IUserRepository interface for connecting to a MySQL database.
 See interfaces/user-repository for method documentation*/
 
@@ -74,7 +76,7 @@ function UserMySQLRepository(databaseConnector) {
         const connection = await databaseConnector.getConnection();
         const runQuery = promisify(connection.query.bind(connection));
 
-        const sql = `SELECT id, handle, email_address, motto, is_verified, first_name, last_name, follower_count, created_date FROM users WHERE email_address = '${emailAddress}'`;
+        const sql = `SELECT id, handle, email_address, motto, is_verified, first_name, last_name, follower_count, created_date FROM users WHERE email_address = "${emailAddress}"`;
 
         const result = await runQuery(sql);
         connection.release();
@@ -86,7 +88,7 @@ function UserMySQLRepository(databaseConnector) {
     this.findOneByHandle = async function(handle) {
         const connection = await databaseConnector.getConnection();
         const runQuery = promisify(connection.query.bind(connection));
-        const sql = `SELECT id, handle, email_address, motto, is_verified, first_name, last_name, follower_count, created_date FROM users WHERE handle = '${handle}'`;
+        const sql = `SELECT id, handle, email_address, motto, is_verified, first_name, last_name, follower_count, created_date FROM users WHERE handle = "${handle}"`;
         const result = await runQuery(sql);
         connection.release();
 
@@ -109,7 +111,7 @@ function UserMySQLRepository(databaseConnector) {
         const connection = await databaseConnector.getConnection();
         const runQuery = promisify(connection.query.bind(connection));
         const lastModified = new Date().toISOString();
-        const sql = `UPDATE users SET motto = '${text}', last_modified = '${lastModified}' WHERE id = '${id}'`;
+        const sql = `UPDATE users SET motto = "${text}", last_modified = "${lastModified}" WHERE id = "${id}"`;
 
         const result = await runQuery(sql);
         connection.release();
@@ -122,7 +124,7 @@ function UserMySQLRepository(databaseConnector) {
         const connection = await databaseConnector.getConnection();
         const runQuery = promisify(connection.query.bind(connection));
         const lastModified = new Date().toISOString();
-        const sql = `UPDATE users SET first_name = '${doc.firstName}', last_name = '${doc.lastName}', last_modified = '${lastModified}' WHERE id = '${id}'`;
+        const sql = `UPDATE users SET first_name = "${doc.firstName}", last_name = "${doc.lastName}", last_modified = "${lastModified}" WHERE id = "${id}"`;
 
         const result = await runQuery(sql)
         connection.release();
@@ -136,7 +138,7 @@ function UserMySQLRepository(databaseConnector) {
         const connection = await databaseConnector.getConnection();
         const runQuery = promisify(connection.query.bind(connection));
         const lastModified = new Date().toISOString();
-        const sql = `UPDATE users SET phone_number = '${phoneNumber}', last_modified = '${lastModified}' WHERE id = '${id}'`;
+        const sql = `UPDATE users SET phone_number = "${phoneNumber}", last_modified = "${lastModified}" WHERE id = "${id}"`;
 
         const result = await runQuery(sql);
         connection.release();
@@ -148,8 +150,8 @@ function UserMySQLRepository(databaseConnector) {
     this.createSubscription = async function(currentUserId, targetUserId) {
         const connection = await databaseConnector.getConnection();
         const runQuery = promisify(connection.query.bind(connection));
-        const insertSubscriptionSql = `INSERT INTO user_followers (user_id, follower_id) VALUES('${targetUserId}', '${currentUserId}')`;
-        const incrementFollowerCountSql = `UPDATE users SET follower_count = follower_count + 1 WHERE id = '${targetUserId}'`;
+        const insertSubscriptionSql = `INSERT INTO user_followers (user_id, follower_id) VALUES("${targetUserId}", "${currentUserId}")`;
+        const incrementFollowerCountSql = `UPDATE users SET follower_count = follower_count + 1 WHERE id = "${targetUserId}"`;
 
         connection.beginTransaction(async(err) => {
             try {
@@ -169,8 +171,8 @@ function UserMySQLRepository(databaseConnector) {
     this.removeSubscription = async function(currentUserId, targetUserId) {
         const connection = await databaseConnector.getConnection();
         const runQuery = promisify(connection.query.bind(connection));
-        const removeSubscription = `DELETE FROM user_followers WHERE follower_id = '${currentUserId}'`;
-        const decrementFollowerCount = `UPDATE users SET follower_count = follower_count - 1 WHERE id = '${targetUserId}'`;
+        const removeSubscription = `DELETE FROM user_followers WHERE follower_id = "${currentUserId}"`;
+        const decrementFollowerCount = `UPDATE users SET follower_count = follower_count - 1 WHERE id = "${targetUserId}"`;
 
         connection.beginTransaction(async(err) => {
             try {
@@ -205,7 +207,7 @@ function UserMySQLRepository(databaseConnector) {
     this.getSubscribersOf = async function(currentUserId) {
         const connection = await databaseConnector.getConnection();
         const runQuery = promisify(connection.query.bind(connection));
-        const sql = `SELECT users.id, users.handle, users.email_address, users.motto, users.is_verified, users.first_name, users.last_name, users.follower_count, users.created_date, user_followers.* FROM user_followers JOIN users ON user_followers.follower_id = users.id WHERE user_followers.user_id = '${currentUserId}'`;
+        const sql = `SELECT users.id, users.handle, users.email_address, users.motto, users.is_verified, users.first_name, users.last_name, users.follower_count, users.created_date, user_followers.* FROM user_followers JOIN users ON user_followers.follower_id = users.id WHERE user_followers.user_id = "${currentUserId}"`;
         const result = await runQuery(sql);
 
         return result.map((u) => onReadUser(u));
@@ -215,7 +217,7 @@ function UserMySQLRepository(databaseConnector) {
     this.getUserSubscriptions = async function(currentUserId) {
         const connection = await databaseConnector.getConnection();
         const runQuery = promisify(connection.query.bind(connection));
-        const sql = `SELECT users.*, user_followers.* FROM user_followers JOIN users ON user_followers.user_id = users.id WHERE user_followers.follower_id = '${currentUserId}'`;
+        const sql = `SELECT users.*, user_followers.* FROM user_followers JOIN users ON user_followers.user_id = users.id WHERE user_followers.follower_id = "${currentUserId}"`;
 
         const result = await runQuery(sql);
         return result.map((u) => onReadUser(u));
