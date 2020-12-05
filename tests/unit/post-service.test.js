@@ -152,6 +152,7 @@ test("Should increment Post like count", async() => {
     expect(testPost._data.likeCount === 1).toBe(true);
 });
 
+
 test("Should decrement Post like count", async() => {
     const testPost = await testPostService.createPost({
         body: "Everybody wants a happy ending, right? But it doesn’t always roll that way.",
@@ -183,7 +184,6 @@ test("Should increment Post like count when likeCount property already exists", 
     expect(mockImpl.repo._repo.calledMethods.incrementLikeCountCalled).toBe(true);
 });
 */
-
 
 test("Should return true when post exists in the database", async() => {
     const testPost = await testPostService.createPost({
@@ -300,6 +300,8 @@ test("Should decrement the like count of a post", async() => {
     expect(Array.isArray(postList)).toBe(true);
     expect(postList[0]["id"] === "e98417a8-d912-44e0-8d37-abe712ca840f");
 });
+
+
 
 
 /**Negative Tests**/

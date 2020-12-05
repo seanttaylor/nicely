@@ -10,6 +10,7 @@
 * @property {Function} incrementCommentCount - increments the commentCount of a user post
 * @property {Function} incrementLikeCount - increments the like count of a user post
 * @property {Function} deletePost - deletes a post in the data store by its uuid
+* @property {Function} addSentimentScore - associate a sentiment score with a post in the data store
 */
 
 /**
@@ -66,7 +67,17 @@ function IPostRepository(myImpl) {
     @param {String} id - uuid of the post
     */
 
-    this.deletePost || required;
+    this.deletePost = myImpl.deletePost || required;
+
+
+    /**
+    @param {String} id - uuid of the post
+    @param {Number} sentimentScore - a sentiment score for a specified post
+    @param {Number} magnitued - a magnitude value indicating the strength of sentiment associated with a post
+    */
+
+    this.addSentimentScore = myImpl.addSentimentScore || required;
+
 
     const {
         create,
@@ -75,6 +86,7 @@ function IPostRepository(myImpl) {
         editPost,
         incrementCommentCount,
         deletePost,
+        addSentimentScore,
         ...optionalMethods
     } = myImpl;
 

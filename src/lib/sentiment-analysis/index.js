@@ -14,7 +14,7 @@ const API_KEY = process.env.GOOGLE_CLOUD_NATURAL_LANGUAGE_API_KEY;
  * @param {Object} fetch - an instance of the node-fetch NPM package
  */
 
-function SentimentAnalysisService({eventEmitter, postRepository, fetch}) {
+function SentimentAnalysisService({eventEmitter, postRepository, fetch, console}) {
     eventEmitter.on("postService.newPost", (async({id, body})=> {
         try {
             const {sentimentScore, magnitude} = await this.analyzeSentiment(body);
@@ -54,7 +54,7 @@ function SentimentAnalysisService({eventEmitter, postRepository, fetch}) {
             };
 
         } catch(e) {
-           throw Error(e);
+            throw Error(e);
         }
     }
 
