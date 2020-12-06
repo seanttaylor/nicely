@@ -180,6 +180,24 @@ function UserRouter({postService, userService, commentService, authService, even
         }
     });
 
+    router.get("/:id/feed", verifyUserExists, async(req, res, next) => {
+        const userId = req.params.id;
+
+        try {
+            const postList = await postService.getPostsBySubscriber(userId);
+            res.set("content-type", "application/json");
+            res.status(200);
+            res.json({
+                data: postList.map(p => p.toJSON()),
+                entries: postList.length
+            });
+        }
+        catch (e) {
+            next(e);
+        }
+    });
+
+
     /*** POST ****/
 
     router.post("/token", async(req, res, next) => {

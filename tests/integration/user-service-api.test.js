@@ -283,6 +283,69 @@ test("API should return a 401 status code on attempt(s) to access unauthorized r
 TEST MAY BE DEPRECATED
 */
 
+test("API should return the feed of a specified user", async() => {
+    const userNo1EmailAddress = randomEmailAddress();
+    const userNo1Handle = randomUserHandle();
+
+    const res1 = await request.post(`/api/v1/users`)
+    .send({
+        handle: randomUserHandle(),
+        motto: "Hulk smash!",
+        emailAddress: userNo1EmailAddress,
+        firstName: "Bruce",
+        lastName: "Banner",
+        phoneNumber: randomPhoneNumber(),
+        password: fakePassword
+    })
+    .expect(200);
+
+    const userNo1Id = res1["body"]["data"][0]["id"];
+
+    const accessTokenRequest =  await request.post(`/api/v1/users/token`)
+    .send({
+        emailAddress: userNo1EmailAddress,
+        password: fakePassword
+    })
+    .expect(200);
+
+    const accessToken = accessTokenRequest.body.meta.accessToken;
+
+    const res2 = await request.post(`/api/v1/users/${userNo1Id}/posts`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({
+        "body": "Is it better to be feared or respected? I say, is it too much to ask for both?",
+        "handle": userNo1Handle
+    })
+    .expect(200)
+
+    const postId = res2["body"]["data"][0]["id"];
+   
+    const res3 = await request.post(`/api/v1/users`)
+    .send({
+        handle: randomUserHandle(),
+        motto: "Always bet on black",
+        emailAddress: randomEmailAddress(),
+        firstName: "Nick",
+        lastName: "Fury",
+        phoneNumber: randomPhoneNumber(),
+        password: fakePassword
+    })
+    .expect(200);
+
+    const followerId = res3["body"]["data"][0]["id"];
+
+    const res4 = await request.put(`/api/v1/users/${userNo1Id}/followers/${followerId}`)
+    .send()
+    .expect(204);
+    
+    const res5 = await request.get(`/api/v1/users/${followerId}/feed`)
+    .expect(200);
+
+    expect(Array.isArray(res5["body"]["data"])).toBe(true);
+    expect(res5["body"]["data"]["length"] === 1).toBe(true);
+    expect(res5["body"]["data"][0]["id"] === postId).toBe(true);
+});
+
 test("API should return 200 status code on attempt(s) to access authorized resources", async() => {
     const res1 = await request.post(`/api/v1/users/token`)
     .send({

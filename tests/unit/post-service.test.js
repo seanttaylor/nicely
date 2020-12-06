@@ -48,14 +48,13 @@ test("Should return list of Post instances", async() => {
         userId: "e98417a8-d912-44e0-8d37-abe712ca840f",
         handle: randomUserHandle()
     });
-    const postId = testPost.save();
+    const postId = await testPost.save();
     const result = await testPostService.findAllPosts();
 
     expect(Array.isArray(result)).toBe(true);
     expect(Object.keys(result[0]["_data"]).includes("id")).toBe(true);
     expect(Object.keys(result[0]["_data"]).includes("body")).toBe(true);
     expect(uuid.validate(result[0]["_id"])).toBe(true);
-
 });
 
 

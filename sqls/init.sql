@@ -2,8 +2,6 @@ CREATE DATABASE IF NOT EXISTS asiago;
 
 USE asiago;
 
-
-
 CREATE TABLE IF NOT EXISTS `users`
 (
  `id`             varchar(64) NOT NULL ,
@@ -33,8 +31,9 @@ CREATE TABLE IF NOT EXISTS `posts`
  `last_modified`   mediumtext NULL ,
  `comment_count`   integer NULL DEFAULT 0 ,
  `like_count`      integer NULL DEFAULT 0,
- `sentiment_score` decimal NULL,
- `magnitude`       decimal NULL,
+ /*sentiment_score is type string because MySQL kept coercing negative decimal values to (0)*/
+ `sentiment_score` varchar(8) NULL,
+ `magnitude`       integer NULL,
  `is_archived`     boolean NOT NULL DEFAULT FALSE,
  `is_published`    boolean NOT NULL DEFAULT FALSE,
 

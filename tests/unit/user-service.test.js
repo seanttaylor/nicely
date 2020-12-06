@@ -1,4 +1,6 @@
 const uuid = require("uuid");
+const events = require("events");
+const eventEmitter = new events.EventEmitter();
 const mocks = require("../../src/lib/utils/mocks/repo");
 const { UserService } = require("../../src/services/user");
 const UserRepository = require("../../src/lib/repository/user/mysql");
@@ -8,6 +10,16 @@ const testSqlDbConnector = new DatabaseConnector();
 const IUserRepository = require("../../src/interfaces/user-repository");
 const testUserMySqlRepo = new IUserRepository(new UserRepository(testSqlDbConnector));
 const testUserService = new UserService(testUserMySqlRepo);
+/**PostService**/
+const { PostService } = require("../../src/services/post");
+const PostRepository = require("../../src/lib/repository/post/mysql");
+const IPostRepository = require("../../src/interfaces/post-repository");
+const testPostMySqlRepo = new IPostRepository(new PostRepository(testSqlDbConnector));
+const testPostService = new PostService({
+    repo: testPostMySqlRepo,
+    userService: testUserService,
+    eventEmitter
+});
 
 /**Tests**/
 afterAll(()=> {
@@ -338,6 +350,44 @@ test("Should return true when plain-text password and equivalent hash match", as
     const passwordMatches = await testUserService.isUserPasswordCorrect({password: "xxxyyyzzz", user: testUser});
   
     expect(passwordMatches).toBe(true);
+});
+
+
+test("Should return posts from all users a specified user follows", async() => {
+    const testUserNo1 = await testUserService.createUser({
+        handle: randomUserHandle(),
+        motto: "Hulk smash!",
+        emailAddress: randomEmailAddress(),
+        firstName: "Bruce",
+        lastName: "Banner",
+        phoneNumber: randomPhoneNumber()
+    });
+    const testUserNo1Id = await testUserNo1.save();
+
+    const testUserNo2 = await testUserService.createUser({
+        handle: randomUserHandle(),
+        motto: "Let's do this!",
+        emailAddress: randomEmailAddress(),
+        firstName: "Steve",
+        lastName: "Rogers",
+        phoneNumber: randomPhoneNumber()
+    });
+
+    const testUserNo2Id = await testUserNo2.save();
+    await testUserNo2.followUser(testUserNo1);
+
+    const testPost = await testPostService.createPost({
+        body: "Everybody wants a happy ending, right? But it doesn’t always roll that way.",
+        userId: testUserNo1Id,
+        handle: randomUserHandle()
+    });
+    
+    const postId = await testPost.save();
+    const feed = await testPostService.getPostsBySubscriber(testUserNo2._id);
+    
+    expect(Array.isArray(feed) === true).toBe(true);
+    expect(feed.length === 1).toBe(true);
+    expect(feed[0]["_id"] === postId).toBe(true);
 });
 
 

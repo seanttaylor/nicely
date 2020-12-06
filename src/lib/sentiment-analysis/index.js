@@ -46,7 +46,6 @@ function SentimentAnalysisService({eventEmitter, fetch, console}) {
             });
 
             const {documentSentiment} = await request.json();
-
             return {
                 sentimentScore: documentSentiment.score,
                 magnitude: documentSentiment.magnitude

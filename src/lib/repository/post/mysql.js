@@ -146,7 +146,7 @@ function PostMySQLRepository(databaseConnector) {
     this.setPostSentimentScore = async function({id, sentimentScore, magnitude}) {
         const connection = await databaseConnector.getConnection();
         const runQueryWith = promisify(connection.query.bind(connection));
-        const sql = `UPDATE posts SET sentiment_score = "${sentimentScore}", magnitude = "${magnitude}" WHERE id = "${id}"`;
+        const sql = `UPDATE posts SET sentiment_score = "${String(sentimentScore)}", magnitude = "${magnitude}" WHERE id = "${id}"`;
 
         await runQueryWith(sql);
         connection.release();
@@ -237,7 +237,7 @@ function PostMySQLRepository(databaseConnector) {
             handle: record.handle,
             firstName: record.first_name,
             lastName: record.last_name,
-            sentimentScore: record.sentiment_score,
+            sentimentScore: Number(record.sentiment_score),
             magnitude: record.magnitude
         }
     }
