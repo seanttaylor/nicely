@@ -34,10 +34,12 @@ function Post(repo, doc) {
                 firstName: this._data.firstName,
                 lastName: this._data.lastName,
                 likeCount: this._data.likeCount,
-                commentCount: this._data.commentCount
+                commentCount: this._data.commentCount,
+                sentimentScore: this._data.sentimentScore
             }
         };
     }
+
 
     /**
     Saves a new post to the data store.
@@ -56,6 +58,7 @@ function Post(repo, doc) {
         return post.id;
     }
 
+
     /**
     Associates a comment with a post; updates post.commentCount property.
     @param {Comment} comment - an instance of the Comment class
@@ -73,6 +76,7 @@ function Post(repo, doc) {
         }
     }
 
+
     /**
     Increments the like count on the current post; updates post.likeCount property.
     */
@@ -87,6 +91,7 @@ function Post(repo, doc) {
         }
     }
 
+
     /**
     Decrements the like count on the current post; updates post.likeCount property.
     */
@@ -94,6 +99,7 @@ function Post(repo, doc) {
         await this._repo.decrementLikeCount({postId: this._id, userId: fromUser});
         this._data.likeCount -= 1;
     }
+
 
     /**
     Updates the post.body property; saves the update to the data store
@@ -107,6 +113,19 @@ function Post(repo, doc) {
 
         return this;
     }
+
+
+    /**
+    Set the sentimentScore for a specified post in the data store
+    @param {Number} sentimentScore - a sentiment score to associate with the post
+    @param {Number} magnitude - a magnitude score to associate with the post
+    */
+    this.setSentimentScore = async function({sentimentScore, magnitude}) {
+        await this._repo.setPostSentimentScore({id: this._id, sentimentScore, magnitude});
+        this._data.sentimentScore = sentimentScore;
+        this._data.magnitude = magnitude;
+    };
+
 }
 
 /*Post*/

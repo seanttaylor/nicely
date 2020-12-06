@@ -171,6 +171,22 @@ test("Should decrement Post like count", async() => {
 });
 
 
+test("Should set the post sentiment score", async() => {
+    const testPost = await testPostService.createPost({
+        body: "Everybody wants a happy ending, right? But it doesn’t always roll that way.",
+        userId: "e98417a8-d912-44e0-8d37-abe712ca840f",
+        handle: "@tstark"
+    });
+
+    await testPost.save();
+    await testPost.setSentimentScore({sentimentScore: 0.9, magnitude: 0.9});
+
+    expect(testPost._data.sentimentScore === 0.9).toBe(true);
+    expect(testPost._data.magnitude === 0.9).toBe(true);
+});
+
+
+
 /* TEST MAY BE DEPRECATED
 test("Should increment Post like count when likeCount property already exists", async() => {
     const testPost = await testPostService.createPost({

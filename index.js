@@ -12,6 +12,8 @@ const cors = require("cors");
 const app = express();
 const events = require("events");
 const eventEmitter = new events.EventEmitter();
+const fetch = require("node-fetch");
+const mockFetch = require("./src/lib/utils/mocks/fetch");
 const DatabaseConnector = require("./src/lib/database/connectors/mysql"); 
 const asiagoDatabaseConnector = new DatabaseConnector();
 const serverPort = process.env.SERVER_PORT || 3000;
@@ -60,6 +62,15 @@ const cacheService = new ICache(new CacheService());
 /**AuthService**/
 const AuthService = require("./src/services/auth");
 const authService = new AuthService({cacheService, userService});
+
+/**SentimentAnalysisService**/
+const SentimentAnalysisService = require("./src/lib/sentiment-analysis");
+const ISentimentAnalysisService = require("./src/interfaces/sentiment-analysis");
+const sentimentAnalysisService = new ISentimentAnalysisService(new SentimentAnalysisService({
+    eventEmitter, 
+    fetch: process.env.NODE_ENV === "ci/cd/test" ? mockFetch : fetch, 
+    console
+}));
 /******************************************************************************/
 
 const SSERouter = require("./src/api/sse");
@@ -87,7 +98,8 @@ app.use("/api/v1/users", UserRouter({
     postService, 
     userService, 
     commentService,
-    authService
+    authService,
+    eventEmitter
 }));
 app.use("/api/v1/feed", FeedRouter(postService));
 app.use("/api/v1/feed/realtime-updates", SSERouter(ssePublishService));

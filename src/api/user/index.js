@@ -19,7 +19,7 @@ const {
  * @returns router - an instance of an Express router
  */
 
-function UserRouter({postService, userService, commentService, authService}) {
+function UserRouter({postService, userService, commentService, authService, eventEmitter}) {
 
     async function verifyUserExists(req, res, next) {
         const userExists = await userService.userExists(req.params.id);
@@ -214,6 +214,7 @@ function UserRouter({postService, userService, commentService, authService}) {
         try {
             const post = await postService.createPost({userId, ...req.body});
             await post.save();
+            eventEmitter.emit("postService.newPost", post);
             res.set("content-type", "application/json");
             res.status(200);
             res.json({

@@ -6,6 +6,7 @@ const mockRepo = require("../../src/lib/utils/mocks/repo");
 const mockSentimentAnalysisService = require("../../src/lib/utils/mocks/sentiment-analysis-service");
 const mockFetch = require("../../src/lib/utils/mocks/fetch");
 const mockConsole = require("../../src/lib/utils/mocks/console");
+const mockPost = require("../../src/lib/utils/mocks/post");
 
 const sentimentServiceDeps = {
     eventEmitter, 
@@ -30,26 +31,24 @@ test("Should return a sentiment analysis for specified string", async() => {
 });
 
 
-test("Should trigger an sentiment analyis when the 'postService.newPost' event is emitted", async() => {
+test("Should trigger an sentiment analysis when the 'postService.newPost' event is emitted", async() => {
     const testSentimentAnalysisService = new ISentimentAnalysisService(new SentimentAnalysisService(sentimentServiceDeps));
-    eventEmitter.emit("postService.newPost", {id: "fake-id", body: "I'll build a stairway to paradise"});
+    eventEmitter.emit("postService.newPost", mockPost);
     setTimeout(()=> {
-        expect(mockRepo._repo.calledMethods.addSentimentScore).toBe(true);
-    }, 5000);  
+        expect(mockPost.calledMethods.setSentimentScore).toBe(true);
+    },5000);  
 });
 
 
 test("Should log an error when the 'postService.newPost' event handler encounters an error", async() => {
-    const sentimentServiceDepsWithBrokenPostRepo = Object.assign(sentimentServiceDeps, {
-        postRepository: {
-            addSentimentScore() {
-                throw new Error("There was an error")
-            }
-        }
-    });
-    const testSentimentAnalysisService = new ISentimentAnalysisService(new SentimentAnalysisService(sentimentServiceDepsWithBrokenPostRepo));
+    const testSentimentAnalysisService = new ISentimentAnalysisService(new SentimentAnalysisService(sentimentServiceDeps));
  
-    eventEmitter.emit("postService.newPost", {id: "fake-id", body: "I'll build a stairway to paradise"});
+    eventEmitter.emit("postService.newPost", Object.assign(mockPost, {
+        setSentimentScore() {
+            throw Error(e);
+        }
+    }));
+
     setTimeout(()=> {
         expect(mockConsole.calledMethods.error).toBe(true);
     }, 5000)

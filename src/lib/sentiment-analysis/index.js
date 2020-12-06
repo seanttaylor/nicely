@@ -10,21 +10,20 @@ const API_KEY = process.env.GOOGLE_CLOUD_NATURAL_LANGUAGE_API_KEY;
 
 /**
  * @param {EventEmitter} eventEmitter - an instance of EventEmitter
- * @param {PostRepository} postRepository - an instance of the PostRepository
  * @param {Object} fetch - an instance of the node-fetch NPM package
+ * @param {Object} console - the console object
  */
 
-function SentimentAnalysisService({eventEmitter, postRepository, fetch, console}) {
-    eventEmitter.on("postService.newPost", (async({id, body})=> {
-        try {
-            const {sentimentScore, magnitude} = await this.analyzeSentiment(body);
-            await postRepository.addSentimentScore({id, sentimentScore, magnitude});
-        } catch(e) {
-            console.error(e);
-        }
-    }).bind(this));
-
+function SentimentAnalysisService({eventEmitter, fetch, console}) {
+    //Promises are used here because the implementation could not be made to work with async functions
+     
+    eventEmitter.on("postService.newPost", (post)=> {
+        this.analyzeSentiment(post._data.body)
+        .then(({sentimentScore, magnitude})=> post.setSentimentScore({sentimentScore, magnitude}))
+        .catch((e) => console.error(e))
+    });
    
+
     this.getReport = async function() {
         return {};
     }
@@ -38,12 +37,12 @@ function SentimentAnalysisService({eventEmitter, postRepository, fetch, console}
         try {
             const request = await fetch(`${URL}?key=${API_KEY}`, {
                 "method": "POST",
-                "body": {
+                "body": JSON.stringify({
                     document: {
                         type: "PLAIN_TEXT",
                         content: text
                     }
-                }
+                })
             });
 
             const {documentSentiment} = await request.json();

@@ -30,7 +30,7 @@ function PostMySQLRepository(databaseConnector) {
     this.findOne = async function(id) {
         const connection = await databaseConnector.getConnection();
         const runQueryWith = promisify(connection.query.bind(connection));
-        const sql = `SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, posts.last_modified, users.handle, users.first_name, users.last_name FROM posts JOIN users ON posts.user_id = users.id  WHERE posts.id = "${id}"`;
+        const sql = `SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, posts.last_modified, posts.sentiment_score, posts.magnitude, users.handle, users.first_name, users.last_name FROM posts JOIN users ON posts.user_id = users.id  WHERE posts.id = "${id}"`;
 
         const result = await runQueryWith(sql);
         connection.release();
@@ -41,7 +41,7 @@ function PostMySQLRepository(databaseConnector) {
     this.findAll = async function() {
         const connection = await databaseConnector.getConnection();
         const runQueryWith = promisify(connection.query.bind(connection));
-        const sql = `SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, users.handle, users.first_name, users.last_name FROM posts JOIN users ON posts.user_id = users.id`;
+        const sql = `SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, posts.sentiment_score, posts.magnitude, users.handle, users.first_name, users.last_name FROM posts JOIN users ON posts.user_id = users.id`;
         const result = await runQueryWith(sql);
         connection.release();
 
@@ -143,14 +143,13 @@ function PostMySQLRepository(databaseConnector) {
     }
 
 
-    this.addSentimentScore = async function({id, sentimentScore, magnitude}) {
+    this.setPostSentimentScore = async function({id, sentimentScore, magnitude}) {
         const connection = await databaseConnector.getConnection();
         const runQueryWith = promisify(connection.query.bind(connection));
         const sql = `UPDATE posts SET sentiment_score = "${sentimentScore}", magnitude = "${magnitude}" WHERE id = "${id}"`;
 
         await runQueryWith(sql);
         connection.release();
-
     }
 
 
@@ -201,7 +200,7 @@ function PostMySQLRepository(databaseConnector) {
     this.getPostsBySubscriber = async function(id) {
         const connection = await databaseConnector.getConnection();
         const runQueryWith = promisify(connection.query.bind(connection));
-        const sql = `SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, users.handle, users.first_name, users.last_name FROM posts JOIN user_followers ON posts.user_id = user_followers.user_id JOIN users ON posts.user_id = users.id WHERE follower_id = "${id}"`;
+        const sql = `SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, posts.sentiment_score, posts.magnitude, users.handle, users.first_name, users.last_name FROM posts JOIN user_followers ON posts.user_id = user_followers.user_id JOIN users ON posts.user_id = users.id WHERE follower_id = "${id}"`;
 
         const result = await runQueryWith(sql);
         connection.release();
@@ -212,7 +211,7 @@ function PostMySQLRepository(databaseConnector) {
     this.findPostsByUserId = async function({userId, showUnpublished=false}) {
         const connection = await databaseConnector.getConnection();
         const runQueryWith = promisify(connection.query.bind(connection));
-        let sql = `SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, users.handle, users.first_name, users.last_name FROM posts JOIN users ON posts.user_id = users.id WHERE users.id = "${userId}"`;
+        let sql = `SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, posts.sentiment_score, posts.magnitude, users.handle, users.first_name, users.last_name FROM posts JOIN users ON posts.user_id = users.id WHERE users.id = "${userId}"`;
 
         if (!showUnpublished) {
             sql+= " AND is_published = 1";
@@ -237,7 +236,9 @@ function PostMySQLRepository(databaseConnector) {
             lastModified: record.last_modified,
             handle: record.handle,
             firstName: record.first_name,
-            lastName: record.last_name
+            lastName: record.last_name,
+            sentimentScore: record.sentiment_score,
+            magnitude: record.magnitude
         }
     }
 }
