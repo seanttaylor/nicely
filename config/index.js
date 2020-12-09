@@ -1,7 +1,19 @@
 /*Non-secret configuration for application modules*/
 
+//Requests with status codes below 400 are not logged during unit/integration test runs
+function doNotLogRequestsWithStatusBelow400 (req, res) { 
+    return process.env.NODE_ENV == "ci/cd/test" 
+}
+
+
 module.exports = {
     launchBanner: require("./launch-banner"),
+    application: {
+        morgan: {
+            verbosity: process.env.NODE_ENV === "ci/cd/test" ? "tiny" : "dev",
+            requestLoggingBehavior: process.env.NODE_ENV == "ci/cd/test" ? doNotLogRequestsWithStatusBelow400 : () => undefined
+        }
+    },
     posts: {
         postCharacterLimit: 150,
         baseSentimentScore: 2,

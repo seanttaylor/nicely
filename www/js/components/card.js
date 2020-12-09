@@ -26,7 +26,7 @@ const Card = {
                 ),//div.media
                 m("div", {class: "content"}, `${vnode.attrs.body}`,
                     m("br"),
-                    m("time", `${vnode.attrs.createdDate} ago`)        
+                    m("time", `${vnode.attrs.createdDate}`)        
                 )//div.content    
             )//div.card-content
         )//div.card

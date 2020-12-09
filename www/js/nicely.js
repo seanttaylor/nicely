@@ -14,16 +14,17 @@ function Application() {
         }
     };
 
-    function onNewPosts({detail}) {
-        const eventData = JSON.parse(detail.data);
+    function onNewPost(e) {
+        const eventData = JSON.parse(e.data);
         const {payload: post} = eventData;
                   
         const myCardComponent = m(Card, {
-            handle: post["author"], 
-            body: post["body"], 
-            firstName: post["first_name"],
-            lastName: post["last_name"],
-            createdDate: dateFns.distanceInWords(new Date(post["created_date"]), new Date())
+            handle: post.data.author, 
+            body: post.data.body, 
+            firstName: post.data.firstName,
+            lastName: post.data.lastName,
+            createdDate: "just now!"
+            //createdDate: //dateFns.distanceInWords(new Date(post["created_date"]), new Date())
         });
         
         m.render(app.config.dom.root.node, myCardComponent);
@@ -32,7 +33,7 @@ function Application() {
 
     async function init() {
         console.info("INITIALIZING");
-        const source = new EventSource("/api/v1/subscribe");
+        const source = new EventSource("/api/v1/feed/realtime-updates");
         source.addEventListener("newPost", onNewPost);
         
     } 

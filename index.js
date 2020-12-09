@@ -79,12 +79,14 @@ const PostRouter = require("./src/api/post");
 const UserRouter = require("./src/api/user");
 const FeedRouter = require("./src/api/feed");
 const CommentRouter = require("./src/api/comment");
+const UIApplicationRouter = require("./src/ui");
 
-app.use(helmet());
+app.set("view engine", "ejs");
+
+//app.use(helmet());
 app.use(cors());
-app.use(morgan("tiny", {
-    //Requests with status codes below 400 are not logged
-    skip: function (req, res) { return process.env.NODE_ENV == "ci/cd/test" }
+app.use(morgan(globalConfig.application.morgan.verbosity, {
+    skip: globalConfig.application.morgan.requestLoggingBehavior
   }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -104,6 +106,8 @@ app.use("/api/v1/users", UserRouter({
 app.use("/api/v1/feed", FeedRouter(postService));
 app.use("/api/v1/feed/realtime-updates", SSERouter(ssePublishService));
 app.use("/api/v1/comments", CommentRouter(commentService));
+
+app.use("/", UIApplicationRouter());
 
 app.use((req, res, next) => {
     //console.error(`Error 404 on ${req.url}.`);
