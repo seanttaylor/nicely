@@ -17,7 +17,11 @@
     "url": "https://github.com/seanttaylor/nicely-js/issues"
   },
   "homepage": "https://github.com/seanttaylor/nicely-js#readme",
+  "browserslist": [
+    "last 1 Chrome version"
+  ],
   "devDependencies": {
+    "cssnano": "^4.1.10",
     "jest": "^26.6.1",
     "supertest": "^6.0.1"
   },

@@ -1,0 +1,58 @@
+<html>
+  <head>
+    <title>Nicely</title>
+    <meta charset="utf-8">
+    <!-- Sets initial viewport load and disables zooming  -->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <!-- Makes your prototype chrome-less once bookmarked to your phone's home screen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+    <style>
+        .post-body {
+            display: block;
+            margin: 0px 0px 15px 0px;
+        }
+    </style>
+  </head>
+  <body>
+    <div class="ui menu">
+        <div class="two ui buttons">
+          <button class="ui button active">Public</button>
+          <button class="ui button">Personal</button>
+        </div>
+    </div>
+    
+    <div id="nicely">
+        <div class="ui card centered">
+            <div class="content">
+            <div class="right floated meta">14h</div>
+            <img class="ui avatar image" src="https://placehold.it/50"> Elliot
+            </div>
+        
+            <div class="image">
+            <img src="https://placehold.it/150">
+            </div>
+        
+            <div class="content">
+            <span class="right floated">
+                <i class="heart outline like icon"></i>
+                17 likes
+            </span>
+            <i class="comment icon"></i>
+            3 comments
+            </div>
+        
+            <div class="extra content">
+            <div class="ui large transparent left icon input">
+                <i class="heart outline icon"></i>
+                <input type="text" placeholder="Add Comment...">
+            </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://unpkg.com/mithril/mithril.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.min.js"></script>
+    <script src="/nicely.js"></script>
+  </body>
+</html>

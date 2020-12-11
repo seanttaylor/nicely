@@ -1,4 +1,4 @@
-import {Card} from "./components/card.js";
+const Card = require("./components/card.js");
 
 function Application() {
     const app = {};
@@ -23,11 +23,12 @@ function Application() {
             body: post.data.body, 
             firstName: post.data.firstName,
             lastName: post.data.lastName,
-            createdDate: "just now!"
-            //createdDate: //dateFns.distanceInWords(new Date(post["created_date"]), new Date())
+            likeCount: post.data.likeCount,
+            commentCount: post.data.commentCount,
+            createdDate: `${dateFns.distanceInWords(new Date(post.createdDate), new Date())} ago`
         });
         
-        m.render(app.config.dom.root.node, myCardComponent);
+        m.render(app.config.dom.uiHandle.node, myCardComponent);
     }
   
 

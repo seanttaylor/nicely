@@ -91,7 +91,7 @@ app.use(morgan(globalConfig.application.morgan.verbosity, {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static("www"));
+app.use(express.static("dist"));
 
 /**Routes**/
 app.use("/status", StatusRouter());
