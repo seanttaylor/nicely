@@ -14,11 +14,17 @@ function Application() {
         }
     };
 
+    function onUpdatePost(e) {
+        const eventData = JSON.parse(e.data);
+        const {payload: post} = eventData;
+
+    }
+
     function onNewPost(e) {
         const eventData = JSON.parse(e.data);
         const {payload: post} = eventData;
-                  
-        const myCardComponent = m(Card, {
+        
+        const myCard = Card({
             handle: post.data.author, 
             body: post.data.body, 
             firstName: post.data.firstName,
@@ -28,7 +34,7 @@ function Application() {
             createdDate: `${dateFns.distanceInWords(new Date(post.createdDate), new Date())} ago`
         });
         
-        m.render(app.config.dom.uiHandle.node, myCardComponent);
+        app.config.dom.uiHandle.node.insertAdjacentHTML("afterbegin", myCard);
     }
   
 
