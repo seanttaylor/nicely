@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 /*Non-secret configuration for application modules*/
 
 //Requests with status codes below 400 are not logged during unit/integration test runs

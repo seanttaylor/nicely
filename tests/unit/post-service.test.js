@@ -297,8 +297,9 @@ test("Should increment post comment count when commentCount property already exi
         handle: "@tstark",
         userId: "e98417a8-d912-44e0-8d37-abe712ca840f"
     });
+    const testContext = Object.assign(mockImpl.repo, {_eventEmitter: eventEmitter});
 
-    await testPost.addComment.call(mockImpl.repo, testComment);
+    await testPost.addComment.call(testContext, testComment);
     expect(mockImpl.repo._repo.calledMethods.incrementCommentCountCalled).toBe(true);
 
 });

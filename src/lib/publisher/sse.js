@@ -17,18 +17,19 @@ function SSEPublisher(eventEmitter) {
     let onPublish = undefined;
     /** 
     * Serializes an instance of the Post class to EventStream format sending Server-Sent Events
-    * @param {Post} post - an instance of the Post class
+    * @param {Array} eventData - whose elements consist of a {String} eventName and an {Object} having a toJSON method
     */
 
-    this.publish = function(post) {
+    this.publish = function([eventName, post]) {
         if (onPublish === undefined) {
             return;
         }
-        const event = sse.of("newPost", post.toJSON());
+        const event = sse.of(eventName, post.toJSON());
         return onPublish(event);
     }
 
     eventEmitter.on("posts.newPostReadyToPublish", this.publish);
+    eventEmitter.on("posts.postUpdated", this.publish);
 
     /** 
     * Adds additional configuration necessary to execute the publish method after class is instantiated

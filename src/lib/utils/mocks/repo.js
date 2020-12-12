@@ -15,14 +15,10 @@ const mockRepositoryImplementation = {
         createUserPassword() {
             this.calledMethods.createUserPasswordCalled = true;
         },
-        async addSentimentScore() {
-            this.calledMethods.addSentimentScore = true;
-        },
         calledMethods: {
             incrementCommentCountCalled: false,
             incrementLikeCountCalled: false,
-            createUserPasswordCalled: false,
-            addSentimentScore: false
+            createUserPasswordCalled: false
         }
     },
     _data: {

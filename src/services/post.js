@@ -14,11 +14,13 @@ const uuid = require("uuid");
  * 
  * @param {Object} repo - the repo associated with this post
  * @param {Object} doc - the data of the post
+ * @param {Object} eventEmitter - an instance of EventEmitter
  */
 
-function Post(repo, doc) {
+function Post(repo, doc, eventEmitter) {
     this._data = doc;
     this._repo = repo;
+    this._eventEmitter = eventEmitter;
     this._id = doc.id || null;
     this._lastModified = doc.lastModified || null;
 
@@ -54,7 +56,6 @@ function Post(repo, doc) {
         this._id = post.id;
         this._data.createdDate = post.createdDate;
         this._lastModified = null;
-        //this._eventEmitter.emit("PostService.newPost", {id: post.id, body: this._data.body});
         return post.id;
     }
 
@@ -74,6 +75,8 @@ function Post(repo, doc) {
         else {
             this._data.commentCount = 1;
         }
+
+        this._eventEmitter.emit("posts.postUpdated" ["postUpdate", this]);
     }
 
 
@@ -89,6 +92,8 @@ function Post(repo, doc) {
         else {
             this._data.likeCount = 1;
         }
+
+        this._eventEmitter.emit("posts.postUpdated", ["postUpdate", this]);
     }
 
 
@@ -152,11 +157,12 @@ function PostService({ repo, userService, eventEmitter, validator }) {
 
     /**
     * Creates a new post
+    * @param {Object} doc an object containing data for a new post
     * @returns {Post} a new post instance
     */
     this.createPost = async function(doc) {
         await this._validator.validate(doc);
-        return new Post(this._repo, doc);
+        return new Post(this._repo, doc, this._eventEmitter);
     }
 
 
@@ -165,19 +171,19 @@ function PostService({ repo, userService, eventEmitter, validator }) {
             throw new Error("MissingPostId");
         }
         const result = await this._repo.findOne(id);
-        return result.map((p) => new Post(this._repo, p));
+        return result.map((p) => new Post(this._repo, p, this._eventEmitter));
     }
 
 
     this.findAllPosts = async function() {
         const posts = await this._repo.findAll();
-        return posts.map((p) => new Post(this._repo, p));
+        return posts.map((p) => new Post(this._repo, p, this._eventEmitter));
     }
 
 
     this.findPostsByUserId = async function(options) {
         const postList = await this._repo.findPostsByUserId(options);
-        return postList.map((p) => new Post(this._repo, p));
+        return postList.map((p) => new Post(this._repo, p, this._eventEmitter));
     }
 
     
@@ -204,14 +210,14 @@ function PostService({ repo, userService, eventEmitter, validator }) {
 
     this.getRecentPosts = async function() {
         const posts = await this._repo.getRecentPosts();
-        return posts.map((p) => new Post(this._repo, p));
+        return posts.map((p) => new Post(this._repo, p, this._eventEmitter));
     }
 
 
     this.markAsPublished = async function(post) {
         await this._repo.markAsPublished(post._id);
         post._data.isPublished = true;
-        this._eventEmitter.emit("posts.newPostReadyToPublish", post);
+        this._eventEmitter.emit("posts.newPostReadyToPublish", ["newPost", post]);
     }
 
 
@@ -223,7 +229,7 @@ function PostService({ repo, userService, eventEmitter, validator }) {
 
     this.getPostsBySubscriber = async function(id) {
         const posts = await this._repo.getPostsBySubscriber(id);
-        return posts.map((p) => new Post(this._repo, p));
+        return posts.map((p) => new Post(this._repo, p, this._eventEmitter));
     }
 
 }

@@ -9,7 +9,7 @@ const ssePublishService = new IPublisher(new SSEPublisher(mocks.mockImpl.publish
 
 test("Completes initialization of the SSE publisher", ()=> {
     ssePublishService.setup(()=> mocks.mockImpl.publishService.onPublishFn());
-    ssePublishService.publish({toJSON: () => null });
+    ssePublishService.publish(["newPost", {toJSON: () => null }]);
 
     expect(mocks.mockImpl.publishService.calledMethods.onPublishFn).toBe(true);
 });

@@ -14,10 +14,10 @@ function Application() {
         }
     };
 
-    function onUpdatePost(e) {
+    function onPostUpdate(e) {
         const eventData = JSON.parse(e.data);
         const {payload: post} = eventData;
-
+        console.log(post);
     }
 
     function onNewPost(e) {
@@ -42,7 +42,8 @@ function Application() {
         console.info("INITIALIZING");
         const source = new EventSource("/api/v1/feed/realtime-updates");
         source.addEventListener("newPost", onNewPost);
-        
+        source.addEventListener("postUpdate", onPostUpdate);
+
     } 
 
     return {init};
