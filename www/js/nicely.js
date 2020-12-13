@@ -1,4 +1,4 @@
-const Card = require("./components/card.js");
+const UiCardPost = require("./components/ui-card-post.js");
 
 function Application() {
     const app = {};
@@ -17,24 +17,18 @@ function Application() {
     function onPostUpdate(e) {
         const eventData = JSON.parse(e.data);
         const {payload: post} = eventData;
-        console.log(post);
+        new UiCardPost(app.config.dom.uiHandle.node, post).update();
     }
 
     function onNewPost(e) {
         const eventData = JSON.parse(e.data);
-        const {payload: post} = eventData;
-        
-        const myCard = Card({
-            handle: post.data.author, 
-            body: post.data.body, 
-            firstName: post.data.firstName,
-            lastName: post.data.lastName,
-            likeCount: post.data.likeCount,
-            commentCount: post.data.commentCount,
-            createdDate: `${dateFns.distanceInWords(new Date(post.createdDate), new Date())} ago`
+        const { payload } = eventData;
+        const post = Object.assign(payload, {
+            createdDate: `${dateFns.distanceInWords(new Date(payload.createdDate), new Date())} ago`
         });
         
-        app.config.dom.uiHandle.node.insertAdjacentHTML("afterbegin", myCard);
+        const myCard = new UiCardPost(app.config.dom.uiHandle.node, post);
+        myCard.render((node, html) => node.insertAdjacentHTML("afterbegin", html));
     }
   
 

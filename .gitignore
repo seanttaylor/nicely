@@ -68,6 +68,7 @@ typings/
 
 #parcel build output
 dist/*.js
+dist/*.js.*
 dist/*.css
 
 # next.js build output

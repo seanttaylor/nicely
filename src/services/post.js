@@ -76,7 +76,7 @@ function Post(repo, doc, eventEmitter) {
             this._data.commentCount = 1;
         }
 
-        this._eventEmitter.emit("posts.postUpdated" ["postUpdate", this]);
+        this._eventEmitter.emit("posts.postUpdated", ["postUpdate", this]);
     }
 
 
@@ -103,6 +103,8 @@ function Post(repo, doc, eventEmitter) {
     this.decrementLikeCount = async function({fromUser}) {
         await this._repo.decrementLikeCount({postId: this._id, userId: fromUser});
         this._data.likeCount -= 1;
+
+        this._eventEmitter.emit("posts.postUpdated", ["postUpdate", this]);
     }
 
 
