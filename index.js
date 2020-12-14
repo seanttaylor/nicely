@@ -79,7 +79,7 @@ const PostRouter = require("./src/api/post");
 const UserRouter = require("./src/api/user");
 const FeedRouter = require("./src/api/feed");
 const CommentRouter = require("./src/api/comment");
-const UIApplicationRouter = require("./src/ui");
+const UIApplicationRouter = require("./src/api/ui");
 
 app.set("view engine", "ejs");
 

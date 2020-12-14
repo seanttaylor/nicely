@@ -37,7 +37,8 @@ function Post(repo, doc, eventEmitter) {
                 lastName: this._data.lastName,
                 likeCount: this._data.likeCount,
                 commentCount: this._data.commentCount,
-                sentimentScore: this._data.sentimentScore
+                sentimentScore: this._data.sentimentScore,
+                publishDate: this._data.publishDate
             }
         };
     }

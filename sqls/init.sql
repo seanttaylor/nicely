@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS `posts`
  `magnitude`       integer NULL,
  `is_archived`     boolean NOT NULL DEFAULT FALSE,
  `is_published`    boolean NOT NULL DEFAULT FALSE,
+ `publish_date`    mediumtext NULL,
 
 PRIMARY KEY (`id`),
 KEY `fkIdx_169` (`user_id`),
