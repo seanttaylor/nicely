@@ -16,13 +16,15 @@ const API_KEY = process.env.GOOGLE_CLOUD_NATURAL_LANGUAGE_API_KEY;
 
 function SentimentAnalysisService({eventEmitter, fetch, console}) {
     //Promises are used here because the implementation could not be made to work with async functions
-     
-    eventEmitter.on("postService.newPost", (post)=> {
+    
+    const updatePostSentimentScore = (function(post) {
         this.analyzeSentiment(post._data.body)
         .then(({sentimentScore, magnitude})=> post.setSentimentScore({sentimentScore, magnitude}))
-        .catch((e) => console.error(e))
-    });
-   
+        .catch((e) => console.error(e));
+    }).bind(this);
+
+    eventEmitter.on("postService.newPost", updatePostSentimentScore);
+    eventEmitter.on("posts.editExistingPost", updatePostSentimentScore);
 
     this.getReport = async function() {
         return {};

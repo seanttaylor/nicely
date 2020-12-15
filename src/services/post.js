@@ -119,6 +119,7 @@ function Post(repo, doc, eventEmitter) {
         this._data.body = text;
         this._lastModified = lastModified;
 
+        this._eventEmitter.emit("posts.editExistingPost", this)
         return this;
     }
 
