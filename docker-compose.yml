@@ -20,14 +20,6 @@ services:
     container_name: nicely_app
     depends_on:
       - db
-    environment:
-      COMMIT_HASH: cd7daa643ffa505ae3b465beaa583df42246f4f2
-      DATABASE_HOSTNAME: db
-      DATABASE_USERNAME: root
-      DATABASE_PASSWORD: root
-      DATABASE_NAME: asiago
-      NODE_ENV: development
-      JWT_SECRET: superSecret
     env_file: .env
     volumes:
       - ./:/src
