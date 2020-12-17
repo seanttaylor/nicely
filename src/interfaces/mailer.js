@@ -3,7 +3,6 @@
 * @typedef {Object} IMailerAPI
 * @property {Function} send - send an email to specified recipients
 * @property {Function} addAttachments - add attachments to an email
-* @property {Function} useTemplate - configure the email template to send the message 
 */
 
 /**
@@ -17,13 +16,9 @@ function IMailer(myImpl) {
         throw Error("Missing implementation");
     }
 
-    this._message = {};
-
     this.addAttachments = myImpl.addAttachments || required;
 
     this.send = myImpl.send || required;
-
-    this.useTemplate = myImpl.useTemplate || required;
 
     return;
 }

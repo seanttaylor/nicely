@@ -7,7 +7,7 @@
 * An configuration object for send emails via the Mailable interface.
 * @typedef {Object} EmailMessageConfiguration
 * @property {String} from - email addrress of the sender
-* @property {String} to - email address of the primary recipient
+* @property {Array} to - email address of the primary recipient
 * @property {Array} bcc - List of email addresses to 'bcc'
 * @property {Array} cc - List of email addresses to 'cc'
 * @property {String} subject - Subject of the email
@@ -30,38 +30,29 @@ const transporter = nodemailer.createTransport({
  * @returns {Object} an implementation of the IMailer interface
  */
 
-function Mailer () {
-    
+function Mailer ({console}) {
+    this._mailLib = nodemailer;
+    this._transporter = transporter;
+
     /**
     * Sends an email to specified recipients
     * @param {EmailMessageConfiguration} 
     */
 
-    this.send = async function({ from, to, bcc, subject }) {
-        this._message = Object.assign(this.__message, {
+    this.send = async function({ from, to, bcc, subject, html}) {
+        const message = {
             from,
             to: to.join(', '), // Nodemailer API requires a single comma-separated string of addresses
-            subject
-        });
+            bcc,
+            subject,
+            html
+        };
 
-        const outboundMessage = await transporter.sendMail(this.__message);
+        const outboundMessage = await this._transporter.sendMail(message);
         console.log({
             messageId: outboundMessage.messageId,
-            messagePreviewURL: nodemailer.getTestMessageUrl(outboundMessage)
+            messagePreviewURL: this._mailLib.getTestMessageUrl(outboundMessage)
         });
-    }
-
-    this.addAttachments = function() {
-
-    }
-
-    /**
-    * Sets the HTML email template that will be used to display the message when sent
-    * @param {String} renderedTemplate - the finalized template produced by the Templatable API
-    */
-
-    this.useTemplate = function(renderedTemplate) {
-        this._message.html = renderedTemplate;
     }
 
 }
