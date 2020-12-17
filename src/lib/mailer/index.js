@@ -34,6 +34,19 @@ function Mailer ({console}) {
     this._mailLib = nodemailer;
     this._transporter = transporter;
 
+    //eventEmitter.on("userService.newUserCreated", sendWelcomeEmail);
+
+    /*
+    function sendWelcomeEmail(data) {
+        this.send({
+            from,
+            to,
+            subject: "Welcome to Nicely!",
+            html: new EmailTemplate({filePath, data})
+        })
+    }
+     */
+
     /**
     * Sends an email to specified recipients
     * @param {EmailMessageConfiguration} 
