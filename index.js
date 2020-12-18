@@ -63,6 +63,11 @@ const cacheService = new ICache(new CacheService());
 const AuthService = require("./src/services/auth");
 const authService = new AuthService({cacheService, userService});
 
+/**MailService**/
+const IMailer = require("./src/interfaces/mailer");
+const MailService = require("./src/lib/mailer");
+const mailService = new IMailer(new MailService({console, eventEmitter}));
+
 /**SentimentAnalysisService**/
 const SentimentAnalysisService = require("./src/lib/sentiment-analysis");
 const ISentimentAnalysisService = require("./src/interfaces/sentiment-analysis");

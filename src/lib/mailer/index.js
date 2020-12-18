@@ -14,6 +14,7 @@
 */
 
 
+const EmailTemplate = require("./email-templates");
 const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
     host: "smtp.ethereal.email",
@@ -30,22 +31,20 @@ const transporter = nodemailer.createTransport({
  * @returns {Object} an implementation of the IMailer interface
  */
 
-function Mailer ({console}) {
+function Mailer ({console, eventEmitter}) {
     this._mailLib = nodemailer;
     this._transporter = transporter;
 
-    //eventEmitter.on("userService.newUserCreated", sendWelcomeEmail);
+    eventEmitter.on("userService.newUserCreated", sendWelcomeEmail.bind(this));
 
-    /*
-    function sendWelcomeEmail(data) {
-        this.send({
-            from,
-            to,
+    async function sendWelcomeEmail(user) {
+        await this.send({
+            from: process.env.PLATFORM_OUTBOUND_EMAIL_USERNAME,
+            to: [user._data.emailAddress],
             subject: "Welcome to Nicely!",
-            html: new EmailTemplate({filePath, data})
-        })
+            html: await EmailTemplate.of({templateName: "welcomeEmail", data: user._data})
+        });
     }
-     */
 
     /**
     * Sends an email to specified recipients
@@ -62,10 +61,10 @@ function Mailer ({console}) {
         };
 
         const outboundMessage = await this._transporter.sendMail(message);
-        console.log({
+        /*console.log({
             messageId: outboundMessage.messageId,
             messagePreviewURL: this._mailLib.getTestMessageUrl(outboundMessage)
-        });
+        });*/
     }
 
 }

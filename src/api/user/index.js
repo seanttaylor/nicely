@@ -273,6 +273,7 @@ function UserRouter({postService, userService, commentService, authService, even
             await user.save();
             await userService.createUserPassword({user, password});
             const token = await authService.issueAuthCredential(user);
+            eventEmitter.emit("userService.newUserCreated", user);
 
             res.set("content-type", "application/json");
             res.status(200);
