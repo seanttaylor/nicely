@@ -2,6 +2,11 @@ CREATE DATABASE IF NOT EXISTS asiago;
 
 USE asiago;
 
+CREATE USER 'nicely'@'localhost' IDENTIFIED BY 'root';
+GRANT ALL PRIVILEGES ON *.* TO 'nicely'@'localhost' WITH GRANT OPTION;
+CREATE USER 'nicely'@'%' IDENTIFIED BY 'root';
+GRANT ALL PRIVILEGES ON *.* TO 'nicely'@'%' WITH GRANT OPTION;
+
 CREATE TABLE IF NOT EXISTS `users`
 (
  `id`             varchar(64) NOT NULL ,
@@ -57,6 +62,12 @@ CREATE TABLE IF NOT EXISTS `comments`
 PRIMARY KEY (`id`),
 KEY `fkIdx_152` (`post_id`),
 CONSTRAINT `FK_152` FOREIGN KEY `fkIdx_152` (`post_id`) REFERENCES `posts` (`id`)
+);
+
+CREATE TABLE IF NOT EXISTS `status`
+(
+ `id`           varchar(64) NOT NULL ,
+ `created_date` mediumtext  NOT NULL 
 );
 
 

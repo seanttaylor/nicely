@@ -131,7 +131,6 @@ function User(repo, doc) {
     this.isFollowing = async function(targetUser) {
         const subscriptionsList = await this._repo.getUserSubscriptions(this._id);
         const currentUserFollowsTargetUser = subscriptionsList.find((u) => u.id === targetUser._id);
-
         return (currentUserFollowsTargetUser !== undefined);
     }
 

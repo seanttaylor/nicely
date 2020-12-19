@@ -76,6 +76,14 @@ const sentimentAnalysisService = new ISentimentAnalysisService(new SentimentAnal
     fetch: process.env.NODE_ENV === "ci/cd/test" ? mockFetch : fetch, 
     console
 }));
+
+
+/**StatusService**/
+const StatusRepository = require("./src/lib/repository/status/mysql");
+const IStatusRepository = require("./src/interfaces/status-repository");
+const statusRepo = new IStatusRepository(new StatusRepository(asiagoDatabaseConnector));
+const StatusService = require("./src/services/status");
+const statusService = new StatusService(statusRepo);
 /******************************************************************************/
 
 const SSERouter = require("./src/api/sse");
@@ -99,7 +107,7 @@ app.use(cookieParser());
 app.use(express.static("dist"));
 
 /**Routes**/
-app.use("/status", StatusRouter());
+app.use("/status", StatusRouter(statusService));
 app.use("/api/v1/posts", PostRouter(postService));
 app.use("/api/v1/users", UserRouter({
     postService, 
