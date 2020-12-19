@@ -36,7 +36,6 @@ CREATE TABLE IF NOT EXISTS `posts`
  `last_modified`   mediumtext NULL ,
  `comment_count`   integer NULL DEFAULT 0 ,
  `like_count`      integer NULL DEFAULT 0,
- /*sentiment_score is type string because MySQL kept coercing negative decimal values to (0)*/
  `sentiment_score` varchar(8) NULL,
  `magnitude`       integer NULL,
  `is_archived`     boolean NOT NULL DEFAULT FALSE,
@@ -126,7 +125,7 @@ INSERT INTO users (id, handle, email_address, phone_number, first_name, last_nam
 
 INSERT INTO users (id, handle, email_address, phone_number, first_name, last_name, created_date) VALUES("b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09", "@thor", "thor@avengers.io", "12125552020", "Thor", "Odinson", "2020-09-26T23:08:27.645Z");
 
-INSERT INTO posts (id, user_id, body, created_date) VALUES("d343fd4b-654a-40ae-bb54-05dd1f5b4791", "e98417a8-d912-44e0-8d37-abe712ca840f", "Playboy. Billionaire. Genius.", "2020-09-26T23:08:27.645Z");
+INSERT INTO posts (id, user_id, body, created_date, is_published) VALUES("d343fd4b-654a-40ae-bb54-05dd1f5b4791", "e98417a8-d912-44e0-8d37-abe712ca840f", "Playboy. Billionaire. Genius.", "2020-09-26T23:08:27.645Z");
 
 INSERT INTO posts (id, user_id, body, created_date, is_published) VALUES("f4c5c046-5cbb-4619-8358-639d2c0e898b", "e98417a8-d912-44e0-8d37-abe712ca840f", "Is it better to be feared or respected? I say: it is too much to ask for both?", "2020-09-26T23:08:27.645Z", 1);
 

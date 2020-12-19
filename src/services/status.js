@@ -13,10 +13,16 @@ function StatusService(statusRepo) {
     */
 
     this.getSystemStatus = async function() {
-       const report = await this._repo.getSystemStatus();
-       return {
-           databaseConnectionEstablished: report.affectedRows === 1
-        };
+        try {
+            const report = await this._repo.getSystemStatus();
+            return {
+                databaseConnectionEstablished: report.affectedRows === 1
+            }
+        } catch(e) {
+            return {
+                databaseConnectionEstablished: false
+            }
+        }
     }
 }
 

@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "jest --coverage true --detectOpenHandles"
+    "test": "jest --coverage true --detectOpenHandles",
+    "db:migrate:up": "node ./src/lib/utils/migration/up",
+    "db:migrate:down": "node ./src/lib/utils/migration/down",
+    "db:migrate:create": "node ./src/lib/utils/migration/create"
   },
   "repository": {
     "type": "git",
@@ -32,6 +35,8 @@
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
+    "db-migrate": "^0.11.11",
+    "db-migrate-mysql": "^2.1.1",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
     "halson": "^3.0.0",

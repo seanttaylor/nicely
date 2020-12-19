@@ -1,20 +1,25 @@
 version: "3.1"
 
 services:
-  db:
-    container_name: db
-    image: mysql:5.7
-    command: --init-file /docker-entrypoint.initdb.d/init.sql
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: root
-      MYSQL_DATABASE: asiago
+  nicely_app:
+    container_name: nicely_app
+    environment: 
+      - GOOGLE_CLOUD_NATURAL_LANGUAGE_API_URL=https://language.googleapis.com/v1/documents:analyzeSentiment
+      - COMMIT_HASH=cd7daa643ffa505ae3b465beaa583df42246f4f2
+      - DATABASE_HOSTNAME=0.0.0.0
+      - DATABASE_USERNAME=nicely
+      - DATABASE_PASSWORD=root
+      - DATABASE_NAME=asiago
+      - NODE_ENV=development
+      - JWT_SECRET=superSecret
     volumes:
-      - ./sqls:/docker-entrypoint.initdb.d
+      - ./:/src
+    build:
+        context: .
+    command: npm test
     networks:
       - shared_network
     ports:
-      - "3306:3306"
+      - "3000:3000"
 networks:
   shared_network:

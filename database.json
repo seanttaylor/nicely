@@ -1,0 +1,56 @@
+{
+    "defaultEnv": {
+        "ENV": "NODE_ENV"
+    },
+    "prod": {
+        "driver": "mysql",
+        "port": "3306",
+        "database": "asiago",
+        "user": {
+            "ENV": "DATABASE_USERNAME"
+        },
+        "password": {
+            "ENV": "DATABASE_PASSWORD"
+        },
+        "host": {
+            "ENV": "DATABASE_HOSTNAME"
+        }
+    },
+    "development": {
+        "driver": "mysql",
+        "port": "3306",
+        "database": "asiago",
+        "user": {
+            "ENV": "DATABASE_USERNAME"
+        },
+        "password": {
+            "ENV": "DATABASE_PASSWORD"
+        },
+        "host": {
+            "ENV": "DATABASE_HOSTNAME"
+        }
+    },
+    "ci/cd/test": {
+        "driver": "mysql",
+        "port": "3306",
+        "database": "asiago",
+        "user": {
+            "ENV": "DATABASE_USERNAME"
+        },
+        "password": {
+            "ENV": "DATABASE_PASSWORD"
+        },
+        "host": {
+            "ENV": "DATABASE_HOSTNAME"
+        }
+    },
+    "local": {
+        "driver": "mysql",
+        "host": "db",
+        "port": "3306",
+        "database": "asiago",
+        "user": "root",
+        "password": "root"
+    },
+    "sql-file": true
+}

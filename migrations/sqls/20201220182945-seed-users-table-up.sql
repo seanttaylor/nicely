@@ -1,0 +1,2 @@
+INSERT INTO users (id, handle, email_address, phone_number, first_name, last_name, created_date) VALUES("e98417a8-d912-44e0-8d37-abe712ca840f", "@tstark", "tstark@avengers.io", "12125552424", "Tony", "Stark", "2020-09-26T23:08:27.645Z"),
+("b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09", "@thor", "thor@avengers.io", "12125552020", "Thor", "Odinson", "2020-09-26T23:08:27.645Z");

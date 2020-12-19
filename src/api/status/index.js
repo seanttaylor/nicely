@@ -12,13 +12,16 @@ const router = new express.Router();
 function StatusRouter(statusService) {
     router.get("/", async(req, res, next) => {
         const { databaseConnectionEstablished } = await statusService.getSystemStatus();
+        
         res.set("content-type", "application/json");
-        res.status(200);
+        res.status(databaseConnectionEstablished ? 200 : 503);
         res.json({
             status: "OK",
-            hasDatabaseConnection: databaseConnectionEstablished,
+            databaseStatus: databaseConnectionEstablished ? "ONLINE" : "OFFLINE",
             commitHash: process.env.COMMIT_HASH
         });
+    
+    
     });
 
     return router;
