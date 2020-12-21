@@ -8,7 +8,7 @@ const { promisify } = require("util");
 
 function MySQLDatabaseConnector() {
     const pool = mysql.createPool({
-        connectionLimit: 1500,
+        connectionLimit: 2000,
         host: process.env.DATABASE_HOSTNAME,
         user: process.env.DATABASE_USERNAME,
         password: process.env.DATABASE_PASSWORD,

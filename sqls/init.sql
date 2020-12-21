@@ -2,11 +2,6 @@ CREATE DATABASE IF NOT EXISTS asiago;
 
 USE asiago;
 
-CREATE USER 'nicely'@'localhost' IDENTIFIED BY 'root';
-GRANT ALL PRIVILEGES ON *.* TO 'nicely'@'localhost' WITH GRANT OPTION;
-CREATE USER 'nicely'@'%' IDENTIFIED BY 'root';
-GRANT ALL PRIVILEGES ON *.* TO 'nicely'@'%' WITH GRANT OPTION;
-
 CREATE TABLE IF NOT EXISTS `users`
 (
  `id`             varchar(64) NOT NULL ,
