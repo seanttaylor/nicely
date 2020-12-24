@@ -11,7 +11,7 @@ function JSONDatabaseConnector({ filePath }) {
 
 
     /**
-     * A a document to the database.
+     * Add a document to the database.
      * @params {String} data - document to add to the database.
      * @params {String} collection - name of collection to add to.
      * @returns {Object}
@@ -34,9 +34,8 @@ function JSONDatabaseConnector({ filePath }) {
             data[collection][id] = record;
             await writeToFile(this._dataFilePath, JSON.stringify(data, null, 2));
              
-            return {
-                data: [record]
-            }
+            return [record]
+            
             
         } catch(e) {
             console.error(e);
@@ -44,10 +43,10 @@ function JSONDatabaseConnector({ filePath }) {
     }
 
     /**
-     * Update a document in the database BY ID ONLY.
-     * @params {String} id - Id of the document in the database.
-     * @params {String} doc - Update document.
-     * @params {String} collection - collection to update. 
+     * Update a document in the database by id ONLY
+     * @params {String} id - id of the document in the database
+     * @params {String} doc - the update document
+     * @params {String} collection - collection to update 
      * @returns {Object}
      */
 
@@ -55,6 +54,12 @@ function JSONDatabaseConnector({ filePath }) {
         try {
             const fileDB = await readFile(this._dataFilePath, "utf-8");
             const data = JSON.parse(fileDB);
+
+            if (!data[collection][id]) {
+                console.info(`JSONDatabaseConnector => Could not find ${collection}.${id}`);
+                return [];
+            }
+
             const record = Object.assign(data[collection][id], {
                 lastModified: new Date().toISOString(),
                 ...doc
@@ -63,13 +68,44 @@ function JSONDatabaseConnector({ filePath }) {
             data[collection][id] = record;
             await writeToFile(this._dataFilePath, JSON.stringify(data, null, 2));
             
-            return {
-                data: [record]
-            }
+            return [record];
         } catch(e) {
-           console.error(e);
+            console.error("JSONDatabaseConnectorError =>", e);
         }
     }
+
+
+    /**
+     * Add a document to the database with a user-defined ID
+     * @params {String} id - id of the document to create in the database
+     * @params {String} doc - update document
+     * @params {String} collection - collection to update 
+     * @returns {Object}
+     */
+
+    this.putOne = async function({id, doc, collection}) {
+        if (typeof(doc) !== "object") {
+            throw new Error(`Record should be of type [Object] but is ${typeof(doc)} instead.`)
+        }
+
+        try {
+            const fileDB = await readFile(this._dataFilePath, "utf-8");
+            const data = JSON.parse(fileDB);
+            const createdDate = new Date().toISOString();
+            const lastModified = null
+            const record = Object.assign(doc, { id, createdDate, lastModified });
+            
+            data[collection][id] = record;
+            await writeToFile(this._dataFilePath, JSON.stringify(data, null, 2));
+             
+            return [record]
+            
+            
+        } catch(e) {
+            console.error("JSONDatabaseConnectorError =>", e);
+        }
+    }
+
 
     /**
      * Remove a document from a collection BY ID ONLY.
@@ -85,9 +121,7 @@ function JSONDatabaseConnector({ filePath }) {
             delete data[collection][id];
             await writeToFile(this._dataFilePath, JSON.stringify(data, null, 2));
             
-            return {
-                data: []
-            }
+            return [];
             
         } catch(e) {
             console.error(e);
@@ -104,22 +138,21 @@ function JSONDatabaseConnector({ filePath }) {
         try {
             const fileDB = await readFile(this._dataFilePath, "utf-8");
             const data = JSON.parse(fileDB);
-            return {
-                data: Object.values(data[collection]),
-            }
+            
+            return Object.values(data[collection]);
         } catch(e) {
            console.error(e);
         }
     }
 
     /**
-     * Find a document in a collection BY ID ONLY.
-     * @params {String} id - Id of the document. 
-     * @params {String} collection - Collection to pull from. 
+     * Find a document in a collection by id
+     * @params {String} id - id of the document 
+     * @params {String} collection - collection to pull from
      * @returns {Object}
      */
 
-    this.findOneById = async function({id, collection}) {
+    this.findOne = async function({id, collection}) {
         try {
             const fileDB = await readFile(this._dataFilePath, "utf-8");
             const data = JSON.parse(fileDB);

@@ -23,6 +23,22 @@ function UserJSONRepository(JSONDatabaseConnector) {
             collection: "user_roles"
         });
 
+        await JSONDatabaseConnector.putOne({
+            id: record.id,
+            doc: {
+                followers: []
+            }, 
+            collection: "user_followers"
+        });
+
+        await JSONDatabaseConnector.putOne({
+            id: record.id,
+            doc: {
+                subscriptions: []
+            }, 
+            collection: "user_subscriptions"
+        });
+
         return { id: record.id, createdDate: record.createdDate };
 
     }
@@ -41,22 +57,25 @@ function UserJSONRepository(JSONDatabaseConnector) {
 
 
     this.findOneById = async function(id) {
-        const result = await JSONDatabaseConnector.findOneById({id, collection: "users"});
+        const result = await JSONDatabaseConnector.findOne({id, collection: "users"});
         return result.map((u) => onReadUser(u));
     }
 
 
     this.findOneByEmail = async function(emailAddress) {
-        const [result] = await JSONDatabaseConnector.findAll("users");
-        const user = result.find((u)=> u.email_address === userEmailAddress);
-        return user;
+        const result = await JSONDatabaseConnector.findAll("users");
+        const user = result.find((u)=> u.emailAddress === emailAddress);
+        
+        return [ user || {} ];
     }
 
 
     this.findOneByHandle = async function(handle) {
-        const [result] = await JSONDatabaseConnector.findAll("users");
+        const result = await JSONDatabaseConnector.findAll("users");
+        //Remember: the result of a failed Array.find is `undefined`
         const user = result.find((u)=> u.handle === handle);
-        return user;
+         
+        return [ user || {} ];
     }
 
 
@@ -101,23 +120,44 @@ function UserJSONRepository(JSONDatabaseConnector) {
 
 
     this.createSubscription = async function(currentUserId, targetUserId) {
-        const [record] = await JSONDatabaseConnector.add({
-            doc: {
-                currentUserId,
-                targetUserId
-            },
+        const [targetUser] = await JSONDatabaseConnector.findOne({
+            id: targetUserId,
             collection: "user_followers"
         });
         
-        const [followers] = await JSONDatabaseConnector.findAll("user_followers");
-        const followerCount = followers.filter((followRecord) => followRecord.targetUserId === targetUserId).length;
+        const targetUserFollowerListUnique = new Set(targetUser.followers);
+        targetUserFollowerListUnique.add(currentUserId);
+
+
+        await JSONDatabaseConnector.updateOne({
+            id: targetUserId,
+            doc: Array.from(targetUserFollowerListUnique),
+            collection: "user_followers"
+        });
+        
 
         await JSONDatabaseConnector.updateOne({
             id: targetUserId, 
             doc: {
-                followers: followerCount
+                followers: targetUserFollowerListUnique.size
             },
             collection: "users"
+        });
+
+        const currentUserSubscriptions = await JSONDatabaseConnector.findOne({
+            id: currentUserId, 
+            collection: "user_subscriptions"
+        });
+
+        const currentUserSubscriptionsUnique = new Set(currentUserSubscriptions.subscriptions);
+        currentUserSubscriptionsUnique.add(targetUserId);
+
+        await JSONDatabaseConnector.updateOne({
+            id: currentUserId, 
+            doc: {
+                subscriptions: Array.from(currentUserSubscriptionsUnique)
+            },
+            collection: "user_subscriptions"
         });
     }
 
@@ -157,27 +197,27 @@ function UserJSONRepository(JSONDatabaseConnector) {
 
 
     this.getSubscribersOf = async function(currentUserId) {
-        const connection = await databaseConnector.getConnection();
-        const runQuery = promisify(connection.query.bind(connection));
-        const sql = `SELECT users.id, users.handle, users.email_address, users.motto, users.is_verified, users.first_name, users.last_name, users.follower_count, users.created_date, user_followers.* FROM user_followers JOIN users ON user_followers.follower_id = users.id WHERE user_followers.user_id = "${currentUserId}"`;
-        const result = await runQuery(sql);
+        const result = [];
+        //const sql = `SELECT users.id, users.handle, users.email_address, users.motto, users.is_verified, users.first_name, users.last_name, users.follower_count, users.created_date, user_followers.* FROM user_followers JOIN users ON user_followers.follower_id = users.id WHERE user_followers.user_id = "${currentUserId}"`;
 
         return result.map((u) => onReadUser(u));
     }
 
 
     this.getUserSubscriptions = async function(currentUserId) {
-        const connection = await databaseConnector.getConnection();
-        const runQuery = promisify(connection.query.bind(connection));
-        const sql = `SELECT users.*, user_followers.* FROM user_followers JOIN users ON user_followers.user_id = users.id WHERE user_followers.follower_id = "${currentUserId}"`;
+        
+        const result = [];
+        //const sql = `SELECT users.*, user_followers.* FROM user_followers JOIN users ON user_followers.user_id = users.id WHERE user_followers.follower_id = "${currentUserId}"`;
 
-        const result = await runQuery(sql);
         return result.map((u) => onReadUser(u));
     }
 
 
     this.getUserRole = async function(currentUserId) {
-        const [result] = await JSONDatabaseConnector.findOneById({id: currentUserId, collection: "user_roles"});
+        const [result] = await JSONDatabaseConnector.findOne({
+            id: currentUserId, 
+            collection: "user_roles"
+        });
         
         return result;
     }

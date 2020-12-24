@@ -4,7 +4,7 @@ const eventEmitter = new events.EventEmitter();
 const { mockImpl } = require("../../src/lib/utils/mocks");
 const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../../src/lib/utils");
 const DatabaseConnector = require("../../src/lib/database/connectors/mysql");
-const testSqlDbConnector = new DatabaseConnector();
+//const testSqlDbConnector = new DatabaseConnector();
 const JSONDatabaseConnector = require("../../src/lib/database/connectors/json");
 const testJSONDbConnector = new JSONDatabaseConnector({
     filePath: "/json-connector.json"
@@ -28,7 +28,7 @@ const testPostService = new PostService({
 });
 /*CommentService*/
 const { CommentService } = require("../../src/services/comment");
-const CommentRepository = require("../../src/lib/repository/comment/mysql");
+const CommentRepository = require("../../src/lib/repository/comment/json");
 const ICommentRepository = require("../../src/interfaces/comment-repository");
 const testCommentJSONRepo = new ICommentRepository(new CommentRepository(testJSONDbConnector));
 const testCommentService = new CommentService({
@@ -40,7 +40,7 @@ const testCommentService = new CommentService({
 /**Tests**/
 
 afterAll(()=> {
-    testSqlDbConnector.end();
+//testSqlDbConnector.end();
 });
 
 const thorUserId = "b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09";
@@ -146,7 +146,7 @@ test("Should return updated Comment matching test text", async() => {
 });
 
 
-test("Should return increment Comment like count", async() => {
+test("Should return incremented Comment like count", async() => {
     const testPost = await testPostService.createPost({
         body: "Everybody wants a happy ending, right? But it doesn’t always roll that way.",
         userId: "e98417a8-d912-44e0-8d37-abe712ca840f",
@@ -166,7 +166,7 @@ test("Should return increment Comment like count", async() => {
     expect(testComment._data.likeCount === 1).toBe(true);
 });
 
-test("Should return increment Comment like count", async() => {
+test("Should return decremented Comment like count", async() => {
     const testPost = await testPostService.createPost({
         body: "Everybody wants a happy ending, right? But it doesn’t always roll that way.",
         userId: "e98417a8-d912-44e0-8d37-abe712ca840f",
@@ -187,6 +187,25 @@ test("Should return increment Comment like count", async() => {
     await testComment.decrementLikeCount({fromUser: thorUserId});
 
     expect(testComment._data.likeCount === 0).toBe(true);
+});
+
+
+test("Should return JSON representation of Comment", async() => {
+    const testPost = await testPostService.createPost({
+        body: "Everybody wants a happy ending, right? But it doesn’t always roll that way.",
+        userId: "e98417a8-d912-44e0-8d37-abe712ca840f",
+        handle: randomUserHandle()
+    });
+    const testPostId = await testPost.save();
+    const testComment = await testCommentService.createComment({
+        body: "True story. FR.",
+        userId: "e98417a8-d912-44e0-8d37-abe712ca840f",
+        postId: testPostId
+    });
+    await testComment.save();
+   
+    console.log(testComment.toJSON());
+    expect(typeof(testComment.toJSON()) === "object").toBe(true);
 });
 
 

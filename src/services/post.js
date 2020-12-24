@@ -55,8 +55,10 @@ function Post(repo, doc, eventEmitter) {
         });
 
         this._id = post.id;
-        this._data.createdDate = post.createdDate;
         this._lastModified = null;
+        this._data.createdDate = post.createdDate;
+        this._data.likeCount = 0;
+        
         return post.id;
     }
 
@@ -87,13 +89,7 @@ function Post(repo, doc, eventEmitter) {
     this.incrementLikeCount = async function({fromUser}) {
         await this._repo.incrementLikeCount({postId: this._id, userId: fromUser});
 
-        if (Object.keys(this._data).includes("likeCount")) {
-            this._data.likeCount += 1;
-        }
-        else {
-            this._data.likeCount = 1;
-        }
-
+        this._data.likeCount += 1;
         this._eventEmitter.emit("posts.postUpdated", ["postUpdate", this]);
     }
 
@@ -180,7 +176,7 @@ function PostService({ repo, userService, eventEmitter, validator }) {
 
 
     this.findAllPosts = async function() {
-        const posts = await this._repo.findAll();
+        const posts = await this._repo.findAll("posts");
         return posts.map((p) => new Post(this._repo, p, this._eventEmitter));
     }
 

@@ -5,7 +5,7 @@
 * An object having the ICommentRepository API; a set of methods for managing user comments
 * @typedef {Object} ICommentRepositoryAPI
 * @property {Function} create - creates a new comment in the data store
-* @property {Function} findOneById - finds a comment in the data store by its uuid
+* @property {Function} findOne - finds a comment in the data store by its uuid
 * @property {Function} findAllComments - finds all comments in the data store
 * @property {Function} incrementLikeCount - increments like_count property of a comment in the data store
 * @property {Function} editComment - update a comment in the data store by its uuid
@@ -24,16 +24,16 @@ function ICommentRepository(myImpl) {
 
     /**
     @param {Object} doc - dictionary representing a valid entry
-    @returns {String} a uuid for the new post
+    @returns {String} a uuid for the new comment
     */
     this.create = myImpl.create || required;
 
 
     /**
-    @param {String} id - uuid of the post
-    @returns {Object} - the requested post
+    @param {String} id - uuid of the comment
+    @returns {Object} - the requested comment
     */
-    this.findOneById = myImpl.findOneById || required;
+    this.findOne = myImpl.findOne || required;
 
 
     /**
@@ -56,7 +56,7 @@ function ICommentRepository(myImpl) {
 
     const {
         create,
-        findOneById,
+        findOne,
         findAllComments,
         editComment,
         incrementLikeCount,

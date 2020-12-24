@@ -3,28 +3,30 @@ const events = require("events");
 const eventEmitter = new events.EventEmitter();
 const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../../src/lib/utils");
 const { mocks, mockImpl } = require("../../src/lib/utils/mocks");
-const DatabaseConnector = require("../../src/lib/database/connectors/mysql");
-const testSqlDbConnector = new DatabaseConnector();
+const DatabaseConnector = require("../../src/lib/database/connectors/json");
+const testJSONDbConnector = new DatabaseConnector({
+    filePath: "/json-connector.json"
+});
 /**UserService**/
 const { UserService } = require("../../src/services/user");
-const UserRepository = require("../../src/lib/repository/user/mysql");
+const UserRepository = require("../../src/lib/repository/user/json");
 const IUserRepository = require("../../src/interfaces/user-repository");
-const testUserMySqlRepo = new IUserRepository(new UserRepository(testSqlDbConnector));
-const testUserService = new UserService(testUserMySqlRepo);
+const testUserJSONRepo = new IUserRepository(new UserRepository(testJSONDbConnector));
+const testUserService = new UserService(testUserJSONRepo);
 /**PostService**/
 const { PostService } = require("../../src/services/post");
-const PostRepository = require("../../src/lib/repository/post/mysql");
+const PostRepository = require("../../src/lib/repository/post/json");
 const IPostRepository = require("../../src/interfaces/post-repository");
-const testPostMySqlRepo = new IPostRepository(new PostRepository(testSqlDbConnector));
+const testPostJSONRepo = new IPostRepository(new PostRepository(testJSONDbConnector));
 const testPostService = new PostService({
-    repo: testPostMySqlRepo,
+    repo: testPostJSONRepo,
     userService: testUserService,
     eventEmitter
 });
 
 /**Tests**/
 afterAll(()=> {
-    testSqlDbConnector.end();
+    //testSqlDbConnector.end();
 });
 
 const thorUserId = "b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09";
@@ -306,17 +308,18 @@ test("Should increment post comment count when commentCount property already exi
 
 test("Should return list of posts created by a user with specified id", async() => {
     const postList = await testPostService.findPostsByUserId({userId: "e98417a8-d912-44e0-8d37-abe712ca840f"});
+    
     expect(Array.isArray(postList)).toBe(true);
     expect(postList[0]["id"] === "e98417a8-d912-44e0-8d37-abe712ca840f");
 });
 
-
+/* TEST MAY BE DEPRECATED 
 test("Should decrement the like count of a post", async() => {
     const postList = await testPostService.findPostsByUserId({userId: "e98417a8-d912-44e0-8d37-abe712ca840f"});
     expect(Array.isArray(postList)).toBe(true);
     expect(postList[0]["id"] === "e98417a8-d912-44e0-8d37-abe712ca840f");
 });
-
+*/
 
 
 

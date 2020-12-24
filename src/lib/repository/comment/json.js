@@ -14,12 +14,17 @@ const { promisify } = require("util");
 function CommentJSONRepository(JSONDatabaseConnector) {
 
     this.create = async function(doc) {
-        const [record] = await JSONDatabaseConnector.add({doc, collection: "comments"});
-        return { id: record.id, createdDate: record.createdDate };
+        const [comment] = await JSONDatabaseConnector.add({
+            doc: Object.assign(doc, {like_count: 0}), 
+            collection: "comments"
+        });
+        await JSONDatabaseConnector.putOne({id: comment.id, doc: [], collection: "comment_likes"});
+
+        return { id: comment.id, createdDate: comment.createdDate };
     }
 
 
-    this.findOneById = async function(id) {
+    this.findOne = async function(id) {
         const result = await JSONDatabaseConnector.findOne({id, collection:"comments"});
         return result.map((c) => onReadComment(c));
     }
@@ -38,7 +43,7 @@ function CommentJSONRepository(JSONDatabaseConnector) {
     }
 
     this.incrementLikeCount = async function({commentId, userId}) {
-        const [commentLikeList] = await JSONDatabaseConnector.findOne({
+        const commentLikeList = await JSONDatabaseConnector.findOne({
             id: commentId, 
             collection: "comment_likes"
         });
@@ -53,17 +58,24 @@ function CommentJSONRepository(JSONDatabaseConnector) {
             },
             collection: "comments"
         });
+
+        await JSONDatabaseConnector.updateOne({
+            id: commentId, 
+            doc: {
+                likes: Array.from(commentLikeListUnique)
+            },
+            collection: "comment_likes"
+        });
     }
 
     this.decrementLikeCount = async function({commentId, userId}) {
-
-        const [commentLikeList] = await JSONDatabaseConnector.findOne({
+        const commentLikeList = await JSONDatabaseConnector.findOne({
             id: commentId, 
             collection: "comment_likes"
         });
         const commentLikeListUnique = new Set(commentLikeList);
         
-        commentLikeListUnique.remove(userId);
+        commentLikeListUnique.delete(userId);
 
         await JSONDatabaseConnector.updateOne({
             id: commentId, 
@@ -71,6 +83,14 @@ function CommentJSONRepository(JSONDatabaseConnector) {
                 like_count: commentLikeListUnique.size
             },
             collection: "comments"
+        });
+
+        await JSONDatabaseConnector.updateOne({
+            id: commentId, 
+            doc: {
+                likes: Array.from(commentLikeListUnique)
+            },
+            collection: "comment_likes"
         });
     }
 

@@ -56,6 +56,7 @@ function Comment(repo, doc) {
         this._id = comment.id;
         this._data.createdDate = comment.createdDate;
         this._data.lastModified = null;
+        this._data.likeCount = 0;
 
         return comment.id;
     }
@@ -65,17 +66,11 @@ function Comment(repo, doc) {
     Increments the comment.likeCount property
     */
     this.incrementLikeCount = async function({fromUser}) {
-
         await this._repo.incrementLikeCount({commentId: this._id, userId: fromUser});
-
-        if (Object.keys(this._data).includes("likeCount")) {
-            this._data.likeCount += 1;
-        }
-        else {
-            this._data.likeCount = 1;
-        }
+        this._data.likeCount += 1;
     }
 
+    
     /**
     Decrements the comment.likeCount property
     */
@@ -134,7 +129,7 @@ function CommentService({ repo, postService, userService, validator }) {
     }
 
     this.findCommentById = async function(id) {
-        const commentsList = await this._repo.findOneById(id);
+        const commentsList = await this._repo.findOne(id);
         return commentsList.map((c) => new Comment(this._repo, c));
     }
 
