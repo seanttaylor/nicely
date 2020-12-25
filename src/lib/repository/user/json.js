@@ -45,14 +45,20 @@ function UserJSONRepository(JSONDatabaseConnector) {
 
 
     this.createUserPassword = async function(userEmailAddress, password) {
-        await JSONDatabaseConnector.add({doc, collection: "user_credentials"});
+        await JSONDatabaseConnector.putOne({
+            id: userEmailAddress,
+            doc: {
+                emailAddress: userEmailAddress,
+                password
+            }, 
+            collection: "user_credentials"
+        });
     }
 
 
     this.getUserPassword = async function(userEmailAddress) {
-        const [result] = await JSONDatabaseConnector.findAll("users");
-        const user = result.find((u)=> u.email_address === userEmailAddress);
-        return user.user_password;
+        const [result] = await JSONDatabaseConnector.findOne({id: userEmailAddress, collection: "user_credentials"});
+        return result.password;
     }
 
 
@@ -80,7 +86,7 @@ function UserJSONRepository(JSONDatabaseConnector) {
 
 
     this.findAll = async function() {
-        const [result] = await JSONDatabaseConnector.findAll("users");
+        const result = await JSONDatabaseConnector.findAll("users");
         return result.map((u) => onReadUser(u));
     }
 
@@ -131,7 +137,9 @@ function UserJSONRepository(JSONDatabaseConnector) {
 
         await JSONDatabaseConnector.updateOne({
             id: targetUserId,
-            doc: Array.from(targetUserFollowerListUnique),
+            doc: {
+                followers: Array.from(targetUserFollowerListUnique)
+            },
             collection: "user_followers"
         });
         
@@ -163,20 +171,46 @@ function UserJSONRepository(JSONDatabaseConnector) {
 
 
     this.removeSubscription = async function(currentUserId, targetUserId) {
-        await JSONDatabaseConnector.removeOne({
-            id,
+        const [targetUser] = await JSONDatabaseConnector.findOne({
+            id: targetUserId,
             collection: "user_followers"
         });
         
-        const [followers] = await JSONDatabaseConnector.findAll("user_followers");
-        const followerCount = followers.filter(followRecord => followRecord.targetUserId === targetUserId).length;
+        const targetUserFollowerListUnique = new Set(targetUser.followers);
+        targetUserFollowerListUnique.delete(currentUserId);
+
+
+        await JSONDatabaseConnector.updateOne({
+            id: targetUserId,
+            doc: {
+                followers: Array.from(targetUserFollowerListUnique)
+            },
+            collection: "user_followers"
+        });
+        
 
         await JSONDatabaseConnector.updateOne({
             id: targetUserId, 
             doc: {
-                followers: followerCount
+                followers: targetUserFollowerListUnique.size
             },
             collection: "users"
+        });
+
+        const currentUserSubscriptions = await JSONDatabaseConnector.findOne({
+            id: currentUserId, 
+            collection: "user_subscriptions"
+        });
+
+        const currentUserSubscriptionsUnique = new Set(currentUserSubscriptions.subscriptions);
+        currentUserSubscriptionsUnique.add(targetUserId);
+
+        await JSONDatabaseConnector.updateOne({
+            id: currentUserId, 
+            doc: {
+                subscriptions: Array.from(currentUserSubscriptionsUnique)
+            },
+            collection: "user_subscriptions"
         });
     }
 

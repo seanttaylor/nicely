@@ -6,7 +6,7 @@ const { promisify } = require("util");
 const writeToFile = promisify(fs.writeFile);
 const readFile = promisify(fs.readFile);
 
-function JSONDatabaseConnector({ filePath }) {
+function InMemoryDatabaseConnector({ filePath }) {
     const data = {
         "users": {
             "e98417a8-d912-44e0-8d37-abe712ca840f": {
@@ -271,4 +271,4 @@ function JSONDatabaseConnector({ filePath }) {
 
 }
 
-module.exports = JSONDatabaseConnector;
+module.exports = InMemoryDatabaseConnector;

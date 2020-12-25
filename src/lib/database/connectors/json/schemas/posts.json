@@ -1,0 +1,190 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/posts.json",
+    "type": "object",
+    "title": "The post schema",
+    "description": "The root schema comprises the entire JSON document.",
+    "default": {},
+    "examples": [
+        {
+            "id": "ace3e658-fd8f-4339-900e-027aea182016",
+            "userId": "e98417a8-d912-44e0-8d37-abe712ca840f",
+            "body": "Billionaire. Playboy. Genius.",
+            "commentCount": 138,
+            "likeCount": 2000,
+            "sequenceNo": 47,
+            "createdDate": "2020-09-26T23:08:27.645Z",
+            "lastModified": null,
+            "handle": "@tstark",
+            "firstName": "Tony",
+            "lastName": "Stark",
+            "sentimentScore": "1.2",
+            "magnitude": "1.0",
+            "isPublished": false,
+            "publishDate": "2020-09-26T23:08:27.645Z"
+        }
+    ],
+    "required": [
+        "id",
+        "userId",
+        "body",
+        "createdDate",
+        "lastModified",
+        "handle",
+        "isPublished",
+        "publishDate"
+    ],
+    "properties": {
+        "id": {
+            "$id": "#/properties/id",
+            "type": "string",
+            "title": "The id schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "ace3e658-fd8f-4339-900e-027aea182016"
+            ]
+        },
+        "userId": {
+            "$id": "#/properties/userId",
+            "type": "string",
+            "title": "The userId schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "e98417a8-d912-44e0-8d37-abe712ca840f"
+            ]
+        },
+        "body": {
+            "$id": "#/properties/body",
+            "type": "string",
+            "title": "The body schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "Billionaire. Playboy. Genius."
+            ]
+        },
+        "commentCount": {
+            "$id": "#/properties/commentCount",
+            "type": "integer",
+            "title": "The commentCount schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                138
+            ]
+        },
+        "likeCount": {
+            "$id": "#/properties/likeCount",
+            "type": "integer",
+            "title": "The likeCount schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                2000
+            ]
+        },
+        "sequenceNo": {
+            "$id": "#/properties/sequenceNo",
+            "type": ["integer", "null"],
+            "title": "The sequenceNo schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                47
+            ]
+        },
+        "createdDate": {
+            "$id": "#/properties/createdDate",
+            "type": "string",
+            "title": "The createdDate schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "2020-09-26T23:08:27.645Z"
+            ]
+        },
+        "lastModified": {
+            "$id": "#/properties/lastModified",
+            "type": ["string", "null"],
+            "title": "The lastModified schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": null,
+            "examples": [
+                null
+            ]
+        },
+        "handle": {
+            "$id": "#/properties/handle",
+            "type": "string",
+            "title": "The handle schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "@tstark"
+            ]
+        },
+        "firstName": {
+            "$id": "#/properties/firstName",
+            "type": "string",
+            "title": "The firstName schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "Tony"
+            ]
+        },
+        "lastName": {
+            "$id": "#/properties/lastName",
+            "type": "string",
+            "title": "The lastName schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "Stark"
+            ]
+        },
+        "sentimentScore": {
+            "$id": "#/properties/sentimentScore",
+            "type": ["string", "null"],
+            "title": "The sentimentScore schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "1.2"
+            ]
+        },
+        "magnitude": {
+            "$id": "#/properties/magnitude",
+            "type": ["string", "null"],
+            "title": "The magnitude schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "null",
+            "examples": [
+                "1.0"
+            ]
+        },
+        "isPublished": {
+            "$id": "#/properties/isPublished",
+            "type": "boolean",
+            "title": "The isPublished schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": false,
+            "examples": [
+                false
+            ]
+        },
+        "publishDate": {
+            "$id": "#/properties/publishDate",
+            "type": ["string", "null"],
+            "title": "The publishDate schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": null,
+            "examples": [
+                "2020-09-26T23:08:27.645Z"
+            ]
+        }
+    },
+    "additionalProperties": false
+}

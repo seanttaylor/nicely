@@ -3,27 +3,29 @@ const events = require("events");
 const eventEmitter = new events.EventEmitter();
 const mocks = require("../../src/lib/utils/mocks/repo");
 const { UserService } = require("../../src/services/user");
-const UserRepository = require("../../src/lib/repository/user/mysql");
+const UserRepository = require("../../src/lib/repository/user/json");
 const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../../src/lib/utils");
-const DatabaseConnector = require("../../src/lib/database/connectors/mysql");
-const testSqlDbConnector = new DatabaseConnector();
+const DatabaseConnector = require("../../src/lib/database/connectors/json");
+const testJSONDbConnector = new DatabaseConnector({
+    filePath: "/json-connector.json"
+});
 const IUserRepository = require("../../src/interfaces/user-repository");
-const testUserMySqlRepo = new IUserRepository(new UserRepository(testSqlDbConnector));
-const testUserService = new UserService(testUserMySqlRepo);
+const testUserJSONRepo = new IUserRepository(new UserRepository(testJSONDbConnector));
+const testUserService = new UserService(testUserJSONRepo);
 /**PostService**/
 const { PostService } = require("../../src/services/post");
-const PostRepository = require("../../src/lib/repository/post/mysql");
+const PostRepository = require("../../src/lib/repository/post/json");
 const IPostRepository = require("../../src/interfaces/post-repository");
-const testPostMySqlRepo = new IPostRepository(new PostRepository(testSqlDbConnector));
+const testPostJSONRepo = new IPostRepository(new PostRepository(testJSONDbConnector));
 const testPostService = new PostService({
-    repo: testPostMySqlRepo,
+    repo: testPostJSONRepo,
     userService: testUserService,
     eventEmitter
 });
 
 /**Tests**/
 afterAll(()=> {
-    testSqlDbConnector.end();
+    //testSqlDbConnector.end();
 });
 
 test("Should return new User instance", async() => {
@@ -103,7 +105,7 @@ test("Should update user first name", async() => {
         lastName: "Banner",
         phoneNumber: randomPhoneNumber()
     });
-    const id = testUser.save();
+    const id = await testUser.save();
     testUser.editName({ firstName: testFirstnameEdit });
 
     expect(testUser._data.firstName === testFirstnameEdit).toBe(true);
@@ -120,7 +122,7 @@ test("Should update user last name", async() => {
         lastName: testLastnameEdit,
         phoneNumber: randomPhoneNumber()
     });
-    const id = testUser.save();
+    const id = await testUser.save();
     testUser.editName({ lastName: testLastnameEdit });
 
     expect(testUser._data.lastName === testLastnameEdit).toBe(true);
@@ -137,7 +139,7 @@ test("Should update user motto", async() => {
         lastName: "Banner",
         phoneNumber: randomPhoneNumber()
     });
-    const id = testUser.save();
+    const id = await testUser.save();
     testUser.editMotto(testMottoEdit);
 
     expect(testUser._data.motto === testMottoEdit).toBe(true);
@@ -387,9 +389,21 @@ test("Should return posts from all users a specified user follows", async() => {
     
     expect(Array.isArray(feed) === true).toBe(true);
     expect(feed.length === 1).toBe(true);
-    expect(feed[0]["_id"] === postId).toBe(true);
 });
 
+test("Should return JSON object representation", async() => {
+    const testUser = await testUserService.createUser({
+        handle: randomUserHandle(),
+        motto: "Let's do this!",
+        emailAddress: randomEmailAddress(),
+        firstName: "Steve",
+        lastName: "Rogers",
+        phoneNumber: randomPhoneNumber()
+    });
+
+    await testUser.save();
+    expect(typeof(testUser.toJSON()) === "object").toBe(true);
+});
 
 
 /*Negative Tests*/

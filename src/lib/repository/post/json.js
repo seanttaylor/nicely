@@ -15,7 +15,12 @@ function PostJSONRepository(JSONDatabaseConnector) {
 
     this.create = async function(doc) {
         const [record] = await JSONDatabaseConnector.add({
-            doc: Object.assign(doc, {isPublished: false}), 
+            doc: Object.assign(doc, {
+                commentCount: 0, 
+                likeCount: 0, 
+                isPublished: false,
+                publishDate: null
+            }), 
             collection: "posts"
         });
         return { id: record.id, createdDate: record.createdDate };

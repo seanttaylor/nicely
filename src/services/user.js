@@ -80,8 +80,8 @@ function User(repo, doc) {
     @param {String} phoneNumber - a telephone number
     */
     this.editPhoneNumber = async function(phoneNumber) {
-        this._data.phoneNumber = phoneNumber;
         const result = await this._repo.editPhoneNumber(this._id, phoneNumber);
+        this._data.phoneNumber = phoneNumber;
         return result;
     }
 
@@ -213,7 +213,7 @@ function UserService(repo, validator = new UserValidator()) {
     }
 
     this.handleExists = async function(handle) {
-        const result = await this._repo.findOneByHandle(handle);
+        const result = await this._repo.findOneByHandle(handle); 
         return result.length === 1 && result[0]["handle"] === handle;
     }
 

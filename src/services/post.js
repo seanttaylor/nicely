@@ -51,7 +51,8 @@ function Post(repo, doc, eventEmitter) {
     this.save = async function() {
         const post = await this._repo.create({
             body: this._data.body,
-            userId: this._data.userId
+            userId: this._data.userId,
+            handle: this._data.handle
         });
 
         this._id = post.id;

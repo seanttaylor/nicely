@@ -1,0 +1,69 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/user-subscriptions.json",
+    "type": "object",
+    "title": "The user subscription schema",
+    "description": "The root schema comprises the entire JSON document.",
+    "default": {},
+    "examples": [
+        {
+            "subscriptions": [],
+            "id": "e7e89550-66ef-4b24-b769-593b9ab0df0f",
+            "createdDate": "2020-12-24T18:52:30.510Z",
+            "lastModified": null
+        }
+    ],
+    "required": [
+        "subscriptions",
+        "id",
+        "createdDate",
+        "lastModified"
+    ],
+    "properties": {
+        "subscriptions": {
+            "$id": "#/properties/subscriptions",
+            "type": "array",
+            "title": "The subscriptions schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": [],
+            "examples": [
+                []
+            ],
+            "additionalItems": true,
+            "items": {
+                "$id": "#/properties/subscriptions/items"
+            }
+        },
+        "id": {
+            "$id": "#/properties/id",
+            "type": "string",
+            "title": "The id schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "e7e89550-66ef-4b24-b769-593b9ab0df0f"
+            ]
+        },
+        "createdDate": {
+            "$id": "#/properties/createdDate",
+            "type": "string",
+            "title": "The createdDate schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "2020-12-24T18:52:30.510Z"
+            ]
+        },
+        "lastModified": {
+            "$id": "#/properties/lastModified",
+            "type": ["string", "null"],
+            "title": "The lastModified schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": null,
+            "examples": [
+                null
+            ]
+        }
+    },
+    "additionalProperties": false
+}
