@@ -1,48 +1,17 @@
-const fs = require("fs");
 const Ajv = require("ajv");
-const ajv = new Ajv();
 const uuid = require("uuid");
-const { promisify } = require("util");
-const writeToFile = promisify(fs.writeFile);
-const readFile = promisify(fs.readFile);
+const ajv = new Ajv();
+const dataTemplate = require("../template");
 
-function InMemoryDatabaseConnector({ filePath }) {
-    const data = {
-        "users": {
-            "e98417a8-d912-44e0-8d37-abe712ca840f": {
-              "id": "e98417a8-d912-44e0-8d37-abe712ca840f",
-              "handle": "@tstark",
-              "emailAddress": "tstark@avengers.io",
-              "phoneNumber": "12125552424",
-              "firstName": "Tony",
-              "lastName": "Stark",
-              "createdDate": "2020-09-26T23:08:27.645Z"
-            }
-        },
-        "posts": {},
-        "comments": {},
-        "comment_likes": {},
-        "post_likes": {},
-        "user_roles": {
-            "e98417a8-d912-44e0-8d37-abe712ca840f": {
-                "id": "e98417a8-d912-44e0-8d37-abe712ca840f",
-                "role": "admin"
-            }
-        },
-        "user_credentials": {},
-        "user_followers": {},
-        "user_subscriptions": {}
-    };
-    const databaseLocation = `${__dirname}${filePath}`;
-    const dataFile = require(databaseLocation);
-    this._dataFilePath = databaseLocation;
+function InMemoryDatabaseConnector() {
+    const data = Object.assign({}, dataTemplate);
     this._schemaValidators = {
-        "posts": require("./json/schemas/posts.json"),
-        "user_subscriptions": require("./json/schemas/user-subscriptions.json"),
-        "user_roles": require("./json/schemas/user-roles.json"),
-        "user_followers": require("./json/schemas/user-followers.json"),
-        "user_credentials": require("./json/schemas/user-credentials.json"),
-        "users": require("./json/schemas/users.json"),
+        "posts": require("../json/schemas/posts.json"),
+        "user_subscriptions": require("../json/schemas/user-subscriptions.json"),
+        "user_roles": require("../json/schemas/user-roles.json"),
+        "user_followers": require("../json/schemas/user-followers.json"),
+        "user_credentials": require("../json/schemas/user-credentials.json"),
+        "users": require("../json/schemas/users.json"),
     }
 
 
@@ -61,8 +30,6 @@ function InMemoryDatabaseConnector({ filePath }) {
 
         try {
             const validate = ajv.compile(this._schemaValidators[collection])
-            //const fileDB = await readFile(this._dataFilePath, "utf-8");
-            //const data = JSON.parse(fileDB);
             const id = uuid.v4();
             const createdDate = new Date().toISOString();
             const lastModified = null;
@@ -72,11 +39,8 @@ function InMemoryDatabaseConnector({ filePath }) {
                 throw new Error(`ValidationError => Schema => ${collection} ${JSON.stringify(validate.errors, null, 2)}`); 
             }
 
-            data[collection][id] = record;
-            //await writeToFile(this._dataFilePath, JSON.stringify(data, null, 2));
-             
+            data[collection][id] = record;             
             return Promise.resolve([record]);
-            
             
         } catch(e) {
             console.error(`JSONDatabaseConnectorError => ${e.message}`);
@@ -94,24 +58,22 @@ function InMemoryDatabaseConnector({ filePath }) {
     this.updateOne = async function({id, doc, collection}) {
 
         if (typeof(doc) !== "object") {
-            throw new Error(`Record should be of type [Object] but is ${typeof(doc)} instead.`)
+            throw new Error(`Record should be of type [Object] but is ${typeof(doc)} instead.`);
         }
 
         if (id === null) {
-            throw new Error(`JSONDatabaseConnectorError => UpdateError => record id CANNOT be null`)
+            throw new Error(`JSONDatabaseConnectorError => UpdateError => record id CANNOT be null`);
         }
 
         if (!Object.keys(this._schemaValidators).includes(collection)) {
-            throw new Error(`JSONDatabaseConnectorError => UpdateError => collection (${collection}) does not exist`)
+            throw new Error(`JSONDatabaseConnectorError => UpdateError => collection (${collection}) does not exist`);
         }
 
         try {
-            const validate = ajv.compile(this._schemaValidators[collection])
-            //const fileDB = await readFile(this._dataFilePath, "utf-8");
-            //const data = JSON.parse(fileDB);
+            const validate = ajv.compile(this._schemaValidators[collection]);
 
             if (!data[collection][id]) {
-                console.info(`JSONDatabaseConnector => Could not find ${collection}.${id}`);
+                console.info(`JSONDatabaseConnector => UpdateError => Could not find ${collection}.${id}`);
                 return Promise.resolve([]);
             }
 
@@ -125,7 +87,6 @@ function InMemoryDatabaseConnector({ filePath }) {
             }
             
             data[collection][id] = record;
-            //await writeToFile(this._dataFilePath, JSON.stringify(data, null, 2));
             
             return Promise.resolve([record]);
         } catch(e) {
@@ -157,9 +118,6 @@ function InMemoryDatabaseConnector({ filePath }) {
 
         try {
             const validate = ajv.compile(this._schemaValidators[collection]);
-
-            //const fileDB = await readFile(this._dataFilePath, "utf-8");
-            //const data = JSON.parse(fileDB);
             const createdDate = new Date().toISOString();
             const lastModified = null
             const record = Object.assign(doc, { id, createdDate, lastModified });
@@ -168,11 +126,7 @@ function InMemoryDatabaseConnector({ filePath }) {
             }
             
             data[collection][id] = record;
-            //await writeToFile(this._dataFilePath, JSON.stringify(data, null, 2));
-             
             return Promise.resolve([record]);
-            
-            
         } catch(e) {
             console.error(`JSONDatabaseConnectorError =>", ${e.message}`);
         }
@@ -188,11 +142,7 @@ function InMemoryDatabaseConnector({ filePath }) {
 
     this.removeOne = async function(id, collection) {
         try {
-            const fileDB = await readFile(this._dataFilePath, "utf-8");
-            const data = JSON.parse(fileDB);
-            delete data[collection][id];
-            await writeToFile(this._dataFilePath, JSON.stringify(data, null, 2));
-            
+            delete data[collection][id];            
             return [];
             
         } catch(e) {
@@ -208,9 +158,6 @@ function InMemoryDatabaseConnector({ filePath }) {
 
     this.findAll = async function(collection) {
         try {
-            //const fileDB = await readFile(this._dataFilePath, "utf-8");
-            //const data = JSON.parse(fileDB);
-            
             return Promise.resolve(Object.values(data[collection]));
         } catch(e) {
            console.error(e);
@@ -230,8 +177,6 @@ function InMemoryDatabaseConnector({ filePath }) {
         }
 
         try {
-            //const fileDB = await readFile(this._dataFilePath, "utf-8");
-            //const data = JSON.parse(fileDB);
             
             if (!data[collection][id]) {
                 return [];
@@ -252,10 +197,7 @@ function InMemoryDatabaseConnector({ filePath }) {
 
     this.drop = async function(collection) {
         delete dataFile[collection];
-        await writeToFile(this._dataFilePath, JSON.stringify(dataFile, null, 2));
-        return {
-            data: []
-        }
+        return [];
     }
     
     /**
@@ -264,9 +206,7 @@ function InMemoryDatabaseConnector({ filePath }) {
      * @returns
      */
     this.close = function() {
-        return {
-          data: []
-        };
+        return [];
     }
 
 }

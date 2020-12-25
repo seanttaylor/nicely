@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-/*Implements IPostRepository interface for connecting to a JSON file database.
+/*Implements IPostRepository interface for connecting to a JSON file or in-memory document database
 See interfaces/post-repository for method documentation*/
 
 const uuid = require("uuid");

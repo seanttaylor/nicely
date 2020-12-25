@@ -37,12 +37,12 @@ function JSONDatabaseConnector({ filePath }) {
     const dataFile = require(databaseLocation);
     this._dataFilePath = databaseLocation;
     this._schemaValidators = {
-        "posts": require("./json/schemas/posts.json"),
-        "user_subscriptions": require("./json/schemas/user-subscriptions.json"),
-        "user_roles": require("./json/schemas/user-roles.json"),
-        "user_followers": require("./json/schemas/user-followers.json"),
-        "user_credentials": require("./json/schemas/user-credentials.json"),
-        "users": require("./json/schemas/users.json"),
+        "posts": require("./schemas/posts.json"),
+        "user_subscriptions": require("./schemas/user-subscriptions.json"),
+        "user_roles": require("./schemas/user-roles.json"),
+        "user_followers": require("./schemas/user-followers.json"),
+        "user_credentials": require("./schemas/user-credentials.json"),
+        "users": require("./schemas/users.json"),
     }
 
 

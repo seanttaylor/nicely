@@ -128,10 +128,10 @@ function User(repo, doc) {
     @param {User} targetUser - an instance of the User class; the user being inquired about
     @returns {Boolean}
     */
-    this.isFollowing = async function(targetUser) {
-        const subscriptionsList = await this._repo.getUserSubscriptions(this._id);
-        const currentUserFollowsTargetUser = subscriptionsList.find((u) => u.id === targetUser._id);
-        return (currentUserFollowsTargetUser !== undefined);
+    this.isFollowing =  async function(targetUser) {
+        const subscriptionRecord = await this._repo.getUserSubscriptions(this._id);
+        const currentUserFollowsTargetUser = subscriptionRecord.subscriptions.includes(targetUser._id);
+        return currentUserFollowsTargetUser;
     }
 
     /**
@@ -140,8 +140,8 @@ function User(repo, doc) {
     */
 
     this.getFollowers = async function() {
-        const followersList = await this._repo.getSubscribersOf(this._id);
-        return followersList.map((u) => new User(this._repo, u));
+        const user = await this._repo.getSubscribersOf(this._id);
+        return user.followers;
     }
 
     /**
@@ -149,8 +149,8 @@ function User(repo, doc) {
     @returns {Array}
     */
     this.follows = async function() {
-        const subscriptionsList = await this._repo.getUserSubscriptions(this._id);
-        return subscriptionsList.map((u) => new User(this._repo, u));
+        const subscriptionRecord = await this._repo.getUserSubscriptions(this._id);
+        return subscriptionRecord.subscriptions;
     }
 
 }

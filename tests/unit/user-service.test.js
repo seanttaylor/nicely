@@ -5,7 +5,7 @@ const mocks = require("../../src/lib/utils/mocks/repo");
 const { UserService } = require("../../src/services/user");
 const UserRepository = require("../../src/lib/repository/user/json");
 const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../../src/lib/utils");
-const DatabaseConnector = require("../../src/lib/database/connectors/json");
+const DatabaseConnector = require("../../src/lib/database/connectors/memory");
 const testJSONDbConnector = new DatabaseConnector({
     filePath: "/json-connector.json"
 });
@@ -222,7 +222,7 @@ test("Should return list of followers", async() => {
     const followerList = await testUserNo1.getFollowers();
 
     expect(Array.isArray(followerList)).toBe(true);
-    expect(followerList[0]["_id"] === testUserNo2Id).toBe(true);
+    expect(followerList[0] === testUserNo2Id).toBe(true);
     expect(followerList.length === 1).toBe(true);
 });
 

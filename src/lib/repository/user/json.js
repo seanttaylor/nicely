@@ -231,19 +231,22 @@ function UserJSONRepository(JSONDatabaseConnector) {
 
 
     this.getSubscribersOf = async function(currentUserId) {
-        const result = [];
-        //const sql = `SELECT users.id, users.handle, users.email_address, users.motto, users.is_verified, users.first_name, users.last_name, users.follower_count, users.created_date, user_followers.* FROM user_followers JOIN users ON user_followers.follower_id = users.id WHERE user_followers.user_id = "${currentUserId}"`;
+        const [currentUser] = await JSONDatabaseConnector.findOne({
+            id: currentUserId, 
+            collection: "user_followers"
+        });
 
-        return result.map((u) => onReadUser(u));
+        return currentUser;
     }
 
 
     this.getUserSubscriptions = async function(currentUserId) {
-        
-        const result = [];
-        //const sql = `SELECT users.*, user_followers.* FROM user_followers JOIN users ON user_followers.user_id = users.id WHERE user_followers.follower_id = "${currentUserId}"`;
+        const [userSubscriptionRecord] = await JSONDatabaseConnector.findOne({
+            id: currentUserId, 
+            collection: "user_subscriptions"
+        });
 
-        return result.map((u) => onReadUser(u));
+        return userSubscriptionRecord;
     }
 
 
