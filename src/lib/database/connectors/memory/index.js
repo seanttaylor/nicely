@@ -6,6 +6,8 @@ const dataTemplate = require("../template");
 function InMemoryDatabaseConnector() {
     const data = Object.assign({}, dataTemplate);
     this._schemaValidators = {
+        "comment_likes": require("../json/schemas/comment-likes.json"),
+        "comments": require("../json/schemas/comments.json"),
         "posts": require("../json/schemas/posts.json"),
         "user_subscriptions": require("../json/schemas/user-subscriptions.json"),
         "user_roles": require("../json/schemas/user-roles.json"),
@@ -40,7 +42,7 @@ function InMemoryDatabaseConnector() {
             }
 
             data[collection][id] = record;             
-            return Promise.resolve([record]);
+            return [record];
             
         } catch(e) {
             console.error(`JSONDatabaseConnectorError => ${e.message}`);

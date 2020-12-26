@@ -3,24 +3,20 @@ const events = require("events");
 const eventEmitter = new events.EventEmitter();
 const { mockImpl } = require("../../src/lib/utils/mocks");
 const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../../src/lib/utils");
-const DatabaseConnector = require("../../src/lib/database/connectors/mysql");
-//const testSqlDbConnector = new DatabaseConnector();
-const JSONDatabaseConnector = require("../../src/lib/database/connectors/json");
-const testJSONDbConnector = new JSONDatabaseConnector({
-    filePath: "/json-connector.json"
-});
+const InMemoryDatabaseConnector = require("../../src/lib/database/connectors/memory");
+const testInMemoryDbConnector = new InMemoryDatabaseConnector();
 
 /*UserService*/
 const { UserService } = require("../../src/services/user");
 const UserRepository = require("../../src/lib/repository/user/json");
 const IUserRepository = require("../../src/interfaces/user-repository");
-const testUserJSONRepo = new IUserRepository(new UserRepository(testJSONDbConnector));
+const testUserJSONRepo = new IUserRepository(new UserRepository(testInMemoryDbConnector));
 const testUserService = new UserService(testUserJSONRepo);
 /*PostService*/
 const { PostService } = require("../../src/services/post");
 const PostRepository = require("../../src/lib/repository/post/json");
 const IPostRepository = require("../../src/interfaces/post-repository");
-const testPostJSONRepo = new IPostRepository(new PostRepository(testJSONDbConnector));
+const testPostJSONRepo = new IPostRepository(new PostRepository(testInMemoryDbConnector));
 const testPostService = new PostService({
     repo: testPostJSONRepo,
     userService: testUserService,
@@ -30,7 +26,7 @@ const testPostService = new PostService({
 const { CommentService } = require("../../src/services/comment");
 const CommentRepository = require("../../src/lib/repository/comment/json");
 const ICommentRepository = require("../../src/interfaces/comment-repository");
-const testCommentJSONRepo = new ICommentRepository(new CommentRepository(testJSONDbConnector));
+const testCommentJSONRepo = new ICommentRepository(new CommentRepository(testInMemoryDbConnector));
 const testCommentService = new CommentService({
     userService: testUserService,
     postService: testPostService,
@@ -38,10 +34,6 @@ const testCommentService = new CommentService({
 });
 
 /**Tests**/
-
-afterAll(()=> {
-//testSqlDbConnector.end();
-});
 
 const thorUserId = "b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09";
 
@@ -204,7 +196,6 @@ test("Should return JSON representation of Comment", async() => {
     });
     await testComment.save();
    
-    console.log(testComment.toJSON());
     expect(typeof(testComment.toJSON()) === "object").toBe(true);
 });
 
