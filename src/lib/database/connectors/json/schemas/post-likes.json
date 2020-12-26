@@ -1,0 +1,85 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/post-likes.json",
+    "type": "object",
+    "title": "The Post-like schema",
+    "description": "The root schema comprises the entire JSON document.",
+    "default": {},
+    "examples": [
+        {
+            "id": "a2dca444-aafc-4162-b9e5-e7697f783470",
+            "likes": [
+                "7f04a40e-6147-42bb-bd20-121664138a03"
+            ],
+            "createdDate": "2020-09-26T23:08:27.645Z",
+            "lastModified": null
+        }
+    ],
+    "required": [
+        "id",
+        "likes",
+        "createdDate",
+        "lastModified"
+    ],
+    "properties": {
+        "id": {
+            "$id": "#/properties/id",
+            "type": "string",
+            "title": "The id schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "a2dca444-aafc-4162-b9e5-e7697f783470"
+            ]
+        },
+        "likes": {
+            "$id": "#/properties/likes",
+            "type": "array",
+            "title": "The likes schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": [],
+            "examples": [
+                [
+                    "7f04a40e-6147-42bb-bd20-121664138a03"
+                ]
+            ],
+            "additionalItems": true,
+            "items": {
+                "$id": "#/properties/likes/items",
+                "anyOf": [
+                    {
+                        "$id": "#/properties/likes/items/anyOf/0",
+                        "type": "string",
+                        "title": "The first anyOf schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "default": "",
+                        "examples": [
+                            "7f04a40e-6147-42bb-bd20-121664138a03"
+                        ]
+                    }
+                ]
+            }
+        },
+        "createdDate": {
+            "$id": "#/properties/createdDate",
+            "type": "string",
+            "title": "The createdDate schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "2020-09-26T23:08:27.645Z"
+            ]
+        },
+        "lastModified": {
+            "$id": "#/properties/lastModified",
+            "type": ["string", "null"],
+            "title": "The lastModified schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": null,
+            "examples": [
+                null
+            ]
+        }
+    },
+    "additionalProperties": false
+}

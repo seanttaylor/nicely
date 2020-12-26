@@ -32,7 +32,8 @@
         "lastModified",
         "handle",
         "isPublished",
-        "publishDate"
+        "publishDate",
+        "likeCount"
     ],
     "properties": {
         "id": {

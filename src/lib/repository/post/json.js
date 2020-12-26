@@ -8,13 +8,13 @@ const { promisify } = require("util");
 
 /**
  * @implements {IPostRepository}
- * @param {Object} JSONDatabaseConnector - object with methods for connecting to a database 
+ * @param {Object} databaseConnector - object with methods for connecting to a database 
  */
 
-function PostJSONRepository(JSONDatabaseConnector) {
+function PostJSONRepository(databaseConnector) {
 
     this.create = async function(doc) {
-        const [record] = await JSONDatabaseConnector.add({
+        const [post] = await databaseConnector.add({
             doc: Object.assign(doc, {
                 commentCount: 0, 
                 likeCount: 0, 
@@ -23,24 +23,32 @@ function PostJSONRepository(JSONDatabaseConnector) {
             }), 
             collection: "posts"
         });
-        return { id: record.id, createdDate: record.createdDate };
+
+        await databaseConnector.putOne({
+            id: post.id, 
+            doc: {
+                likes:[]
+            }, 
+            collection: "post_likes"
+        });
+        return { id: post.id, createdDate: post.createdDate };
     }
 
 
     this.findOne = async function(id) {
-        const result = await JSONDatabaseConnector.findOne({id, collection: "posts"});
+        const result = await databaseConnector.findOne({id, collection: "posts"});
         return result.map((p) => onReadPost(p));
     }
 
 
     this.findAll = async function() {
-        const result = await JSONDatabaseConnector.findAll("posts");
+        const result = await databaseConnector.findAll("posts");
         return result.map((p) => onReadPost(p));
     }
 
 
     this.editPost = async function(id, text) {
-        const [record] = await JSONDatabaseConnector.updateOne({
+        const [record] = await databaseConnector.updateOne({
             id, 
             doc: {
                 body: text
@@ -58,13 +66,13 @@ function PostJSONRepository(JSONDatabaseConnector) {
 
 
     this.incrementCommentCount = async function(id) {
-        const allComments = await JSONDatabaseConnector.findAll("comments");
+        const allComments = await databaseConnector.findAll("comments");
         const postCommentList = allComments.filter(c => c.postId === id);
 
-        await JSONDatabaseConnector.updateOne({
+        await databaseConnector.updateOne({
             id, 
             doc: {
-                comment_count: postCommentList.length + 1
+                commentCount: postCommentList.length + 1
             },
             collection: "posts"
         });      
@@ -72,18 +80,18 @@ function PostJSONRepository(JSONDatabaseConnector) {
 
 
     this.incrementLikeCount = async function({postId, userId}) {
-        const [postLikeList] = await JSONDatabaseConnector.findOne({
+        const [postLike] = await databaseConnector.findOne({
             id: postId, 
             collection: "post_likes"
         });
-        const postLikeListUnique = new Set(postLikeList);
+        const postLikeListUnique = new Set(postLike.likes);
         
         postLikeListUnique.add(userId);
 
-        await JSONDatabaseConnector.updateOne({
+        await databaseConnector.updateOne({
             id: postId, 
             doc: {
-                like_count: postLikeListUnique.size
+                likeCount: postLikeListUnique.size
             },
             collection: "posts"
         });
@@ -92,18 +100,18 @@ function PostJSONRepository(JSONDatabaseConnector) {
 
 
     this.decrementLikeCount = async function({postId, userId}) {
-        const [postLikeList] = await JSONDatabaseConnector.findOne({
+        const [postLike] = await databaseConnector.findOne({
             id: postId, 
             collection: "post_likes"
         });
-        const postLikeListUnique = new Set(postLikeList);
+        const postLikeListUnique = new Set(postLike.likes);
         
         postLikeListUnique.delete(userId);
 
-        await JSONDatabaseConnector.updateOne({
+        await databaseConnector.updateOne({
             id: postId, 
             doc: {
-                like_count: postLikeListUnique.size
+                likeCount: postLikeListUnique.size
             },
             collection: "posts"
         });
@@ -111,11 +119,11 @@ function PostJSONRepository(JSONDatabaseConnector) {
 
 
     this.setPostSentimentScore = async function({id, sentimentScore, magnitude}) {
-        const [record] = await JSONDatabaseConnector.updateOne({
+        const [record] = await databaseConnector.updateOne({
             id, 
             doc: {
-                sentiment_score: sentimentScore,
-                magnitude: magnitude
+                sentimentScore: String(sentimentScore),
+                magnitude: String(magnitude)
             }, 
             collection: "posts"
         });
@@ -123,7 +131,7 @@ function PostJSONRepository(JSONDatabaseConnector) {
 
 
     this.getTotalPostCount = async function() {
-        const result = await JSONDatabaseConnector.findAll("posts");
+        const result = await databaseConnector.findAll("posts");
         return result.length;
     }
 
@@ -148,7 +156,7 @@ function PostJSONRepository(JSONDatabaseConnector) {
 
 
     this.markAsPublished = async function(id) {
-        const [record] = await JSONDatabaseConnector.updateOne({
+        const [record] = await databaseConnector.updateOne({
             id, 
             doc: {
                 publishDate: new Date().toISOString(),
@@ -160,7 +168,7 @@ function PostJSONRepository(JSONDatabaseConnector) {
 
 
     this.getPostsBySubscriber = async function(id) {
-        const [user] = await JSONDatabaseConnector.findOne({id, collection: "user_subscriptions"});
+        const [user] = await databaseConnector.findOne({id, collection: "user_subscriptions"});
         const subscriptions = user.subscriptions.reduce((res, userId)=> {
             res.push(userId);
             return res;
@@ -170,7 +178,7 @@ function PostJSONRepository(JSONDatabaseConnector) {
     }
 
     this.findPostsByUserId = async function({userId, showUnpublished=false}) {
-        const posts = await JSONDatabaseConnector.findAll("posts");
+        const posts = await databaseConnector.findAll("posts");
         const postsByUser = posts.filter((p)=> p.userId === userId && p.isPublished === showUnpublished);
         
         return postsByUser;

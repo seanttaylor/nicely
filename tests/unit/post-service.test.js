@@ -3,21 +3,20 @@ const events = require("events");
 const eventEmitter = new events.EventEmitter();
 const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../../src/lib/utils");
 const { mocks, mockImpl } = require("../../src/lib/utils/mocks");
-const DatabaseConnector = require("../../src/lib/database/connectors/json");
-const testJSONDbConnector = new DatabaseConnector({
-    filePath: "/json-connector.json"
-});
+const InMemoryDatabaseConnector = require("../../src/lib/database/connectors/memory");
+const testInMemoryDatabaseConnector = new InMemoryDatabaseConnector();
+
 /**UserService**/
 const { UserService } = require("../../src/services/user");
 const UserRepository = require("../../src/lib/repository/user/json");
 const IUserRepository = require("../../src/interfaces/user-repository");
-const testUserJSONRepo = new IUserRepository(new UserRepository(testJSONDbConnector));
+const testUserJSONRepo = new IUserRepository(new UserRepository(testInMemoryDatabaseConnector));
 const testUserService = new UserService(testUserJSONRepo);
 /**PostService**/
 const { PostService } = require("../../src/services/post");
 const PostRepository = require("../../src/lib/repository/post/json");
 const IPostRepository = require("../../src/interfaces/post-repository");
-const testPostJSONRepo = new IPostRepository(new PostRepository(testJSONDbConnector));
+const testPostJSONRepo = new IPostRepository(new PostRepository(testInMemoryDatabaseConnector));
 const testPostService = new PostService({
     repo: testPostJSONRepo,
     userService: testUserService,
@@ -25,9 +24,6 @@ const testPostService = new PostService({
 });
 
 /**Tests**/
-afterAll(()=> {
-    //testSqlDbConnector.end();
-});
 
 const thorUserId = "b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09";
 
