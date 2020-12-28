@@ -73,7 +73,7 @@ test("Should return specified Comment", async() => {
     const [returnedTestComment] = await testCommentService.findCommentById(testCommentId);
 
     expect(Object.keys(returnedTestComment).includes("_data")).toBe(true);
-    expect(returnedTestComment._id === testCommentId).toBe(true);
+    expect(returnedTestComment.id === testCommentId).toBe(true);
 });
 
 

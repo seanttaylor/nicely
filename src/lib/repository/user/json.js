@@ -3,39 +3,39 @@
 /*Implements IUserRepository interface for connecting to a JSON file database.
 See interfaces/user-repository for method documentation*/
 
-const uuid = require("uuid");
-const { promisify } = require("util");
+const {UserDTO, UserFollowersDTO, UserSubscriptionsDTO} = require("../../../lib/repository/user/dto");
+
 
 /**
  * @implements {IUserRepostory}
- * @param {Object} JSONDatabaseConnector - object with methods for connecting to a database 
+ * @param {Object} databaseConnector - object with methods for connecting to a database 
  */
 
-function UserJSONRepository(JSONDatabaseConnector) {
+function UserJSONRepository(databaseConnector) {
+    /**
+     * @param {UserDTO} userDTO - an instance of UserDTO
+     * @param {UserRoleDTO} userRoleDTO - an instance of UserRoleDTO
+     * @param {UserFollowersDTO} userFollowerDTO - an instance of UserFollowersDTO
+     * @param {UserSubscriptionsDTO} userSubscriptionsDTO - an instance of UserSubscriptionsDTO
+     */
+    this.create = async function({userDTO, userRoleDTO, userFollowersDTO, userSubscriptionsDTO}) {
+        const [record] = await databaseConnector.add({
+            doc: userDTO, 
+            collection: "users"
+        });
 
-    this.create = async function(doc) {
-        const [record] = await JSONDatabaseConnector.add({doc, collection: "users"});
-        await JSONDatabaseConnector.add({
-            doc: {
-                id: record.id, 
-                role: "user"
-            }, 
+        await databaseConnector.add({
+            doc: userRoleDTO, 
             collection: "user_roles"
         });
 
-        await JSONDatabaseConnector.putOne({
-            id: record.id,
-            doc: {
-                followers: []
-            }, 
+        await databaseConnector.putOne({
+            doc: userFollowersDTO, 
             collection: "user_followers"
         });
 
-        await JSONDatabaseConnector.putOne({
-            id: record.id,
-            doc: {
-                subscriptions: []
-            }, 
+        await databaseConnector.putOne({
+            doc: userSubscriptionsDTO, 
             collection: "user_subscriptions"
         });
 
@@ -43,33 +43,32 @@ function UserJSONRepository(JSONDatabaseConnector) {
 
     }
 
-
-    this.createUserPassword = async function(userEmailAddress, password) {
-        await JSONDatabaseConnector.putOne({
-            id: userEmailAddress,
-            doc: {
-                emailAddress: userEmailAddress,
-                password
-            }, 
+    /**
+     * @param {UserCredentialsDTO} userCredentialsDTO - an instance of UserCredentialsDTO
+     */
+    this.createUserPassword = async function(userCredentialsDTO) {
+        await databaseConnector.putOne({
+            doc: userCredentialsDTO, 
             collection: "user_credentials"
         });
     }
 
 
     this.getUserPassword = async function(userEmailAddress) {
-        const [result] = await JSONDatabaseConnector.findOne({id: userEmailAddress, collection: "user_credentials"});
+        const [result] = await databaseConnector.findOne({id: userEmailAddress, collection: "user_credentials"});
         return result.password;
     }
 
 
     this.findOneById = async function(id) {
-        const result = await JSONDatabaseConnector.findOne({id, collection: "users"});
-        return result.map((u) => onReadUser(u));
+        const result = await databaseConnector.findOne({id, collection: "users"});
+        return result;
     }
 
 
     this.findOneByEmail = async function(emailAddress) {
-        const result = await JSONDatabaseConnector.findAll("users");
+        //Remember: the result of a failed Array.find is `undefined`
+        const result = await databaseConnector.findAll("users");
         const user = result.find((u)=> u.emailAddress === emailAddress);
         
         return [ user || {} ];
@@ -77,8 +76,8 @@ function UserJSONRepository(JSONDatabaseConnector) {
 
 
     this.findOneByHandle = async function(handle) {
-        const result = await JSONDatabaseConnector.findAll("users");
         //Remember: the result of a failed Array.find is `undefined`
+        const result = await databaseConnector.findAll("users");
         const user = result.find((u)=> u.handle === handle);
          
         return [ user || {} ];
@@ -86,26 +85,28 @@ function UserJSONRepository(JSONDatabaseConnector) {
 
 
     this.findAll = async function() {
-        const result = await JSONDatabaseConnector.findAll("users");
-        return result.map((u) => onReadUser(u));
+        const result = await databaseConnector.findAll("users");
+        return result;
     }
 
-
-    this.editMotto = async function(id, text) {
-        const [record] = await JSONDatabaseConnector.updateOne({
-            id,
-            doc: {body: text},
+    /**
+     * @param {UserDTO} userDTO - an instance of UserDTO
+     */
+    this.editMotto = async function(userDTO) {
+        const [record] = await databaseConnector.updateOne({
+            doc: userDTO,
             collection: "users"
         });
 
         return { id: record.id, lastModified: record.lastModified };
     }
 
-
-    this.editName = async function(id, doc) {
-        const [record] = await JSONDatabaseConnector.updateOne({
-            id,
-            doc,
+    /**
+     * @param {UserDTO} userDTO - an instance of UserDTO
+     */
+    this.editName = async function(userDTO) {
+        const [record] = await databaseConnector.updateOne({
+            doc: userDTO,
             collection: "users"
         });
 
@@ -113,103 +114,118 @@ function UserJSONRepository(JSONDatabaseConnector) {
 
     }
 
-
-    this.editPhoneNumber = async function(id, phoneNumber) {
-        const [record] = await JSONDatabaseConnector.updateOne({
-            id,
-            doc: {phoneNumber},
+    /**
+     * @param {UserDTO} userDTO - an instance of UserDTO
+     */
+    this.editPhoneNumber = async function(userDTO) {
+        const [record] = await databaseConnector.updateOne({
+            doc: userDTO,
             collection: "users"
         });
 
-        return { id, lastModified: record.lastModified };
+        return { lastModified: record.lastModified };
     }
 
-
-    this.createSubscription = async function(currentUserId, targetUserId) {
-        const [targetUser] = await JSONDatabaseConnector.findOne({
-            id: targetUserId,
+    /**
+     * @param {UserDTO} currentUserDTO - an instance of UserDTO
+     * @param {UserDTO} targetUserDTO - an instance of UserDTO
+     */
+    this.createSubscription = async function(currentUserDTO, targetUserDTO) {
+        const currentUserData = currentUserDTO.value();
+        const targetUserData = targetUserDTO.value();
+        const [targetUserFollowerData] = await databaseConnector.findOne({
+            id: targetUserData.id,
             collection: "user_followers"
         });
         
-        const targetUserFollowerListUnique = new Set(targetUser.followers);
-        targetUserFollowerListUnique.add(currentUserId);
+        const targetUserFollowerListUnique = new Set(targetUserFollowerData.followers);
+        
+        targetUserFollowerListUnique.add(currentUserData.id);
+        
+        const updatedUserFollowers = new UserFollowersDTO(Object.assign(targetUserData, {
+            followers: Array.from(targetUserFollowerListUnique)
+        }));
 
+        const updatedUser = new UserDTO(Object.assign(targetUserData, {
+            followerCount: targetUserFollowerListUnique.size
+        }));
 
-        await JSONDatabaseConnector.updateOne({
-            id: targetUserId,
-            doc: {
-                followers: Array.from(targetUserFollowerListUnique)
-            },
+        await databaseConnector.updateOne({
+            doc: updatedUserFollowers,
             collection: "user_followers"
         });
         
-
-        await JSONDatabaseConnector.updateOne({
-            id: targetUserId, 
-            doc: {
-                followers: targetUserFollowerListUnique.size
-            },
+        await databaseConnector.updateOne({
+            doc: updatedUser,
             collection: "users"
         });
 
-        const currentUserSubscriptions = await JSONDatabaseConnector.findOne({
-            id: currentUserId, 
+        const [currentUserSubscriptions] = await databaseConnector.findOne({
+            id: currentUserData.id, 
             collection: "user_subscriptions"
         });
 
         const currentUserSubscriptionsUnique = new Set(currentUserSubscriptions.subscriptions);
-        currentUserSubscriptionsUnique.add(targetUserId);
+        
+        currentUserSubscriptionsUnique.add(targetUserData.id);
 
-        await JSONDatabaseConnector.updateOne({
-            id: currentUserId, 
-            doc: {
-                subscriptions: Array.from(currentUserSubscriptionsUnique)
-            },
+        const updatedUserSubscriptions = new UserSubscriptionsDTO(Object.assign(currentUserSubscriptions, {
+            subscriptions: Array.from(currentUserSubscriptionsUnique)
+        }));
+
+        await databaseConnector.updateOne({
+            doc: updatedUserSubscriptions,
             collection: "user_subscriptions"
         });
     }
 
 
-    this.removeSubscription = async function(currentUserId, targetUserId) {
-        const [targetUser] = await JSONDatabaseConnector.findOne({
-            id: targetUserId,
+    this.removeSubscription = async function(currentUserDTO, targetUserDTO) {
+        const currentUserData = currentUserDTO.value();
+        const targetUserData = targetUserDTO.value();
+
+        const [targetUserFollowerData] = await databaseConnector.findOne({
+            id: targetUserData.id,
             collection: "user_followers"
         });
         
-        const targetUserFollowerListUnique = new Set(targetUser.followers);
-        targetUserFollowerListUnique.delete(currentUserId);
+        const targetUserFollowerListUnique = new Set(targetUserFollowerData.followers);
 
+        targetUserFollowerListUnique.delete(currentUserData.id);
+        
+        const updatedUserFollowers = new UserFollowersDTO(Object.assign(targetUserData, {
+            followers: Array.from(targetUserFollowerListUnique)
+        }));
 
-        await JSONDatabaseConnector.updateOne({
-            id: targetUserId,
-            doc: {
-                followers: Array.from(targetUserFollowerListUnique)
-            },
+        const updatedUser = new UserDTO(Object.assign(targetUserData, {
+            followerCount: targetUserFollowerListUnique.size
+        }));
+
+        await databaseConnector.updateOne({
+            doc: updatedUserFollowers,
             collection: "user_followers"
         });
         
-
-        await JSONDatabaseConnector.updateOne({
-            id: targetUserId, 
-            doc: {
-                followers: targetUserFollowerListUnique.size
-            },
+        await databaseConnector.updateOne({
+            doc: updatedUser,
             collection: "users"
         });
 
-        const currentUserSubscriptions = await JSONDatabaseConnector.findOne({
-            id: currentUserId, 
+        const [currentUserSubscriptions] = await databaseConnector.findOne({
+            id: currentUserData.id, 
             collection: "user_subscriptions"
         });
 
         const currentUserSubscriptionsUnique = new Set(currentUserSubscriptions.subscriptions);
-        currentUserSubscriptionsUnique.add(targetUserId);
+        
+        currentUserSubscriptionsUnique.delete(targetUserData.id);
 
-        await JSONDatabaseConnector.updateOne({
-            id: currentUserId, 
-            doc: {
-                subscriptions: Array.from(currentUserSubscriptionsUnique)
-            },
+        const updatedUserSubscriptions = new UserSubscriptionsDTO(Object.assign(currentUserSubscriptions, {
+            subscriptions: Array.from(currentUserSubscriptionsUnique)
+        }));
+
+        await databaseConnector.updateOne({
+            doc: updatedUserSubscriptions,
             collection: "user_subscriptions"
         });
     }
@@ -231,7 +247,7 @@ function UserJSONRepository(JSONDatabaseConnector) {
 
 
     this.getSubscribersOf = async function(currentUserId) {
-        const [currentUser] = await JSONDatabaseConnector.findOne({
+        const [currentUser] = await databaseConnector.findOne({
             id: currentUserId, 
             collection: "user_followers"
         });
@@ -241,7 +257,7 @@ function UserJSONRepository(JSONDatabaseConnector) {
 
 
     this.getUserSubscriptions = async function(currentUserId) {
-        const [userSubscriptionRecord] = await JSONDatabaseConnector.findOne({
+        const [userSubscriptionRecord] = await databaseConnector.findOne({
             id: currentUserId, 
             collection: "user_subscriptions"
         });
@@ -251,7 +267,7 @@ function UserJSONRepository(JSONDatabaseConnector) {
 
 
     this.getUserRole = async function(currentUserId) {
-        const [result] = await JSONDatabaseConnector.findOne({
+        const [result] = await databaseConnector.findOne({
             id: currentUserId, 
             collection: "user_roles"
         });

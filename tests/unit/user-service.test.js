@@ -38,7 +38,7 @@ test("Should return new User instance", async() => {
         phoneNumber: randomPhoneNumber()
     };
     const testUser = await testUserService.createUser(testUserData);
-    expect(Object.keys(testUser).includes("_id")).toBe(true);
+    expect(Object.keys(testUser).includes("id")).toBe(true);
     expect(Object.keys(testUser).includes("_repo")).toBe(true);
     expect(Object.keys(testUser).includes("_data")).toBe(true);
 });
@@ -48,7 +48,7 @@ test("Should return list of User instances", async() => {
     const result = await testUserService.findAllUsers();
 
     expect(Array.isArray(result)).toBe(true);
-    expect(Object.keys(result[0]).includes("_id")).toBe(true);
+    expect(Object.keys(result[0]).includes("id")).toBe(true);
     expect(Object.keys(result[0]).includes("_repo")).toBe(true);
     expect(Object.keys(result[0]).includes("_data")).toBe(true);
 
@@ -68,7 +68,7 @@ test("Should return a specified User instance", async() => {
     const result = await testUserService.findUserById(testUserId);
 
     expect(uuid.validate(testUserId)).toBe(true);
-    expect(result[0]._id === testUserId).toBe(true);
+    expect(result[0].id === testUserId).toBe(true);
 
 });
 
@@ -252,7 +252,7 @@ test("Should return list of a users a specified user follows", async() => {
     const usersFollowed = await testUserNo2.follows();
 
     expect(Array.isArray(usersFollowed)).toBe(true);
-    expect(usersFollowed[0]["_id"] === testUserNo1._id);
+    expect(usersFollowed[0]["id"] === testUserNo1.id);
     expect(usersFollowed.length === 1).toBe(true);
 
 });
@@ -385,7 +385,7 @@ test("Should return posts from all users a specified user follows", async() => {
     });
     
     const postId = await testPost.save();
-    const feed = await testPostService.getPostsBySubscriber(testUserNo2._id);
+    const feed = await testPostService.getSubscriberFeedByUserId(testUserNo2.id);
     
     expect(Array.isArray(feed) === true).toBe(true);
     expect(feed.length === 1).toBe(true);

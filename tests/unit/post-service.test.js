@@ -22,6 +22,16 @@ const testPostService = new PostService({
     userService: testUserService,
     eventEmitter
 });
+/**CommentService**/
+const { CommentService } = require("../../src/services/comment");
+const CommentRepository = require("../../src/lib/repository/comment/json");
+const ICommentRepository = require("../../src/interfaces/comment-repository");
+const testCommentJSONRepo = new ICommentRepository(new CommentRepository(testInMemoryDatabaseConnector));
+const testCommentService = new CommentService({
+    userService: testUserService,
+    postService: testPostService,
+    repo: testCommentJSONRepo
+});
 
 /**Tests**/
 
@@ -52,7 +62,7 @@ test("Should return list of Post instances", async() => {
     expect(Array.isArray(result)).toBe(true);
     expect(Object.keys(result[0]["_data"]).includes("id")).toBe(true);
     expect(Object.keys(result[0]["_data"]).includes("body")).toBe(true);
-    expect(uuid.validate(result[0]["_id"])).toBe(true);
+    expect(uuid.validate(result[0]["id"])).toBe(true);
 });
 
 
@@ -66,16 +76,9 @@ test("Should find and return specified Post instance matching id", async() => {
     const result = await testPostService.findPostById(postId);
 
     expect(Array.isArray(result)).toBe(true);
-    expect(result[0]["_id"] === postId).toBe(true);
+    expect(result[0]["id"] === postId).toBe(true);
     expect(uuid.validate(postId)).toBe(true);
 });
-
-
-/**def test_should_delete_post():
-    #delete_post FUNCTIONALITY NOT IMPLEMENTED YET
-    assert True == True;
-
-*/
 
 
 test("Should return Post id on save", async() => {
@@ -120,18 +123,20 @@ test("Should mark post as published", async() => {
 
 
 test("Should increment Post comment count", async() => {
-    const testComment = new mocks.Comment();
     const testPost = await testPostService.createPost({
         body: "Everybody wants a happy ending, right? But it doesn’t always roll that way.",
         userId: "e98417a8-d912-44e0-8d37-abe712ca840f",
         handle: "@tstark"
     });
+    const testPostId = await testPost.save();
 
-    const postId = await testPost.save();
-    const result = await testPost.addComment(testComment);
-
-    expect(testComment.wasCalled("onPost")).toBe(true);
-    expect(testComment.wasCalled("save")).toBe(true);
+    const testComment = await testCommentService.createComment({
+        body: "True story. FR.",
+        userId: "e98417a8-d912-44e0-8d37-abe712ca840f",
+        postId: testPostId
+    });
+    
+    await testPost.addComment(testComment);
     expect(testPost._data.commentCount === 1).toBe(true);
 });
 
@@ -274,7 +279,7 @@ test("Should return list of posts from users a specified user has subscribed to"
     await testUserNo2.followUser(testUserNo1);
     const userNo2FollowsUserNo1 = await testUserNo2.isFollowing(testUserNo1);
     const testUserNo1Followers = await testUserNo1.getFollowers();
-    const result = await testPostService.getPostsBySubscriber(testUserNo2Id);
+    const result = await testPostService.getSubscriberFeedByUserId(testUserNo2Id);
 
     expect(Array.isArray(result)).toBe(true);
     expect(result.length === 1).toBe(true);
@@ -288,19 +293,6 @@ test("Should return list of (35) most recent posts", async() => {
     expect(result.length <= 35).toBe(true);
 });
 
-test("Should increment post comment count when commentCount property already exists", async() => {
-    const testComment = new mocks.Comment();
-    const testPost = await testPostService.createPost({
-        body: "Everybody wants a happy ending, right? But it doesn’t always roll that way.",
-        handle: "@tstark",
-        userId: "e98417a8-d912-44e0-8d37-abe712ca840f"
-    });
-    const testContext = Object.assign(mockImpl.repo, {_eventEmitter: eventEmitter});
-
-    await testPost.addComment.call(testContext, testComment);
-    expect(mockImpl.repo._repo.calledMethods.incrementCommentCountCalled).toBe(true);
-
-});
 
 test("Should return list of posts created by a user with specified id", async() => {
     const postList = await testPostService.findPostsByUserId({userId: "e98417a8-d912-44e0-8d37-abe712ca840f"});
@@ -308,14 +300,6 @@ test("Should return list of posts created by a user with specified id", async() 
     expect(Array.isArray(postList)).toBe(true);
     expect(postList[0]["id"] === "e98417a8-d912-44e0-8d37-abe712ca840f");
 });
-
-/* TEST MAY BE DEPRECATED 
-test("Should decrement the like count of a post", async() => {
-    const postList = await testPostService.findPostsByUserId({userId: "e98417a8-d912-44e0-8d37-abe712ca840f"});
-    expect(Array.isArray(postList)).toBe(true);
-    expect(postList[0]["id"] === "e98417a8-d912-44e0-8d37-abe712ca840f");
-});
-*/
 
 
 

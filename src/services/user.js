@@ -1,5 +1,7 @@
 const config = require("../../config");
 const bcrypt = require("bcryptjs");
+const {UserDTO, UserRoleDTO, UserFollowersDTO, UserSubscriptionsDTO, UserCredentialsDTO} = require("../lib/repository/user/dto");
+const uuid = require("uuid");
 const {promisify} = require("util");
 const SALT_ROUNDS = 10;
 const hash = promisify(bcrypt.hash);
@@ -7,35 +9,29 @@ const passwordAndHashMatch = promisify(bcrypt.compare);
 
 /**
 * @typedef {Object} User
+* @property {String} id - the uuid of the user
 * @property {Object} _data - the user data
-* @property {String} _id - the uuid of the user
 * @property {Object} _repo - the repository instance associated with this user
-* @property {String} _lastModified - date and time the user was last modified
 */
 
 /**
  * 
  * @param {Object} repo - the repo associated with this user
- * @param {Object} doc - the data of the user
+ * @param {UserDTO} userDTO - an instance of the UserDTO
  */
 
-function User(repo, doc) {
-
+function User(repo, userDTO) {
+    const dtoData = userDTO.value();
+    
+    this._data = dtoData;
     this._repo = repo;
-    this._id = doc.id || null;
-    this._lastModified = doc.lastModified || null;
-
-    this._data = Object.assign({}, doc);
-    this._data.isVerified = doc.isVerified || false;
-    this._data.motto = doc.motto || null;
-    this._data.followerCount = doc.followerCount || 0;
-    this._data.followerCount = doc.followerCount < 0 ? 0 : doc.followerCount || 0;
+    this.id = dtoData.id;
     
     this.toJSON = function() {
         return {
-            id: this._id,
+            id: this.id,
             createdDate: this._data.createdDate,
-            lastModified: this._lastModified,
+            lastModified: this._data.lastModified,
             data: {
                 userId: this._data.userId,
                 handle: this._data.handle,
@@ -54,12 +50,13 @@ function User(repo, doc) {
     @returns {String} - a uuid for the new user
     */
     this.save = async function() {
-        const { id, createdDate } = await this._repo.create(this._data);
-        this._id = id;
-        this._data.createdDate = createdDate;
-        this._data.lastModified = null;
-        return id;
-
+        const userDTO = new UserDTO(this._data);
+        const userRoleDTO = new UserRoleDTO(this._data);
+        const userFollowersDTO = new UserFollowersDTO(this._data);
+        const userSubscriptionsDTO = new UserSubscriptionsDTO(this._data);
+        const user = await this._repo.create({userDTO, userRoleDTO, userFollowersDTO, userSubscriptionsDTO});
+        
+        return user.id;
     }
 
     /**
@@ -68,21 +65,27 @@ function User(repo, doc) {
     @param {String} last_name - updated last name
     */
     this.editName = async function(doc) {
-        this._data.firstName = doc.firstName || this._data.firstName;
-        this._data.lastName = doc.lastName || this._data.lastName;
+        const firstName =  doc.firstName || this._data.firstName;
+        const lastName = doc.lastName || this._data.lastName;
+        const userDTO = new UserDTO(Object.assign(this._data, {
+            firstName,
+            lastName
+        }));
 
-        const result = await this._repo.editName(this._id, doc);
-        return result;
+        await this._repo.editName(userDTO);
+        this._data.firstName = firstName;
+        this._data.lastName = lastName;
     }
 
     /**
     Edit phoneNumber property of an existing user in the data store.
-    @param {String} phoneNumber - a telephone number
+    @param {Integer} phoneNumber - a telephone number
     */
     this.editPhoneNumber = async function(phoneNumber) {
-        const result = await this._repo.editPhoneNumber(this._id, phoneNumber);
+        const userDTO = new UserDTO(Object.assign(this._data, {phoneNumber}));
+        const {lastModified} = await this._repo.editPhoneNumber(userDTO);
         this._data.phoneNumber = phoneNumber;
-        return result;
+        this._data.lastModified = lastModified;
     }
 
     /**
@@ -90,8 +93,9 @@ function User(repo, doc) {
     @param {String} motto - the updated motto
     */
     this.editMotto = async function(motto) {
+        const userDTO = new UserDTO(Object.assign(this._data, {motto}));
+        const result = await this._repo.editMotto(userDTO);
         this._data.motto = motto;
-        const result = await this._repo.editMotto(this._id, motto);
         return result;
     }
 
@@ -101,7 +105,9 @@ function User(repo, doc) {
     @param {User} targetUser - an instance of the User class; the user to be followed
     */
     this.followUser = async function(targetUser) {
-        const result = await this._repo.createSubscription(this._id, targetUser._id)
+        const currentUserDTO = new UserDTO(this._data);
+        const targetUserDTO = new UserDTO(targetUser._data);
+        await this._repo.createSubscription(currentUserDTO, targetUserDTO);
         targetUser._data.followerCount += 1;
     }
 
@@ -111,14 +117,9 @@ function User(repo, doc) {
     @param {User} targetUser - an instance of the User class; the user to be un-followed
     */
     this.unfollowUser = async function(targetUser) {
-        //const resetTargetUserFollowerCount = targetUser._data.followerCount - 1 < 0;
-        //await this._repo.removeSubscription({currentUser: this._id, targetUser: targetUser._id, resetTargetUserFollowerCount});
-        await this._repo.removeSubscription(this._id, targetUser._id);
-        /*if (resetTargetUserFollowerCount) {
-            targetUser._data.followerCount = 0;
-            return;
-        }*/
-
+        const currentUserDTO = new UserDTO(this._data);
+        const targetUserDTO = new UserDTO(targetUser._data);
+        await this._repo.removeSubscription(currentUserDTO, targetUserDTO);
         targetUser._data.followerCount -= 1;
     }
 
@@ -129,8 +130,8 @@ function User(repo, doc) {
     @returns {Boolean}
     */
     this.isFollowing =  async function(targetUser) {
-        const subscriptionRecord = await this._repo.getUserSubscriptions(this._id);
-        const currentUserFollowsTargetUser = subscriptionRecord.subscriptions.includes(targetUser._id);
+        const subscriptionRecord = await this._repo.getUserSubscriptions(this.id);
+        const currentUserFollowsTargetUser = subscriptionRecord.subscriptions.includes(targetUser.id);
         return currentUserFollowsTargetUser;
     }
 
@@ -140,7 +141,7 @@ function User(repo, doc) {
     */
 
     this.getFollowers = async function() {
-        const user = await this._repo.getSubscribersOf(this._id);
+        const user = await this._repo.getSubscribersOf(this.id);
         return user.followers;
     }
 
@@ -149,7 +150,7 @@ function User(repo, doc) {
     @returns {Array}
     */
     this.follows = async function() {
-        const subscriptionRecord = await this._repo.getUserSubscriptions(this._id);
+        const subscriptionRecord = await this._repo.getUserSubscriptions(this.id);
         return subscriptionRecord.subscriptions;
     }
 
@@ -172,15 +173,17 @@ function User(repo, doc) {
 function UserService(repo, validator = new UserValidator()) {
     this._repo = repo;
 
-    this.createUser = async function(doc = {}) {
+    this.createUser = async function(doc) {
+        const id = uuid.v4();
+        const data = Object.assign({id}, doc);
         await validator.validate(this, doc);
-        return new User(repo, doc);
+        return new User(repo, new UserDTO(data)) ;
     }
 
 
     this.findUserById = async function(id) {
         const [user] = await this._repo.findOneById(id);
-        return [new User(repo, user)];
+        return [new User(repo, new UserDTO(user))];
     }
 
 
@@ -192,7 +195,7 @@ function UserService(repo, validator = new UserValidator()) {
 
     this.findAllUsers = async function() {
         const users = await this._repo.findAll();
-        return users.map((u) => new User(repo, u));
+        return users.map((u) => new User(repo, new UserDTO(u)));
     }
 
 
@@ -220,7 +223,10 @@ function UserService(repo, validator = new UserValidator()) {
 
     this.createUserPassword = async function({password, user}) {
         const passwordHash = await hash(password, SALT_ROUNDS);
-        await this._repo.createUserPassword(user._data.emailAddress, passwordHash);
+        await this._repo.createUserPassword(new UserCredentialsDTO({
+            password: passwordHash,
+            ...user._data
+        }));
     }
     
     
@@ -232,7 +238,7 @@ function UserService(repo, validator = new UserValidator()) {
     
     
     this.getUserRole = async function(user) {
-        const result = await this._repo.getUserRole(user._id);
+        const result = await this._repo.getUserRole(user.id);
         return result.role; 
     }
 }

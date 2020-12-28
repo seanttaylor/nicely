@@ -1,27 +1,28 @@
+const {CommentDTO, CommentLikeDTO} = require("../lib/repository/comment/dto");
+const uuid = require("uuid");
+
 /**
 * @typedef {Object} Comment
+* @property {String} id - the uuid of the comment
 * @property {Object} _data - the comment data
-* @property {String} _id - the uuid of the comment
 * @property {Object} _repo - the repository instance associated with this comment
-* @property {String} _lastModified - date and time the comment was last modified
 */
 
 /**
- * 
  * @param {Object} repo - the repo associated with this comment
- * @param {Object} doc - the data of the comment
+ * @param {CommentDTO} commentDTO - an instance of a CommentDTO
  */
 
-function Comment(repo, doc) {
-    this._repo = repo;
-    this._id = doc.id || null;
-    this._data = Object.assign({}, doc);
-    this._lastModified = doc.lastModified || null
+function Comment(repo, commentDTO) {
+    const dtoData = commentDTO.value();
 
+    this._repo = repo;
+    this._data = dtoData;
+    this.id = dtoData.id;
 
     this.toJSON = function() {
         return {
-            id: this._id,
+            id: this.id,
             createdDate: this._data.createdDate,
             lastModified: this._lastModified,
             data: {
@@ -46,17 +47,13 @@ function Comment(repo, doc) {
     @returns {String} - a uuid for the new comment
     */
     this.save = async function() {
-
-        const comment = await this._repo.create({
-            body: this._data.body,
-            userId: this._data.userId,
-            postId: this._data.postId
-        });
-
-        this._id = comment.id;
+        const commentDTO = new CommentDTO(this._data);
+        const commentLikeDTO = new CommentLikeDTO(this._data);
+        const comment = await this._repo.create(commentDTO, commentLikeDTO);
+        
+        this.id = comment.id;
         this._data.createdDate = comment.createdDate;
-        this._data.lastModified = null;
-        this._data.likeCount = 0;
+        this._data.lastModified = comment.lastModified;
 
         return comment.id;
     }
@@ -66,7 +63,8 @@ function Comment(repo, doc) {
     Increments the comment.likeCount property
     */
     this.incrementLikeCount = async function({fromUser}) {
-        await this._repo.incrementLikeCount({commentId: this._id, userId: fromUser});
+        const commentDTO = new CommentDTO(this._data);
+        await this._repo.incrementLikeCount(commentDTO, fromUser);
         this._data.likeCount += 1;
     }
 
@@ -75,7 +73,8 @@ function Comment(repo, doc) {
     Decrements the comment.likeCount property
     */
     this.decrementLikeCount = async function({fromUser}) {
-        await this._repo.decrementLikeCount({commentId: this._id, userId: fromUser});
+        const commentDTO = new CommentDTO(this._data);
+        await this._repo.decrementLikeCount(commentDTO, fromUser);
         this._data.likeCount -= 1;
     }
 
@@ -86,7 +85,8 @@ function Comment(repo, doc) {
     @returns {Object} self
     */
     this.edit = async function(text) {
-        const { lastModified } = await this._repo.editComment(this._id, text);
+        const commentDTO = new CommentDTO(this._data);
+        const { lastModified } = await this._repo.editComment(commentDTO, text);
         this._data.body = text;
         this._data.lastModified = lastModified;
 
@@ -118,19 +118,21 @@ function CommentService({ repo, postService, userService, validator }) {
 
 
     this.createComment = async function(doc) {
+        const id = uuid.v4();
+        const data = Object.assign({id}, doc);
         await this._validator.validate(doc);
-        return new Comment(this._repo, doc);
+        return new Comment(this._repo, new CommentDTO(data));
     }
 
 
     this.findAllComments = async function() {
         const commentsList = await this._repo.findAllComments();
-        return commentsList.map((c) => new Comment(this.repo, c));
+        return commentsList.map((c) => new Comment(this._repo, new CommentDTO(c)));
     }
 
     this.findCommentById = async function(id) {
         const commentsList = await this._repo.findOne(id);
-        return commentsList.map((c) => new Comment(this._repo, c));
+        return commentsList.map((c) => new Comment(this._repo, new CommentDTO(c)));
     }
 
 }

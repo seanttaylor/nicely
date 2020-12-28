@@ -4,7 +4,7 @@
 See interfaces/post-repository for method documentation*/
 
 const uuid = require("uuid");
-const { promisify } = require("util");
+const { PostDTO, PostLikeDTO } = require("./dto");
 
 /**
  * @implements {IPostRepository}
@@ -12,23 +12,19 @@ const { promisify } = require("util");
  */
 
 function PostJSONRepository(databaseConnector) {
-
-    this.create = async function(doc) {
+    /**
+     * @param {PostDTO} postDTO - an instance of PostDTO 
+     * @param {PostLikeDTO} postLikeDTO - an instance of PostLikeDTO 
+     */
+    this.create = async function(postDTO, postLikeDTO) {
         const [post] = await databaseConnector.add({
-            doc: Object.assign(doc, {
-                commentCount: 0, 
-                likeCount: 0, 
-                isPublished: false,
-                publishDate: null
-            }), 
+            doc: postDTO, 
             collection: "posts"
         });
 
         await databaseConnector.putOne({
             id: post.id, 
-            doc: {
-                likes:[]
-            }, 
+            doc: postLikeDTO, 
             collection: "post_likes"
         });
         return { id: post.id, createdDate: post.createdDate };
@@ -37,22 +33,28 @@ function PostJSONRepository(databaseConnector) {
 
     this.findOne = async function(id) {
         const result = await databaseConnector.findOne({id, collection: "posts"});
-        return result.map((p) => onReadPost(p));
+        return result;
     }
 
 
     this.findAll = async function() {
         const result = await databaseConnector.findAll("posts");
-        return result.map((p) => onReadPost(p));
+        return result;
     }
 
+     /**
+     * 
+     * @param {PostDTO} postDTO - an instance of PosttDTO 
+     * @param {String} text - text to update the post
+     */
+    this.editPost = async function(postDTO, text) {
+        const postData = postDTO.value();
+        const updatedPostDTO = new PostDTO(Object.assign(postData, {
+            body: text
+        }));
 
-    this.editPost = async function(id, text) {
         const [record] = await databaseConnector.updateOne({
-            id, 
-            doc: {
-                body: text
-            }, 
+            doc: updatedPostDTO, 
             collection: "posts"
          });
 
@@ -65,66 +67,99 @@ function PostJSONRepository(databaseConnector) {
     }
 
 
-    this.incrementCommentCount = async function(id) {
+    this.incrementCommentCount = async function(postDTO) {
+        const postData = postDTO.value();
         const allComments = await databaseConnector.findAll("comments");
-        const postCommentList = allComments.filter(c => c.postId === id);
+        const postCommentList = allComments.filter(c => c.postId === postData.id);
+        const updatedPostDTO = new PostDTO(Object.assign(postData, {
+            commentCount: postCommentList.length + 1
+        }));
 
         await databaseConnector.updateOne({
-            id, 
-            doc: {
-                commentCount: postCommentList.length + 1
-            },
+            doc: updatedPostDTO,
             collection: "posts"
         });      
     }
 
-
-    this.incrementLikeCount = async function({postId, userId}) {
+    /**
+     * 
+     * @param {PostDTO} postDTO - an instance of PostDTO 
+     * @param {String} fromUser - uuid of platform user liking the post
+     */
+    this.incrementLikeCount = async function(postDTO, fromUser) {
+        const postData = postDTO.value();
+        const postId = postData.id;
         const [postLike] = await databaseConnector.findOne({
             id: postId, 
             collection: "post_likes"
         });
         const postLikeListUnique = new Set(postLike.likes);
-        
-        postLikeListUnique.add(userId);
+        postLikeListUnique.add(fromUser);
+
+        const updatedPostDTO = new PostDTO(Object.assign(postData, {
+            likeCount: postLikeListUnique.size
+        }));
+
+        const updatedPostLikeDTO = new PostLikeDTO(Object.assign(postLike, {
+            likes: Array.from(postLikeListUnique) 
+        }));
 
         await databaseConnector.updateOne({
-            id: postId, 
-            doc: {
-                likeCount: postLikeListUnique.size
-            },
+            doc: updatedPostDTO,
             collection: "posts"
+        });
+
+        await databaseConnector.updateOne({
+            doc: updatedPostLikeDTO,
+            collection: "post_likes"
         });
         
     }
 
-
-    this.decrementLikeCount = async function({postId, userId}) {
+     /**
+     * 
+     * @param {PostDTO} postDTO - an instance of PostDTO 
+     * @param {String} fromUser - uuid of platform user un-liking the post
+     */
+    this.decrementLikeCount = async function(postDTO, fromUser) {
+        const postData = postDTO.value();
+        const postId = postData.id;
         const [postLike] = await databaseConnector.findOne({
             id: postId, 
             collection: "post_likes"
         });
         const postLikeListUnique = new Set(postLike.likes);
-        
-        postLikeListUnique.delete(userId);
+        postLikeListUnique.delete(fromUser);
+
+        const updatedPostDTO = new PostDTO(Object.assign(postData, {
+            likeCount: postLikeListUnique.size
+        }));
+
+        const updatedPostLikeDTO = new PostLikeDTO(Object.assign(postLike, {
+            likes: Array.from(postLikeListUnique) 
+        }));
 
         await databaseConnector.updateOne({
-            id: postId, 
-            doc: {
-                likeCount: postLikeListUnique.size
-            },
+            doc: updatedPostDTO,
             collection: "posts"
+        });
+
+        await databaseConnector.updateOne({
+            doc: updatedPostLikeDTO,
+            collection: "post_likes"
         });
     }
 
 
-    this.setPostSentimentScore = async function({id, sentimentScore, magnitude}) {
-        const [record] = await databaseConnector.updateOne({
-            id, 
-            doc: {
-                sentimentScore: String(sentimentScore),
-                magnitude: String(magnitude)
-            }, 
+    this.setPostSentimentScore = async function(postDTO, sentimentScore, magnitude) {
+        const postData = postDTO.value();
+        const updatedPostDTO = new PostDTO(Object.assign(postData, {
+            sentimentScore: String(sentimentScore),
+            magnitude: String(magnitude)
+        }));
+
+        await databaseConnector.updateOne({
+            doc: updatedPostDTO, 
             collection: "posts"
         });
     }
@@ -151,30 +186,32 @@ function PostJSONRepository(databaseConnector) {
         const result = [];
         //const sql = `SELECT posts.*, users.handle from posts JOIN users ON posts.user_id = users.id WHERE is_published = 1 ORDER BY sequence_no DESC LIMIT 35`;
 
-        return result.map((p) => onReadPost(p));
+        return result;
     }
 
 
-    this.markAsPublished = async function(id) {
-        const [record] = await databaseConnector.updateOne({
-            id, 
-            doc: {
-                publishDate: new Date().toISOString(),
-                isPublished: true
-            }, 
+    this.markAsPublished = async function(postDTO) {
+        const postData = postDTO.value();
+        const updatedPostDTO = new PostDTO(Object.assign(postData, {
+            publishDate: new Date().toISOString(),
+            isPublished: true
+        }));
+
+        await databaseConnector.updateOne({
+            doc: updatedPostDTO, 
             collection: "posts"
         });
     }
 
 
-    this.getPostsBySubscriber = async function(id) {
+    this.getSubscriberFeedByUserId = async function(id) {
         const [user] = await databaseConnector.findOne({id, collection: "user_subscriptions"});
-        const subscriptions = user.subscriptions.reduce((res, userId)=> {
-            res.push(userId);
-            return res;
-        }, []);
-
-        return subscriptions.map((p) => onReadPost(p));
+        const userFeed = user.subscriptions.map(async(userId)=> {
+            const userPosts = await this.findPostsByUserId({userId});
+            return userPosts;
+        });
+        const result = Promise.all(userFeed);
+        return result;
     }
 
     this.findPostsByUserId = async function({userId, showUnpublished=false}) {
@@ -182,30 +219,10 @@ function PostJSONRepository(databaseConnector) {
         const postsByUser = posts.filter((p)=> p.userId === userId && p.isPublished === showUnpublished);
         
         return postsByUser;
-        //return postsByUser.map((p) => onReadPost(p));
 
         //let sql = `SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, posts.sentiment_score, posts.magnitude, publish_date, users.handle, users.first_name, users.last_name FROM posts JOIN users ON posts.user_id = users.id WHERE users.id = "${userId}"`;
     }
 
-
-    function onReadPost(record) {
-        return {
-            id: record.id,
-            userId: record.user_id,
-            body: record.body,
-            commentCount: record.comment_count,
-            likeCount: record.like_count,
-            sequenceNo: record.sequence_no,
-            createdDate: record.created_date,
-            lastModified: record.last_modified,
-            handle: record.handle,
-            firstName: record.first_name,
-            lastName: record.last_name,
-            sentimentScore: Number(record.sentiment_score),
-            magnitude: record.magnitude,
-            publishDate: record.publish_date
-        }
-    }
 }
 
 /*PostMySQLRepository*/

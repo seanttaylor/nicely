@@ -35,7 +35,7 @@
             "type": "string",
             "title": "The role schema",
             "description": "An explanation about the purpose of this instance.",
-            "default": "",
+            "default": "user",
             "examples": [
                 "user"
             ]

@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-
+require("dotenv").config();
 const globalConfig = require("./config");
 const http = require("http");
 const path = require("path");
@@ -14,21 +14,21 @@ const events = require("events");
 const eventEmitter = new events.EventEmitter();
 const fetch = require("node-fetch");
 const mockFetch = require("./src/lib/utils/mocks/fetch");
-const DatabaseConnector = require("./src/lib/database/connectors/mysql"); 
+const DatabaseConnector = require("./src/lib/database/connectors/memory"); 
 const asiagoDatabaseConnector = new DatabaseConnector();
 const serverPort = process.env.SERVER_PORT || 3000;
 
 /********************************SERVICES**************************************/
 /**UserService**/
 const { UserService } = require("./src/services/user");
-const UserRepository = require("./src/lib/repository/user/mysql");
+const UserRepository = require("./src/lib/repository/user/json");
 const IUserRepository = require("./src/interfaces/user-repository");
 const usersRepo = new IUserRepository(new UserRepository(asiagoDatabaseConnector));
 const userService = new UserService(usersRepo);
 
 /**PostService**/
 const { PostService } = require("./src/services/post");
-const PostRepository = require("./src/lib/repository/post/mysql");
+const PostRepository = require("./src/lib/repository/post/json");
 const IPostRepository = require("./src/interfaces/post-repository");
 const postsRepo = new IPostRepository(new PostRepository(asiagoDatabaseConnector));
 const postService = new PostService({
@@ -39,7 +39,7 @@ const postService = new PostService({
 
 /**CommentService**/
 const { CommentService } = require("./src/services/comment");
-const CommentRepository = require("./src/lib/repository/comment/mysql");
+const CommentRepository = require("./src/lib/repository/comment/json");
 const ICommentRepository = require("./src/interfaces/comment-repository");
 const commentsRepo = new ICommentRepository(new CommentRepository(asiagoDatabaseConnector));
 const commentService = new CommentService({
@@ -77,13 +77,6 @@ const sentimentAnalysisService = new ISentimentAnalysisService(new SentimentAnal
     console
 }));
 
-
-/**StatusService**/
-const StatusRepository = require("./src/lib/repository/status/mysql");
-const IStatusRepository = require("./src/interfaces/status-repository");
-const statusRepo = new IStatusRepository(new StatusRepository(asiagoDatabaseConnector));
-const StatusService = require("./src/services/status");
-const statusService = new StatusService(statusRepo);
 /******************************************************************************/
 
 const SSERouter = require("./src/api/sse");
@@ -107,7 +100,7 @@ app.use(cookieParser());
 app.use(express.static("dist"));
 
 /**Routes**/
-app.use("/status", StatusRouter(statusService));
+app.use("/status", StatusRouter());
 app.use("/api/v1/posts", PostRouter(postService));
 app.use("/api/v1/users", UserRouter({
     postService, 

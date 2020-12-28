@@ -1,11 +1,9 @@
 /* istanbul ignore file */
+const {CommentDTO, CommentLikeDTO} = require("../../repository/comment/dto");
 
-/*Implements ICommentRepository interface for connecting to JSON file database.
+/*Implements ICommentRepository interface for connecting to JSON file of in memory document database
 *See interfaces/comment-repository for method documentation
 */
-
-//const uuid = require("uuid");
-const { promisify } = require("util");
 
 /**
  * @implements {ICommentRepository}
@@ -13,16 +11,19 @@ const { promisify } = require("util");
 
 function CommentJSONRepository(databaseConnector) {
 
-    this.create = async function(doc) {
+    /**
+     * 
+     * @param {CommentDTO} commentDTO - an instance of CommentDTO 
+     * @param {CommentLikeDTO} commentLikeDTO - an instance of CommentLikeDTO 
+     */
+    this.create = async function(commentDTO, commentLikeDTO) {
         const [comment] = await databaseConnector.add({
-            doc: Object.assign(doc, {likeCount: 0}), 
+            doc: commentDTO, 
             collection: "comments"
         });
+
         await databaseConnector.putOne({
-            id: comment.id, 
-            doc: {
-                likes:[]
-            }, 
+            doc: commentLikeDTO, 
             collection: "comment_likes"
         });
 
@@ -32,84 +33,94 @@ function CommentJSONRepository(databaseConnector) {
 
     this.findOne = async function(id) {
         const result = await databaseConnector.findOne({id, collection:"comments"});
-        return result.map((c) => onReadComment(c));
+        return result;
     }
 
 
     this.findAllComments = async function() {
         const result = await databaseConnector.findAll("comments");
-        return result.map((c) => onReadComment(c));
+        return result;
     }
 
+    /**
+     * 
+     * @param {CommentDTO} commentDTO - an instance of CommentDTO 
+     * @param {String} text - text to update comment
+     */
 
-    this.editComment = async function(id, text) {
-        const [record] = await databaseConnector.updateOne({id, doc: {body: text}, collection: "comments"});
+    this.editComment = async function(commentDTO, text) {
+        const commentData = commentDTO.value();
+
+        const [record] = await databaseConnector.updateOne({
+            doc: new CommentDTO(Object.assign(commentData, {
+                body: text
+            })), 
+            collection: "comments"
+        });
 
         return { id: record.id , lastModified: record.lastModified };
     }
 
-    this.incrementLikeCount = async function({commentId, userId}) {
+    /**
+     * 
+     * @param {CommentDTO} commentDTO - an instance of CommentDTO 
+     * @param {String} fromUser - uuid of platform user liking the comment
+     */
+    this.incrementLikeCount = async function(commentDTO, fromUser) {
+        const commentData = commentDTO.value();
+        const commentId = commentData.id;
+        const [commentLike] = await databaseConnector.findOne({
+            id: commentId, 
+            collection: "comment_likes"
+        });
+        const commentLikeListUnique = new Set(commentLike.likes);
+        commentLikeListUnique.add(fromUser);
+        
+        const updatedCommentDTO = new CommentDTO(Object.assign(commentData, {
+            likeCount: commentLikeListUnique.size
+        }));
+        const updatedCommentLikeDTO = new CommentLikeDTO(Object.assign(commentLike, {
+            likes: Array.from(commentLikeListUnique)
+        }))
+        
+        await databaseConnector.updateOne({
+            doc: updatedCommentDTO,
+            collection: "comments"
+        });
+
+        await databaseConnector.updateOne({
+            doc: updatedCommentLikeDTO,
+            collection: "comment_likes"
+        });
+    }
+
+    this.decrementLikeCount = async function(commentDTO, fromUser) {
+        const commentData = commentDTO.value();
+        const commentId = commentData.id;
         const [commentLike] = await databaseConnector.findOne({
             id: commentId, 
             collection: "comment_likes"
         });
         const commentLikeListUnique = new Set(commentLike.likes);
         
-        commentLikeListUnique.add(userId);
+        commentLikeListUnique.delete(fromUser);
+
+        const updatedCommentDTO = new CommentDTO(Object.assign(commentData, {
+            likeCount: commentLikeListUnique.size
+        }));
+        const updatedCommentLikeDTO = new CommentLikeDTO(Object.assign(commentLike, {
+            likes: Array.from(commentLikeListUnique)
+        }))
 
         await databaseConnector.updateOne({
-            id: commentId, 
-            doc: {
-                likeCount: commentLikeListUnique.size
-            },
+            doc: updatedCommentDTO,
             collection: "comments"
         });
 
         await databaseConnector.updateOne({
-            id: commentId, 
-            doc: {
-                likes: Array.from(commentLikeListUnique)
-            },
+            doc: updatedCommentLikeDTO,
             collection: "comment_likes"
         });
-    }
-
-    this.decrementLikeCount = async function({commentId, userId}) {
-        const [commentLike] = await databaseConnector.findOne({
-            id: commentId, 
-            collection: "comment_likes"
-        });
-        const commentLikeListUnique = new Set(commentLike.likes);
-        
-        commentLikeListUnique.delete(userId);
-
-        await databaseConnector.updateOne({
-            id: commentId, 
-            doc: {
-                likeCount: commentLikeListUnique.size
-            },
-            collection: "comments"
-        });
-
-        await databaseConnector.updateOne({
-            id: commentId, 
-            doc: {
-                likes: Array.from(commentLikeListUnique)
-            },
-            collection: "comment_likes"
-        });
-    }
-
-
-    function onReadComment(record) {
-        return {
-            id: record.id,
-            postId: record.post_id,
-            userId: record.user_id,
-            body: record.body,
-            likeCount: record.like_count,
-            createdDate: record.created_date
-        }
     }
 
 }

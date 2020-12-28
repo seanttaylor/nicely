@@ -1,28 +1,29 @@
+const {PostDTO, PostLikeDTO} = require("../lib/repository/post/dto");
 const defaultConfig = require("./config.js");
 const uuid = require("uuid");
 
 /**
 * @typedef {Object} Post
+* @property {String} id - the uuid of the post
 * @property {Object} _data - the post data
-* @property {String} _id - the uuid of the post
 * @property {Object} _repo - the repository instance associated with this post
-* @property {String} _lastModified - date and time the post was last modified
 */
 
 
 /**
  * 
  * @param {Object} repo - the repo associated with this post
- * @param {Object} doc - the data of the post
  * @param {Object} eventEmitter - an instance of EventEmitter
+ * @param {PostDTO} postDTO - an instance of a PostDTO
  */
 
-function Post(repo, doc, eventEmitter) {
-    this._data = doc;
+function Post(repo, eventEmitter, postDTO) {
+    const dtoData = postDTO.value();
+
+    this._data = dtoData;
     this._repo = repo;
     this._eventEmitter = eventEmitter;
-    this._id = doc.id || null;
-    this._lastModified = doc.lastModified || null;
+    this.id = dtoData.id;
 
     this.toJSON = function() {
         return {
@@ -45,20 +46,13 @@ function Post(repo, doc, eventEmitter) {
 
 
     /**
-    Saves a new post to the data store.
+    Saves a new post to the data store
     @returns {String} - a uuid for the new post
     */
-    this.save = async function() {
-        const post = await this._repo.create({
-            body: this._data.body,
-            userId: this._data.userId,
-            handle: this._data.handle
-        });
-
-        this._id = post.id;
-        this._lastModified = null;
-        this._data.createdDate = post.createdDate;
-        this._data.likeCount = 0;
+    this.save = async function() { 
+        const postDTO = new PostDTO(this._data);
+        const postLikeDTO = new PostLikeDTO(this._data);
+        const post = await this._repo.create(postDTO, postLikeDTO);
         
         return post.id;
     }
@@ -69,17 +63,13 @@ function Post(repo, doc, eventEmitter) {
     @param {Comment} comment - an instance of the Comment class
     */
     this.addComment = async function(comment) {
-        await comment.onPost(this._id);
+        const postDTO = new PostDTO(this._data);
+        await comment.onPost(this.id);
         await comment.save();
-        await this._repo.incrementCommentCount(this._id);
+        await this._repo.incrementCommentCount(postDTO);
 
-        if (this._data.commentCount) {
-            this._data.commentCount += 1;
-        }
-        else {
-            this._data.commentCount = 1;
-        }
-
+ 
+        this._data.commentCount += 1;
         this._eventEmitter.emit("posts.postUpdated", ["postUpdate", this]);
     }
 
@@ -88,7 +78,8 @@ function Post(repo, doc, eventEmitter) {
     Increments the like count on the current post; updates post.likeCount property.
     */
     this.incrementLikeCount = async function({fromUser}) {
-        await this._repo.incrementLikeCount({postId: this._id, userId: fromUser});
+        const postDTO = new PostDTO(this._data);
+        await this._repo.incrementLikeCount(postDTO, fromUser);
 
         this._data.likeCount += 1;
         this._eventEmitter.emit("posts.postUpdated", ["postUpdate", this]);
@@ -99,9 +90,10 @@ function Post(repo, doc, eventEmitter) {
     Decrements the like count on the current post; updates post.likeCount property.
     */
     this.decrementLikeCount = async function({fromUser}) {
-        await this._repo.decrementLikeCount({postId: this._id, userId: fromUser});
+        const postDTO = new PostDTO(this._data);
+        await this._repo.decrementLikeCount(postDTO, fromUser);
+        
         this._data.likeCount -= 1;
-
         this._eventEmitter.emit("posts.postUpdated", ["postUpdate", this]);
     }
 
@@ -111,12 +103,12 @@ function Post(repo, doc, eventEmitter) {
     @param {String} text - the updated text
     */
     this.edit = async function(text) {
-        const id = this._id;
-        const { lastModified } = await this._repo.editPost(id, text);
+        const postDTO = new PostDTO(this._data);
+        const { lastModified } = await this._repo.editPost(postDTO, text);
         this._data.body = text;
-        this._lastModified = lastModified;
+        this.lastModified = lastModified;
 
-        this._eventEmitter.emit("posts.editExistingPost", this)
+        this._eventEmitter.emit("posts.editExistingPost", this);
         return this;
     }
 
@@ -127,7 +119,9 @@ function Post(repo, doc, eventEmitter) {
     @param {Number} magnitude - a magnitude score to associate with the post
     */
     this.setSentimentScore = async function({sentimentScore, magnitude}) {
-        await this._repo.setPostSentimentScore({id: this._id, sentimentScore, magnitude});
+        const postDTO = new PostDTO(this._data);
+        await this._repo.setPostSentimentScore(postDTO, sentimentScore, magnitude);
+
         this._data.sentimentScore = sentimentScore;
         this._data.magnitude = magnitude;
     };
@@ -162,8 +156,10 @@ function PostService({ repo, userService, eventEmitter, validator }) {
     * @returns {Post} a new post instance
     */
     this.createPost = async function(doc) {
+        const id = uuid.v4();
+        const data = Object.assign({id}, doc);
         await this._validator.validate(doc);
-        return new Post(this._repo, doc, this._eventEmitter);
+        return new Post(this._repo, this._eventEmitter, new PostDTO(data));
     }
 
 
@@ -172,19 +168,19 @@ function PostService({ repo, userService, eventEmitter, validator }) {
             throw new Error("MissingPostId");
         }
         const result = await this._repo.findOne(id);
-        return result.map((p) => new Post(this._repo, p, this._eventEmitter));
+        return result.map((p) => new Post(this._repo, this._eventEmitter, new PostDTO(p)));
     }
 
 
     this.findAllPosts = async function() {
         const posts = await this._repo.findAll("posts");
-        return posts.map((p) => new Post(this._repo, p, this._eventEmitter));
+        return posts.map((p) => new Post(this._repo, this._eventEmitter, new PostDTO(p)));
     }
 
 
     this.findPostsByUserId = async function(options) {
         const postList = await this._repo.findPostsByUserId(options);
-        return postList.map((p) => new Post(this._repo, p, this._eventEmitter));
+        return postList.map((p) => new Post(this._repo, this._eventEmitter, new PostDTO(p)));
     }
 
     
@@ -211,12 +207,14 @@ function PostService({ repo, userService, eventEmitter, validator }) {
 
     this.getRecentPosts = async function() {
         const posts = await this._repo.getRecentPosts();
-        return posts.map((p) => new Post(this._repo, p, this._eventEmitter));
+        return posts.map((p) => new Post(this._repo, this._eventEmitter, new PostDTO(p)));
     }
 
 
     this.markAsPublished = async function(post) {
-        await this._repo.markAsPublished(post._id);
+        const postDTO = new PostDTO(post._data);
+        await this._repo.markAsPublished(postDTO);
+        
         post._data.isPublished = true;
         this._eventEmitter.emit("posts.newPostReadyToPublish", ["newPost", post]);
     }
@@ -228,9 +226,13 @@ function PostService({ repo, userService, eventEmitter, validator }) {
     }
 
 
-    this.getPostsBySubscriber = async function(id) {
-        const posts = await this._repo.getPostsBySubscriber(id);
-        return posts.map((p) => new Post(this._repo, p, this._eventEmitter));
+    this.getSubscriberFeedByUserId = async function(id) {
+        const feedsList = await this._repo.getSubscriberFeedByUserId(id);
+        const userFeed = feedsList.reduce((result, postList)=> {
+            postList.map((p) => result.push(new Post(this._repo, this._eventEmitter, new PostDTO(p))));
+            return result;
+        }, [])
+        return userFeed;
     }
 
 }

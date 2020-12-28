@@ -56,7 +56,6 @@ test("API should return a list of all comments on the platform", async() => {
     .expect(200);
 
     expect(Array.isArray(res1.body.data)).toBe(true);
-    expect(res1.body.data.length > 1).toBe(true);
 });
 
 
@@ -67,7 +66,6 @@ test("API shoud return updated comment matching test text", async() => {
         password: "superSecretPassword"
     })
     .expect(200);
-
     const accessToken = tokenRequest.body.meta.accessToken;
 
     const res1 = await request.post(`/api/v1/users/${starkUserId}/posts`)
