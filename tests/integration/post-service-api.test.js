@@ -319,11 +319,10 @@ test("API should return 204 status when a post is marked as published", async() 
         "handle": "@tstark"
     })
     .expect(200);
-    const responsePayload = JSON.parse(res1.text);
-    const [post] = responsePayload.data;
+    const postId = res1["body"]["data"][0]["id"];
     
     
-    const res2 = await request.post(`/api/v1/users/${starkUserId}/posts/${post.id}/publish`)
+    const res2 = await request.post(`/api/v1/users/${starkUserId}/posts/${postId}/publish`)
     .set("Authorization", `Bearer ${accessToken}`)
     .expect(204);
 });

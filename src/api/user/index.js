@@ -101,7 +101,7 @@ function UserRouter({postService, userService, commentService, authService, even
             res.set("content-type", "application/json");
             res.status(200);
             res.json({
-                data: userSubscriptionsList,
+                data: userSubscriptionsList.map((u)=> u.toJSON()),
                 entries: userSubscriptionsList.length
             });
         }
@@ -184,7 +184,7 @@ function UserRouter({postService, userService, commentService, authService, even
         const userId = req.params.id;
 
         try {
-            const postList = await postService.getPostsBySubscriber(userId);
+            const postList = await postService.getSubscriberFeedByUserId(userId);
             res.set("content-type", "application/json");
             res.status(200);
             res.json({
@@ -236,7 +236,7 @@ function UserRouter({postService, userService, commentService, authService, even
             res.set("content-type", "application/json");
             res.status(200);
             res.json({
-                data: [post],
+                data: [post.toJSON()],
                 entries: 1
             });
         }
@@ -340,7 +340,7 @@ function UserRouter({postService, userService, commentService, authService, even
             });
         }
         catch (e) {
-            console.error("Caught it again", e)
+            console.error(e)
             next(e);
         }
     });

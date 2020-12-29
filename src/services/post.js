@@ -27,9 +27,9 @@ function Post(repo, eventEmitter, postDTO) {
 
     this.toJSON = function() {
         return {
-            id: this._id,
+            id: this.id,
             createdDate: this._data.createdDate,
-            lastModified: this._lastModified,
+            lastModified: this.lastModified,
             data: {
                 userId: this._data.userId,
                 body: this._data.body,
@@ -103,8 +103,10 @@ function Post(repo, eventEmitter, postDTO) {
     @param {String} text - the updated text
     */
     this.edit = async function(text) {
-        const postDTO = new PostDTO(this._data);
-        const { lastModified } = await this._repo.editPost(postDTO, text);
+        const postDTO = new PostDTO(Object.assign(this._data, {
+            body: text
+        }));
+        const { lastModified } = await this._repo.editPost(postDTO);
         this._data.body = text;
         this.lastModified = lastModified;
 

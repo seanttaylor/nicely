@@ -151,7 +151,12 @@ function User(repo, userDTO) {
     */
     this.follows = async function() {
         const subscriptionRecord = await this._repo.getUserSubscriptions(this.id);
-        return subscriptionRecord.subscriptions;
+        const userList = Promise.all(subscriptionRecord.subscriptions.map(async(userId)=> {
+            const [user] = await this._repo.findOneById(userId);
+            return new User(this._repo, new UserDTO(user));
+        }));
+
+        return userList;
     }
 
 }
@@ -189,7 +194,7 @@ function UserService(repo, validator = new UserValidator()) {
 
     this.findUserByEmail = async function(emailAddress) {
         const userList = await this._repo.findOneByEmail(emailAddress);
-        return userList.map((u) => new User(this._repo, u));
+        return userList.map((u) => new User(this._repo, new UserDTO(u)));
     }
 
 

@@ -5,14 +5,14 @@ const router = new express.Router();
 
 /**
  * 
- * @param {PostService} PostService - an instance of the PostService
+ * @param {PostService} postService - an instance of the PostService
  * @returns router - an instance of an Express router
  */
 
-function FeedRouter(PostService) {
+function FeedRouter(postService) {
     router.get("/latest", async(req, res, next) => {
         try {
-            const postList = await PostService.getRecentPosts();
+            const postList = await postService.getRecentPosts();
             res.set("content-type", "application/json");
             res.status(200);
             res.json({

@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 const Ajv = require("ajv");
 const ajv = new Ajv();
 const userSchema = require("../../database/connectors/json/schemas/users.json");

@@ -11,7 +11,7 @@ module.exports = {
             "lastName": "Stark",
             "createdDate": "2020-09-26T23:08:27.645Z",
             "lastModified": null,
-            "folllowerCount": 234
+            "followerCount": 1
         },
         "b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09": {
             "id": "b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09",
@@ -22,7 +22,7 @@ module.exports = {
             "lastName": "Odinson",
             "createdDate": "2020-09-26T23:08:27.645Z",
             "lastModified": null,
-            "folllowerCount": 400
+            "followerCount": 0
         }
     },
     "posts": {
@@ -95,6 +95,14 @@ module.exports = {
         }
     },
     "user_followers": {
+        "e98417a8-d912-44e0-8d37-abe712ca840f": {
+            "subscriptions": [
+                "b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09"
+            ],
+            "id": "e98417a8-d912-44e0-8d37-abe712ca840f",
+            "createdDate": "2020-12-25T18:52:21.887Z",
+            "lastModified": "2020-12-25T18:52:29.352Z"
+        },
         "346d89b9-485d-4525-bd0c-bf12f1f07f65": {
             "subscriptions": [
                 "157966ea-3dac-495f-872f-e2ffad568f20"
@@ -110,6 +118,14 @@ module.exports = {
                 "346d89b9-485d-4525-bd0c-bf12f1f07f65"
             ],
             "id": "157966ea-3dac-495f-872f-e2ffad568f20",
+            "createdDate": "2020-12-25T18:52:21.887Z",
+            "lastModified": "2020-12-25T18:52:29.352Z"
+        },
+        "b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09": {
+            "subscriptions": [
+                "e98417a8-d912-44e0-8d37-abe712ca840f"
+            ],
+            "id": "b0a2ca71-475d-4a4e-8f5b-5a4ed9496a09",
             "createdDate": "2020-12-25T18:52:21.887Z",
             "lastModified": "2020-12-25T18:52:29.352Z"
         }

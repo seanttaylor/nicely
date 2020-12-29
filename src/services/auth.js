@@ -19,10 +19,10 @@ function UserAuthService({cacheService, userService}) {
         const token = jwt.sign({ 
             iss: "api@nicely", 
             exp: expiresInOneHour,
-            sub: user._id,
+            sub: user.id,
             role: ["user"]
         }, process.env.JWT_SECRET);
-        cacheService.set({key: user._id, value: token, ttl: expiresInOneHour});
+        cacheService.set({key: user.id, value: token, ttl: expiresInOneHour});
         return token;
     }
 

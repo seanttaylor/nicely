@@ -45,16 +45,10 @@ function PostJSONRepository(databaseConnector) {
      /**
      * 
      * @param {PostDTO} postDTO - an instance of PosttDTO 
-     * @param {String} text - text to update the post
      */
-    this.editPost = async function(postDTO, text) {
-        const postData = postDTO.value();
-        const updatedPostDTO = new PostDTO(Object.assign(postData, {
-            body: text
-        }));
-
+    this.editPost = async function(postDTO) {
         const [record] = await databaseConnector.updateOne({
-            doc: updatedPostDTO, 
+            doc: postDTO, 
             collection: "posts"
          });
 
@@ -72,7 +66,7 @@ function PostJSONRepository(databaseConnector) {
         const allComments = await databaseConnector.findAll("comments");
         const postCommentList = allComments.filter(c => c.postId === postData.id);
         const updatedPostDTO = new PostDTO(Object.assign(postData, {
-            commentCount: postCommentList.length + 1
+            commentCount: postCommentList.length
         }));
 
         await databaseConnector.updateOne({
@@ -183,10 +177,9 @@ function PostJSONRepository(databaseConnector) {
 
 
     this.getRecentPosts = async function() {
-        const result = [];
-        //const sql = `SELECT posts.*, users.handle from posts JOIN users ON posts.user_id = users.id WHERE is_published = 1 ORDER BY sequence_no DESC LIMIT 35`;
-
-        return result;
+        //TODO: Determine a sort criteria for "recent"
+        const postList = await databaseConnector.findAll("posts");
+        return postList;
     }
 
 
@@ -210,17 +203,16 @@ function PostJSONRepository(databaseConnector) {
             const userPosts = await this.findPostsByUserId({userId});
             return userPosts;
         });
-        const result = Promise.all(userFeed);
-        return result;
+        return Promise.all(userFeed);
     }
 
     this.findPostsByUserId = async function({userId, showUnpublished=false}) {
-        const posts = await databaseConnector.findAll("posts");
-        const postsByUser = posts.filter((p)=> p.userId === userId && p.isPublished === showUnpublished);
+        const postFilterFn = showUnpublished ? (p)=> p.userId === userId : (p)=> p.userId === userId && p.isPublished === true;
         
-        return postsByUser;
+        const postList = await databaseConnector.findAll("posts");
+        const postsByUser = postList.filter(postFilterFn);
 
-        //let sql = `SELECT posts.id, posts.user_id, posts.body, posts.comment_count, posts.like_count, posts.sequence_no, posts.created_date, posts.sentiment_score, posts.magnitude, publish_date, users.handle, users.first_name, users.last_name FROM posts JOIN users ON posts.user_id = users.id WHERE users.id = "${userId}"`;
+        return postsByUser;
     }
 
 }

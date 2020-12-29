@@ -247,12 +247,19 @@ function UserJSONRepository(databaseConnector) {
 
 
     this.getSubscribersOf = async function(currentUserId) {
-        const [currentUser] = await databaseConnector.findOne({
+        const [currentUserFollowerData] = await databaseConnector.findOne({
             id: currentUserId, 
             collection: "user_followers"
         });
 
-        return currentUser;
+        const subscriberList = Promise.all(currentUserFollowerData.subscriptions.map(async(userId)=> {
+            return await databaseConnector.findOne({
+                id: userId,
+                collection: "users"
+            })
+        }));
+
+        return subscriberList;
     }
 
 
