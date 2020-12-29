@@ -245,6 +245,7 @@ test("API should return a list of followers of a specified user", async() => {
     .expect(204);
     
     const res3 = await request.get(`/api/v1/users/${userId}/followers`)
+    .send()
     .expect(200);
 
     expect(Array.isArray(res3["body"]["data"])).toBe(true);
@@ -334,16 +335,20 @@ test("API should return the feed of a specified user", async() => {
 
     const followerId = res3["body"]["data"][0]["id"];
 
-    const res4 = await request.put(`/api/v1/users/${userNo1Id}/followers/${followerId}`)
+    await request.post(`/api/v1/users/${userNo1Id}/posts/${postId}/publish`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .expect(204);
+
+    await request.put(`/api/v1/users/${userNo1Id}/followers/${followerId}`)
     .send()
     .expect(204);
     
-    const res5 = await request.get(`/api/v1/users/${followerId}/feed`)
+    const res4 = await request.get(`/api/v1/users/${followerId}/feed`)
     .expect(200);
 
-    expect(Array.isArray(res5["body"]["data"])).toBe(true);
-    expect(res5["body"]["data"]["length"] === 1).toBe(true);
-    expect(res5["body"]["data"][0]["id"] === postId).toBe(true);
+    expect(Array.isArray(res4["body"]["data"])).toBe(true);
+    expect(res4["body"]["data"]["length"] === 1).toBe(true);
+    expect(res4["body"]["data"][0]["id"] === postId).toBe(true);
 });
 
 test("API should return 200 status code on attempt(s) to access authorized resources", async() => {

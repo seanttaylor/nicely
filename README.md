@@ -2,6 +2,7 @@
 
 #### Local Development
 
+* If running the tests _outside_ of Docker, ensure the `JWT_SECRET` environment variable is set. Otherwise the units for the AuthService module will fail. (e.g. `export JWT_SECRET=mySuperSecret`)
 
 ##### Database and Migrations
 

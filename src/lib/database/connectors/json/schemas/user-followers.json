@@ -7,23 +7,23 @@
     "default": {},
     "examples": [
         {
-            "followers": [],
+            "subscriptions": [],
             "id": "e7e89550-66ef-4b24-b769-593b9ab0df0f",
             "createdDate": "2020-12-24T18:52:30.509Z",
             "lastModified": null
         }
     ],
     "required": [
-        "followers",
+        "subscriptions",
         "id",
         "createdDate",
         "lastModified"
     ],
     "properties": {
-        "followers": {
-            "$id": "#/properties/followers",
+        "subscriptions": {
+            "$id": "#/properties/subscriptions",
             "type": "array",
-            "title": "The followers schema",
+            "title": "The subscriptions schema",
             "description": "An explanation about the purpose of this instance.",
             "default": [],
             "examples": [
@@ -31,7 +31,7 @@
             ],
             "additionalItems": true,
             "items": {
-                "$id": "#/properties/followers/items"
+                "$id": "#/properties/subscriptions/items"
             }
         },
         "id": {

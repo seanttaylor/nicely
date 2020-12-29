@@ -141,8 +141,8 @@ function User(repo, userDTO) {
     */
 
     this.getFollowers = async function() {
-        const user = await this._repo.getSubscribersOf(this.id);
-        return user.followers;
+        const userList = await this._repo.getSubscribersOf(this.id);
+        return userList.map((u) => new User(this._repo, new UserDTO(u)));
     }
 
     /**

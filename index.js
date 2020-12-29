@@ -14,8 +14,11 @@ const events = require("events");
 const eventEmitter = new events.EventEmitter();
 const fetch = require("node-fetch");
 const mockFetch = require("./src/lib/utils/mocks/fetch");
+const mockConsole = require("./src/lib/utils/mocks/console");
 const DatabaseConnector = require("./src/lib/database/connectors/memory"); 
-const asiagoDatabaseConnector = new DatabaseConnector();
+const asiagoDatabaseConnector = new DatabaseConnector({
+    console: process.env.NODE_ENV === "ci/cd/test" ? mockConsole : console,
+});
 const serverPort = process.env.SERVER_PORT || 3000;
 
 /********************************SERVICES**************************************/

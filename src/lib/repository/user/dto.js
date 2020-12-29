@@ -115,22 +115,22 @@ function UserDTO({id, handle, emailAddress, phoneNumber, firstName, lastName, cr
 
  /**
   * @param {String} id - uuid for a user
-  * @param {String[]} followers - a list of uuids referencing platform users who follow this user
+  * @param {String[]} subscriptions - a list of uuids referencing platform users who follow this user
   * @param {String} createdDate - date the user follower list was created
   * @param {String|null} lastModified - date the user follower list was last modified
   * @returns {UserFollowersDTO}
   */
 
- function UserFollowersDTO({id, followers=[], createdDate=new Date().toISOString(), lastModified=null}) {
+ function UserFollowersDTO({id, subscriptions=[], createdDate=new Date().toISOString(), lastModified=null}) {
     const userFollowerData = {
         id,
-        followers,
+        subscriptions,
         createdDate,
         lastModified
     };
   
   if(!userFollowersSchemaValidation(userFollowerData)) {
-    throw new Error(`UserFollowersDTOError/InvalidUserFollowersDTO => ${JSON.stringify(userFollwersSchemaValidation.errors, null, 2)}`);
+    throw new Error(`UserFollowersDTOError/InvalidUserFollowersDTO => ${JSON.stringify(userFollowersSchemaValidation.errors, null, 2)}`);
   }
 
   this.value = function() {
@@ -150,7 +150,7 @@ function UserDTO({id, handle, emailAddress, phoneNumber, firstName, lastName, cr
 
  /**
   * @param {String} id - uuid for a user
-  * @param {String[]} subscriptions - a list of uuids referencing platform users who follow this user
+  * @param {String[]} subscriptions - a list of uuids referencing platform users this user follows
   * @param {String} createdDate - date the user subscrptions list was created
   * @param {String|null} lastModified - date the user subscriptions list was last modified
   * @returns {UserSubscriptionsDTO}

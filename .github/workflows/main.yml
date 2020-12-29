@@ -10,19 +10,6 @@ jobs:
   build-and-push:
     name: build-and-push
     runs-on: ubuntu-latest
-    services:
-      db:
-        image: mysql:5.7
-        ports:
-          - 3306:3306
-
-        env:
-          MYSQL_USER: nicely
-          MYSQL_PASSWORD: root
-          MYSQL_DATABASE: asiago
-          MYSQL_ROOT_PASSWORD: root
-        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
-
     steps:
       - name: "[STEP] Checkout"
         uses: actions/checkout@v2
@@ -41,4 +28,6 @@ jobs:
         run: npm install
 
       - name: "[STEP] Run Integration Tests"
-        run: docker-compose -f ./docker-compose-ci.yml run nicely_app
+        env: 
+          JWT_SECRET: superSecret
+        run: npm test

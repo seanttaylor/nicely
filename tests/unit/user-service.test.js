@@ -1,13 +1,13 @@
 const uuid = require("uuid");
 const events = require("events");
 const eventEmitter = new events.EventEmitter();
-const mocks = require("../../src/lib/utils/mocks/repo");
+const { mockImpl } = require("../../src/lib/utils/mocks");
 const { UserService } = require("../../src/services/user");
 const UserRepository = require("../../src/lib/repository/user/json");
 const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../../src/lib/utils");
 const DatabaseConnector = require("../../src/lib/database/connectors/memory");
 const testJSONDbConnector = new DatabaseConnector({
-    filePath: "/json-connector.json"
+    console: mockImpl.console
 });
 const IUserRepository = require("../../src/interfaces/user-repository");
 const testUserJSONRepo = new IUserRepository(new UserRepository(testJSONDbConnector));
@@ -222,7 +222,7 @@ test("Should return list of followers", async() => {
     const followerList = await testUserNo1.getFollowers();
 
     expect(Array.isArray(followerList)).toBe(true);
-    expect(followerList[0] === testUserNo2Id).toBe(true);
+    expect(followerList[0]["id"] === testUserNo2Id).toBe(true);
     expect(followerList.length === 1).toBe(true);
 });
 
@@ -332,9 +332,9 @@ test("Should create a new user password", async() => {
     };
     const testUser = await testUserService.createUser(testUserData);
     const testUserId = await testUser.save();
-    const testPassword = await testUserService.createUserPassword.call(mocks, {password: "xxxyyyzzz", user: testUser});
+    const testPassword = await testUserService.createUserPassword.call(mockImpl.repo, {password: "xxxyyyzzz", user: testUser});
   
-    expect(mocks._repo.calledMethods.createUserPasswordCalled).toBe(true);
+    expect(mockImpl.repo._repo.calledMethods.createUserPasswordCalled).toBe(true);
 });
 
 test("Should return true when plain-text password and equivalent hash match", async() => {
@@ -385,7 +385,8 @@ test("Should return posts from all users a specified user follows", async() => {
     });
     
     const postId = await testPost.save();
-    const feed = await testPostService.getSubscriberFeedByUserId(testUserNo2.id);
+    await testPostService.markAsPublished(testPost);
+    const feed = await testPostService.getSubscriberFeedByUserId(testUserNo2Id);
     
     expect(Array.isArray(feed) === true).toBe(true);
     expect(feed.length === 1).toBe(true);

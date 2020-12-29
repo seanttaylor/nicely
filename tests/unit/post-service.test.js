@@ -2,9 +2,11 @@ const uuid = require("uuid");
 const events = require("events");
 const eventEmitter = new events.EventEmitter();
 const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../../src/lib/utils");
-const { mocks, mockImpl } = require("../../src/lib/utils/mocks");
+const { mockImpl } = require("../../src/lib/utils/mocks");
 const InMemoryDatabaseConnector = require("../../src/lib/database/connectors/memory");
-const testInMemoryDatabaseConnector = new InMemoryDatabaseConnector();
+const testInMemoryDatabaseConnector = new InMemoryDatabaseConnector({
+    console: mockImpl.console
+});
 
 /**UserService**/
 const { UserService } = require("../../src/services/user");
@@ -277,6 +279,8 @@ test("Should return list of posts from users a specified user has subscribed to"
 
     testPost.save();
     await testUserNo2.followUser(testUserNo1);
+    await testPostService.markAsPublished(testPost);
+
     const userNo2FollowsUserNo1 = await testUserNo2.isFollowing(testUserNo1);
     const testUserNo1Followers = await testUserNo1.getFollowers();
     const result = await testPostService.getSubscriberFeedByUserId(testUserNo2Id);

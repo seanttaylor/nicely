@@ -1,9 +1,11 @@
+/* istanbul ignore file */
+
 const Ajv = require("ajv");
 const uuid = require("uuid");
 const ajv = new Ajv();
 const dataTemplate = require("../template");
 
-function InMemoryDatabaseConnector() {
+function InMemoryDatabaseConnector({console}) {
     const data = Object.assign({}, dataTemplate);
     this._schemaValidators = {
         "comment_likes": require("../json/schemas/comment-likes.json"),
@@ -187,6 +189,7 @@ function InMemoryDatabaseConnector() {
         try {
             
             if (!data[collection][id]) {
+                console.info(`JSONDatabaseConnector.UpdateError: Could NOT find ${collection}.${id}`);
                 return [];
             }
             

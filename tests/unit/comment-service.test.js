@@ -4,7 +4,9 @@ const eventEmitter = new events.EventEmitter();
 const { mockImpl } = require("../../src/lib/utils/mocks");
 const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../../src/lib/utils");
 const InMemoryDatabaseConnector = require("../../src/lib/database/connectors/memory");
-const testInMemoryDbConnector = new InMemoryDatabaseConnector();
+const testInMemoryDbConnector = new InMemoryDatabaseConnector({
+    console: mockImpl.console
+});
 
 /*UserService*/
 const { UserService } = require("../../src/services/user");

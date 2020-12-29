@@ -143,7 +143,7 @@ function UserJSONRepository(databaseConnector) {
         targetUserFollowerListUnique.add(currentUserData.id);
         
         const updatedUserFollowers = new UserFollowersDTO(Object.assign(targetUserData, {
-            followers: Array.from(targetUserFollowerListUnique)
+            subscriptions: Array.from(targetUserFollowerListUnique)
         }));
 
         const updatedUser = new UserDTO(Object.assign(targetUserData, {
@@ -253,10 +253,11 @@ function UserJSONRepository(databaseConnector) {
         });
 
         const subscriberList = Promise.all(currentUserFollowerData.subscriptions.map(async(userId)=> {
-            return await databaseConnector.findOne({
+            const [user] = await databaseConnector.findOne({
                 id: userId,
                 collection: "users"
-            })
+            });
+            return user;
         }));
 
         return subscriberList;

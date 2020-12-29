@@ -7,6 +7,7 @@ module.exports = {
         user: require("./user"),
         userService: require("./user-service"),
         publishService: require("./publish-service"),
-        cache: require("./cache")
+        cache: require("./cache"),
+        console: require("./console")
     }
 }
