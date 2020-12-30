@@ -1,6 +1,10 @@
-/* istanbul ignore file */
+/**
+ * Entry point for bootstrapping application in the ci/cd/test environment
+ */
+
+ /* istanbul ignore file */
 require("dotenv").config();
-const globalConfig = require("./config");
+const globalConfig = require("../config");
 const http = require("http");
 const path = require("path");
 const express = require("express");
@@ -13,24 +17,26 @@ const app = express();
 const events = require("events");
 const eventEmitter = new events.EventEmitter();
 const fetch = require("node-fetch");
-//const mockFetch = require("./src/lib/utils/mocks/fetch");
-//const mockConsole = require("./src/lib/utils/mocks/console");
-const DatabaseConnector = require("./src/lib/database/connectors/memory"); 
-const asiagoDatabaseConnector = new DatabaseConnector({ console });
+const mockFetch = require("../src/lib/utils/mocks/fetch");
+const mockConsole = require("../src/lib/utils/mocks/console");
+const DatabaseConnector = require("../src/lib/database/connectors/memory"); 
+const asiagoDatabaseConnector = new DatabaseConnector({
+    console: mockConsole
+});
 const serverPort = process.env.SERVER_PORT || 3000;
 
 /********************************SERVICES**************************************/
 /**UserService**/
-const { UserService } = require("./src/services/user");
-const UserRepository = require("./src/lib/repository/user/json");
-const IUserRepository = require("./src/interfaces/user-repository");
+const { UserService } = require("../src/services/user");
+const UserRepository = require("../src/lib/repository/user/json");
+const IUserRepository = require("../src/interfaces/user-repository");
 const usersRepo = new IUserRepository(new UserRepository(asiagoDatabaseConnector));
 const userService = new UserService(usersRepo);
 
 /**PostService**/
-const { PostService } = require("./src/services/post");
-const PostRepository = require("./src/lib/repository/post/json");
-const IPostRepository = require("./src/interfaces/post-repository");
+const { PostService } = require("../src/services/post");
+const PostRepository = require("../src/lib/repository/post/json");
+const IPostRepository = require("../src/interfaces/post-repository");
 const postsRepo = new IPostRepository(new PostRepository(asiagoDatabaseConnector));
 const postService = new PostService({
     repo: postsRepo,
@@ -39,9 +45,9 @@ const postService = new PostService({
 });
 
 /**CommentService**/
-const { CommentService } = require("./src/services/comment");
-const CommentRepository = require("./src/lib/repository/comment/json");
-const ICommentRepository = require("./src/interfaces/comment-repository");
+const { CommentService } = require("../src/services/comment");
+const CommentRepository = require("../src/lib/repository/comment/json");
+const ICommentRepository = require("../src/interfaces/comment-repository");
 const commentsRepo = new ICommentRepository(new CommentRepository(asiagoDatabaseConnector));
 const commentService = new CommentService({
     repo: commentsRepo,
@@ -51,43 +57,43 @@ const commentService = new CommentService({
 });
 
 /**PublishService**/
-const IPublisher = require("./src/interfaces/publisher");
-const SSEPublisher = require("./src/lib/publisher/sse");
+const IPublisher = require("../src/interfaces/publisher");
+const SSEPublisher = require("../src/lib/publisher/sse");
 const ssePublishService = new IPublisher(new SSEPublisher(eventEmitter));
 
 /**CacheService**/
-const ICache = require("./src/interfaces/cache");
-const CacheService = require("./src/lib/cache");
+const ICache = require("../src/interfaces/cache");
+const CacheService = require("../src/lib/cache");
 const cacheService = new ICache(new CacheService());
 
 /**AuthService**/
-const AuthService = require("./src/services/auth");
+const AuthService = require("../src/services/auth");
 const authService = new AuthService({cacheService, userService});
 
 /**MailService**/
-const IMailer = require("./src/interfaces/mailer");
-const mailLibrary = require("./src/lib/mail");
-const MailService = require("./src/services/mail");
-const mailService = new IMailer(new MailService({console, eventEmitter}, mailLibrary));
+const IMailer = require("../src/interfaces/mailer");
+const MailService = require("../src/services/mail");
+const mailLib = require("../src/lib/utils/mocks/mailer"); 
+const mailService = new IMailer(new MailService({console: mockConsole, eventEmitter}, mailLib));
 
 /**SentimentAnalysisService**/
-const SentimentAnalysisService = require("./src/lib/sentiment-analysis");
-const ISentimentAnalysisService = require("./src/interfaces/sentiment-analysis");
+const SentimentAnalysisService = require("../src/lib/sentiment-analysis");
+const ISentimentAnalysisService = require("../src/interfaces/sentiment-analysis");
 const sentimentAnalysisService = new ISentimentAnalysisService(new SentimentAnalysisService({
     eventEmitter, 
-    fetch,
+    fetch: mockFetch,
     console
 }));
 
 /******************************************************************************/
 
-const SSERouter = require("./src/api/sse");
-const StatusRouter = require("./src/api/status");
-const PostRouter = require("./src/api/post");
-const UserRouter = require("./src/api/user");
-const FeedRouter = require("./src/api/feed");
-const CommentRouter = require("./src/api/comment");
-const UIApplicationRouter = require("./src/api/ui");
+const SSERouter = require("../src/api/sse");
+const StatusRouter = require("../src/api/status");
+const PostRouter = require("../src/api/post");
+const UserRouter = require("../src/api/user");
+const FeedRouter = require("../src/api/feed");
+const CommentRouter = require("../src/api/comment");
+const UIApplicationRouter = require("../src/api/ui");
 
 app.set("view engine", "ejs");
 

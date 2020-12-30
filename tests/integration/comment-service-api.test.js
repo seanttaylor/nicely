@@ -3,9 +3,8 @@
 /**********************************************/
 process.env.NODE_ENV = "ci/cd/test";
 
-const app = require("../../index");
+const app = require("../index");
 const supertest = require("supertest");
-const { set } = require("../../index");
 const request = supertest(app);
 
 const starkUserId = "e98417a8-d912-44e0-8d37-abe712ca840f";

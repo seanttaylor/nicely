@@ -4,13 +4,13 @@
  * Mock implementation for various mailer service methods
  */
 const mockMailerImplementation =  {
-    _transporter: {
+    transporter: {
         async sendMail(data) {
             mockMailerImplementation.calledMethods.sendMail = true;
             return {messageId: "fake-id", messagePreviewURL: "http://who-cares.io"}
         }
     },
-    _mailLib: {
+    lib: {
         getTestMessageUrl() {
             mockMailerImplementation.calledMethods.getTestMessageUrl = true;
         }

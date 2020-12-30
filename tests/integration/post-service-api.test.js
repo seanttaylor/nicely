@@ -3,7 +3,7 @@
 /**********************************************/
 process.env.NODE_ENV = "ci/cd/test";
 
-const app = require("../../index");
+const app = require("../index");
 const supertest = require("supertest");
 const request = supertest(app);
 const { randomEmailAddress, randomPhoneNumber, randomUserHandle } = require("../../src/lib/utils");

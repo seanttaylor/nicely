@@ -1,7 +1,4 @@
-/* Implements the IMailer interface
-* See interfaces/mailer for method documentation
-* Sends email messages
-*/
+const EmailTemplate = require("../lib/mail/email-templates");
 
 /**
 * An configuration object for send emails via the Mailable interface.
@@ -14,26 +11,27 @@
 */
 
 
-const EmailTemplate = require("./email-templates");
-const nodemailer = require("nodemailer");
-const transporter = nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-        user: process.env.PLATFORM_OUTBOUND_EMAIL_USERNAME,
-        pass: process.env.PLATFORM_OUTBOUND_EMAIL_PASSWORD
-    }
-});
+/**
+* @typedef {Object} MailSService
+* @property {Object} _mailLib - the mail library containing the business logic to send email
+* @property {Object} _transporter - a transporter object for sending the email message
+* @property {Function} send - sends an email
+*/
 
 /**
  * @implements {IMailerAPI}
  * @returns {Object} an implementation of the IMailer interface
  */
 
-function Mailer ({console, eventEmitter}) {
-    this._mailLib = nodemailer;
-    this._transporter = transporter;
+/**
+ * @param {Object} console - the console object
+ * @param {Object} eventEmitter - an instance of EventEmitter
+ * @param {Object} mailLib - an email library 
+ */
+
+function MailService({console, eventEmitter}, mailLib) {
+    //this._mailLib = mailLib.lib;
+    //this._transporter = mailLib.transporter;
 
     eventEmitter.on("userService.newUserCreated", sendWelcomeEmail.bind(this));
 
@@ -60,14 +58,14 @@ function Mailer ({console, eventEmitter}) {
             html
         };
 
-        const outboundMessage = await this._transporter.sendMail(message);
-        /*console.log({
+        const outboundMessage = await mailLib.transporter.sendMail(message);
+        console.log({
             messageId: outboundMessage.messageId,
-            messagePreviewURL: this._mailLib.getTestMessageUrl(outboundMessage)
-        });*/
+            messagePreviewURL: mailLib.lib.getTestMessageUrl(outboundMessage)
+        });
     }
-
 }
- 
 
-module.exports = Mailer;
+
+
+module.exports = MailService;
